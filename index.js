@@ -31,7 +31,7 @@
             command += '\\( -clone 0 -resize ' + size + 'x' + size + ' \\) ';
         }
 
-        command += '-delete 0 -alpha off -colors 256 ' + out;
+        command += '-delete 0 -alpha off -colors 256 ' + options.out;
 
         exec(command, puts);
 
