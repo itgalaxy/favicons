@@ -13,7 +13,8 @@
 
         var options = defaults(params || {}, {
             source: 'apple-touch-icon.png',
-            sizes: [16, 32, 48, 64]
+            sizes: [16, 32, 48, 64],
+            out: 'favicon.ico'
         }),
             command,
             i,
@@ -30,7 +31,7 @@
             command += '\\( -clone 0 -resize ' + size + 'x' + size + ' \\) ';
         }
 
-        command += '-delete 0 -alpha off -colors 256 favicon.ico';
+        command += '-delete 0 -alpha off -colors 256 ' + out;
 
         exec(command, puts);
 
