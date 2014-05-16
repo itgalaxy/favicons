@@ -7,6 +7,9 @@
     "type": "git",
     "url": "https://github.com/haydenbleasel/favicon-generator.git"
   },
+  "scripts": {
+    "test": "node test.js"
+  },
   "keywords": [
     "favicon",
     "ico",
