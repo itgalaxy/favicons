@@ -1,6 +1,6 @@
 {
   "name": "favicon-generator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Favicon.ico generator for Node.js",
   "main": "index.js",
   "repository": {
