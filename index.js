@@ -22,6 +22,7 @@
 
         function puts(error, stdout, stderr) {
             sys.puts(stdout);
+            console.log('Generated favicon.ico');
         }
 
         command = 'convert ' + options.source + ' -bordercolor white -border 0 ';
