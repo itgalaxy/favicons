@@ -1,0 +1,25 @@
+{
+  "name": "favicon-generator",
+  "version": "1.0.0",
+  "description": "Favicon.ico generator for Node.js",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/haydenbleasel/favicon-generator.git"
+  },
+  "keywords": [
+    "favicon",
+    "ico",
+    "generator",
+    "node"
+  ],
+  "author": "Hayden Bleasel <haydenbleasel@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/haydenbleasel/favicon-generator/issues"
+  },
+  "homepage": "https://github.com/haydenbleasel/favicon-generator",
+  "dependencies": {
+    "lodash.defaults": "^2.4.1"
+  }
+}

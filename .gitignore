@@ -1,3 +1,6 @@
+# Created by http://www.gitignore.io
+
+### Node ###
 # Logs
 logs
 *.log
@@ -20,6 +23,13 @@ coverage
 build/Release
 
 # Dependency directory
-# Deployed apps should consider commenting this line out:
-# see https://npmjs.org/doc/faq.html#Should-I-check-my-node_modules-folder-into-git
+# Commenting this out is preferred by some people, see
+# https://npmjs.org/doc/faq.html#Should-I-check-my-node_modules-folder-into-git
 node_modules
+
+# Users Environment Variables
+.lock-wscript
+
+
+### Custom ###
+favicon.ico
