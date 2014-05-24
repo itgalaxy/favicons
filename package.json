@@ -14,7 +14,8 @@
     "favicon",
     "ico",
     "generator",
-    "node"
+    "node",
+    "gulpfriendly"
   ],
   "author": "Hayden Bleasel <haydenbleasel@gmail.com>",
   "license": "ISC",
