@@ -20,11 +20,6 @@
             i,
             size;
 
-        function puts(error, stdout, stderr) {
-            sys.puts(stdout);
-            console.log('Generated favicon.ico');
-        }
-
         command = 'convert ' + options.source + ' -bordercolor white -border 0 ';
 
         for (i = 0; i < options.sizes.length; i += 1) {
@@ -34,7 +29,9 @@
 
         command += '-delete 0 -alpha off -colors 256 ' + options.out;
 
-        exec(command, puts);
+        exec(command);
+
+        console.log('Generated favicon.ico');
 
     };
 
