@@ -14,10 +14,10 @@ brew install imagemagick
 
 Simply require the module and execute it with an optional array of configuration.
 
-- Source: The source image used to produce the favicon
-- Sizes: An array of favicon sizes to be stored within the file
-- Out: The output of the file
-- Upscale: Whether to resize smaller images to larger favicons
+- Source: The source image used to produce the favicon.
+- Sizes: An array of favicon sizes to be stored within the file.
+- Out: The destination path and filename.
+- Upscale: Whether to resize smaller images to larger favicons.
 
 Defaults are shown below:
 
