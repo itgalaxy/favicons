@@ -29,7 +29,7 @@
 
             for (i = 0; i < options.sizes.length; i += 1) {
                 size = options.sizes[i];
-                if (options.upscale || (!options.upscale && origin > size)) {
+                if (options.upscale || (!options.upscale && origin >= size)) {
                     command += '\\( -clone 0 -resize ' + size + 'x' + size + ' \\) ';
                 }
             }
