@@ -14,6 +14,7 @@ var favicon = require('favicon-generator');
 favicon({
   source: 'apple-touch-icon.png',
   sizes: [16, 32, 48, 64],
-  out: 'favicon.ico'
+  out: 'favicon.ico',
+  upscale: false
 });
 ```
