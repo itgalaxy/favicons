@@ -1,12 +1,25 @@
-# Favicon [![Build Status](https://travis-ci.org/haydenbleasel/favicon-generator.svg?branch=node)](https://travis-ci.org/haydenbleasel/favicon-generator)
+# Favicon Generator [![Build Status](https://travis-ci.org/haydenbleasel/favicon-generator.svg?branch=node)](https://travis-ci.org/haydenbleasel/favicon-generator)
 
-Favicon.ico generator for Node.js. Requires ImageMagick which you can get through Brew with:
+Favicon.ico generator for Node.js. Produces a multi-size favicon from a single image. Installed through NPM with:
+
+```
+npm install favicon-generator --save-dev
+```
+
+Requires ImageMagick which you can get through Brew with:
 
 ```
 brew install imagemagick
 ```
 
-Needs some work with upscaling and other rules. Usage:
+Simply require the module and execute it with an optional array of configuration.
+
+- Source: The source image used to produce the favicon
+- Sizes: An array of favicon sizes to be stored within the file
+- Out: The output of the file
+- Upscale: Whether to resize smaller images to larger favicons
+
+Defaults are shown below:
 
 ```
 var favicon = require('favicon-generator');
