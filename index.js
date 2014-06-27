@@ -14,7 +14,8 @@
             source: 'apple-touch-icon.png',
             sizes: [16, 32, 48, 64],
             out: 'favicon.ico',
-            upscale: false
+            upscale: false,
+            callback: null
         }),
             command,
             i,
@@ -38,6 +39,9 @@
 
             exec(command, function () {
                 console.log('Generated favicon.ico');
+                if (options.callback) {
+                    options.callback();
+                }
             });
 
         });
