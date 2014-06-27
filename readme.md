@@ -18,6 +18,7 @@ Simply require the module and execute it with an optional array of configuration
 - Sizes: An array of favicon sizes to be stored within the file.
 - Out: The destination path and filename.
 - Upscale: Whether to resize smaller images to larger favicons.
+- Callback: Function to execute upon completion.
 
 Defaults are shown below:
 
@@ -28,6 +29,7 @@ favicon({
   source: 'apple-touch-icon.png',
   sizes: [16, 32, 48, 64],
   out: 'favicon.ico',
-  upscale: false
+  upscale: false,
+  callback: null
 });
 ```
