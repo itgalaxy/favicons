@@ -18,7 +18,7 @@ Simply require the module and execute it with an optional array of configuration
 - Sizes: An array of favicon sizes to be stored within the file.
 - Out: The destination path and filename.
 - Upscale: Whether to resize smaller images to larger favicons.
-- Callback: Function to execute upon completion.
+- Callback: Function to execute upon completion (parameters are 'error' and 'response').
 
 Defaults are shown below:
 

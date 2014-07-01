@@ -17,30 +17,27 @@
             upscale: false,
             callback: null
         }),
-            command,
-            i,
-            size,
-            origin;
+            command = 'convert ' + options.source + ' -bordercolor white -border 0 ',
+            size;
 
-        command = 'convert ' + options.source + ' -bordercolor white -border 0 ';
-
-        exec('identify -format "%[fx:w]" ' + options.source, function (err, stdout, stderr) {
-
-            origin = parseInt(stdout, 10);
-
+        exec('identify -format "%[fx:w]" ' + options.source, function (err, stdout) {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            var i;
             for (i = 0; i < options.sizes.length; i += 1) {
                 size = options.sizes[i];
-                if (options.upscale || (!options.upscale && origin >= size)) {
+                if (options.upscale || (!options.upscale && parseInt(stdout, 10) >= size)) {
                     command += '\\( -clone 0 -resize ' + size + 'x' + size + ' \\) ';
                 }
             }
 
             command += '-delete 0 -alpha off -colors 256 ' + options.out;
 
-            exec(command, function () {
-                console.log('Generated favicon.ico');
+            exec(command, function (err) {
                 if (options.callback) {
-                    options.callback();
+                    options.callback(err, 'Generated favicon.ico');
                 }
             });
 
