@@ -3,21 +3,22 @@
 
 (function () {
 
-    'use strict';
+    //'use strict';
 
     var path = require('path');
     var fs = require('fs');
     var execSync = require("execSync");
+    var mkdirp = require('mkdirp');
+    var defaults = require('lodash.defaults');
 
-    module.exports = function(grunt) {
-
-        // Tasks
-        grunt.registerMultiTask('favicons', 'Generate favicon.ico and icons for iOS, Android, WP8 and Firefox (OS)', function() {
+    module.exports = function(params) {
 
             var target = this.target;
 
             // Default options
-            var options = this.options({
+            var options = defaults(params || {}, {
+                source: ['logo.png'],
+                dest: 'images',
                 debug: false,
                 trueColor: false,
                 precomposed: true,
@@ -50,9 +51,7 @@
                 args.unshift("convert");
                 var ret = execute(args.join(" "));
                 if (ret.code === 127) {
-                    return grunt.warn(
-                        'You need to have ImageMagick installed in your PATH for this task to work.'
-                    );
+                    return console.log('You need to have ImageMagick installed in your PATH for this task to work.');
                 }
             };
 
@@ -103,7 +102,7 @@
 
             if (needHTML) {
                 var cheerio = require("cheerio");
-                var contents = (grunt.file.exists(options.html)) ? grunt.file.read(options.html) : "";
+                var contents = (fs.existsSync(options.html)) ? fs.read(options.html) : "";
                 var $ = cheerio.load(contents);
                 // Removing exists favicon from HTML
                 $('link[rel="shortcut icon"]').remove();
@@ -124,21 +123,16 @@
                 }
             }
 
-            // Iterate over all specified file groups.
-            this.files.forEach(function(f) {
-
-                if (f.src.length === 0) {
-                    return grunt.warn ('Source file not found.');
+                if (options.length === 0) {
+                    return console.log('Source file not found.');
                 }
 
-                if (!grunt.file.isDir(f.dest)) {
-                    grunt.file.mkdir(f.dest);
-                    grunt.log.ok('Created output folder at "', f.dest, '"');
+                if (!fs.existsSync(options.dest) || !fs.lstatSync(options.dest).isDirectory()) {
+                    mkdirp(options.dest);
+                    console.log('Created output folder at "', options.dest, '"');
                 }
 
-                // Iterate source files
-                f.src.forEach(function(source) {
-
+                    var source = options.source;
                     var resolmap = {};
 
                     // Create resized version of source image
@@ -153,14 +147,14 @@
                     var prefix = options.precomposed ? "-precomposed" : "";
                     var additionalOpts = options.appleTouchBackgroundColor !== "none" ?
                         [ "-background", '"' + options.appleTouchBackgroundColor + '"', "-flatten"] : [];
-                    grunt.log.write('Resizing images for "' + source + '"... ');
+                    console.log('Resizing images for "' + source + '"... ');
 
                     if (options.regular) {
 
                         // regular png
                         ['16x16', '32x32', '48x48'].forEach(function(size) {
                             var p = path.join(dirname, basename + "." + size + ext);
-                            var saveTo = path.join(f.dest, size + '.png');
+                            var saveTo = path.join(options.dest, size + '.png');
                             var src = source;
                             if (fs.existsSync(p)) {
                                 src = p;
@@ -168,22 +162,22 @@
                             convert([src, '-resize', size, saveTo]);
                             files.push(saveTo);
                         });
-                        grunt.log.ok();
+                        console.log("okay");
 
                         // favicon.ico
-                        grunt.log.write('favicon.ico... ');
+                        console.log('favicon.ico... ');
                         convert(files.concat([
                             "-alpha on",
                             "-background none",
                             options.trueColor ? "" : "-bordercolor white -border 0 -colors 64",
-                            path.join(f.dest, 'favicon.ico')
+                            path.join(options.dest, 'favicon.ico')
                         ]));
-                        grunt.log.ok();
+                        console.log("okay");
 
                         // 64x64 favicon.png higher priority than .ico
-                        grunt.log.write('favicon.png... ');
-                        convert([source, '-resize', "64x64", path.join(f.dest, 'favicon.png')]);
-                        grunt.log.ok();
+                        console.log('favicon.png... ');
+                        convert([source, '-resize', "64x64", path.join(options.dest, 'favicon.png')]);
+                        console.log("okay");
                     }
 
                     ////// PNG's for iOS and Android icons
@@ -195,64 +189,64 @@
                         }
 
                         // 57x57: iPhone non-retina, Android 2.1+
-                        grunt.log.write('apple-touch-icon.png... ');
-                        convert(combine(source, f.dest, "57x57", "apple-touch-icon.png", additionalOpts, options.appleTouchPadding));
-                        grunt.log.ok();
+                        console.log('apple-touch-icon.png... ');
+                        convert(combine(source, options.dest, "57x57", "apple-touch-icon.png", additionalOpts, options.appleTouchPadding));
+                        console.log("okay");
 
                         if (options.precomposed) {
-                            grunt.log.write('apple-touch-icon' + prefix + '.png... ');
-                            convert(combine(source, f.dest, "57x57", "apple-touch-icon" + prefix + ".png", additionalOpts, options.appleTouchPadding));
-                            grunt.log.ok();
+                            console.log('apple-touch-icon' + prefix + '.png... ');
+                            convert(combine(source, options.dest, "57x57", "apple-touch-icon" + prefix + ".png", additionalOpts, options.appleTouchPadding));
+                            console.log("okay");
                         }
 
                         // 60x60: iPhone iOS 7 without size
-                        grunt.log.write('apple-touch-icon-60x60-precomposed.png... ');
-                        convert(combine(source, f.dest, "60x60", "apple-touch-icon-60x60-precomposed.png", additionalOpts, options.appleTouchPadding));
-                        grunt.log.ok();
+                        console.log('apple-touch-icon-60x60-precomposed.png... ');
+                        convert(combine(source, options.dest, "60x60", "apple-touch-icon-60x60-precomposed.png", additionalOpts, options.appleTouchPadding));
+                        console.log("okay");
 
                         // 72x72: iPad non-retina, iOS 6 and lower
-                        grunt.log.write('apple-touch-icon-72x72' + prefix + '.png... ');
-                        convert(combine(source, f.dest, "72x72", "apple-touch-icon-72x72" + prefix + ".png", additionalOpts, options.appleTouchPadding));
-                        grunt.log.ok();
+                        console.log('apple-touch-icon-72x72' + prefix + '.png... ');
+                        convert(combine(source, options.dest, "72x72", "apple-touch-icon-72x72" + prefix + ".png", additionalOpts, options.appleTouchPadding));
+                        console.log("okay");
 
                         // 76x76: iPad non-retina, iOS 7 and higher
-                        grunt.log.write('apple-touch-icon-76x76-precomposed.png... ');
-                        convert(combine(source, f.dest, "76x76", "apple-touch-icon-76x76-precomposed.png", additionalOpts, options.appleTouchPadding));
-                        grunt.log.ok();
+                        console.log('apple-touch-icon-76x76-precomposed.png... ');
+                        convert(combine(source, options.dest, "76x76", "apple-touch-icon-76x76-precomposed.png", additionalOpts, options.appleTouchPadding));
+                        console.log("okay");
 
                         // 114x114: iPhone retina, iOS 6 and lower
-                        grunt.log.write('apple-touch-icon-114x114' + prefix + '.png... ');
-                        convert(combine(source, f.dest, "114x114", "apple-touch-icon-114x114" + prefix + ".png", additionalOpts, options.appleTouchPadding));
-                        grunt.log.ok();
+                        console.log('apple-touch-icon-114x114' + prefix + '.png... ');
+                        convert(combine(source, options.dest, "114x114", "apple-touch-icon-114x114" + prefix + ".png", additionalOpts, options.appleTouchPadding));
+                        console.log("okay");
 
                         // 120x120: iPhone retina, iOS 7 and higher
-                        grunt.log.write('apple-touch-icon-120x120-precomposed.png... ');
-                        convert(combine(source, f.dest, "120x120", "apple-touch-icon-120x120-precomposed.png", additionalOpts, options.appleTouchPadding));
-                        grunt.log.ok();
+                        console.log('apple-touch-icon-120x120-precomposed.png... ');
+                        convert(combine(source, options.dest, "120x120", "apple-touch-icon-120x120-precomposed.png", additionalOpts, options.appleTouchPadding));
+                        console.log("okay");
 
                         // 144x144: iPad retina, iOS 6 and lower
-                        grunt.log.write('apple-touch-icon-144x144' + prefix + '.png... ');
-                        convert(combine(source, f.dest, "144x144", "apple-touch-icon-144x144" + prefix + ".png", additionalOpts, options.appleTouchPadding));
-                        grunt.log.ok();
+                        console.log('apple-touch-icon-144x144' + prefix + '.png... ');
+                        convert(combine(source, options.dest, "144x144", "apple-touch-icon-144x144" + prefix + ".png", additionalOpts, options.appleTouchPadding));
+                        console.log("okay");
 
                         // 152x152: iPad retina, iOS 7 and higher
-                        grunt.log.write('apple-touch-icon-152x152-precomposed.png... ');
-                        convert(combine(source, f.dest, "152x152", "apple-touch-icon-152x152-precomposed.png", additionalOpts, options.appleTouchPadding));
-                        grunt.log.ok();
+                        console.log('apple-touch-icon-152x152-precomposed.png... ');
+                        convert(combine(source, options.dest, "152x152", "apple-touch-icon-152x152-precomposed.png", additionalOpts, options.appleTouchPadding));
+                        console.log("okay");
                     }
 
                     // 228x228: Coast
                     if (options.coast) {
-                        grunt.log.write('coast-icon-228x228.png... ');
-                        convert(combine(source, f.dest, "228x228", "coast-icon-228x228.png", additionalOpts));
-                        grunt.log.ok();
+                        console.log('coast-icon-228x228.png... ');
+                        convert(combine(source, options.dest, "228x228", "coast-icon-228x228.png", additionalOpts));
+                        console.log("okay");
                     }
 
                     // Android Homescreen app
                     if (options.androidHomescreen) {
-                        grunt.log.write('homescreen-196x196.png... ');
-                        convert(combine(source, f.dest, "196x196", "homescreen-196x196.png", additionalOpts));
-                        grunt.log.ok();
+                        console.log('homescreen-196x196.png... ');
+                        convert(combine(source, options.dest, "196x196", "homescreen-196x196.png", additionalOpts));
+                        console.log("okay");
                     }
 
                     // Firefox
@@ -261,7 +255,7 @@
                           contentFirefox;
 
                         if (updateFirefoxManifest) {
-                            var contentsFirefox = (grunt.file.exists(options.firefoxManifest)) ? grunt.file.read(options.firefoxManifest) : '{}';
+                            var contentsFirefox = (fs.existsSync(options.firefoxManifest)) ? fs.read(options.firefoxManifest) : '{}';
                             contentFirefox = JSON.parse(contentsFirefox);
                             contentFirefox.icons = {};
                         }
@@ -270,34 +264,34 @@
                             var dimensions = size + 'x' + size;
                             var dhalf = "circle "+size/2+","+size/2+" "+size/2+",1";
                             var fifname = "firefox-icon-" + dimensions + ".png";
-                            grunt.log.write(fifname + '... ');
-                            convert(combine(source, f.dest, dimensions, fifname, []));
+                            console.log(fifname + '... ');
+                            convert(combine(source, options.dest, dimensions, fifname, []));
 
                             if (options.firefoxRound) {
-                                convert(["-size", dimensions, "xc:none", "-fill", path.join(f.dest, fifname), "-draw", '"'+dhalf+'"', path.join(f.dest, fifname)]);
+                                convert(["-size", dimensions, "xc:none", "-fill", path.join(options.dest, fifname), "-draw", '"'+dhalf+'"', path.join(options.dest, fifname)]);
                             }
 
                             if (updateFirefoxManifest) {
                                 contentFirefox.icons[size] = options.HTMLPrefix + fifname;
                             }
 
-                            grunt.log.ok();
+                            console.log("okay");
                         });
 
                         if (updateFirefoxManifest) {
-                            grunt.log.write('Updating Firefox manifest... ');
+                            console.log('Updating Firefox manifest... ');
 
                             fs.writeFileSync(options.firefoxManifest, JSON.stringify(contentFirefox, null, 2));
                         }
 
-                        grunt.log.ok();
+                        console.log("okay");
                     }
 
                     ////// Windows 8 Tile
 
                     if (options.windowsTile) {
 
-                        grunt.log.write('windows-tile-144x144.png... ');
+                        console.log('windows-tile-144x144.png... ');
 
                         // MS Tiles
 
@@ -333,17 +327,17 @@
                             }
                         }
 
-                        convert(combine(source, f.dest, "70x70", "windows-tile-70x70.png", additionalOpts));
-                        convert(combine(source, f.dest, "144x144", "windows-tile-144x144.png", additionalOpts));
-                        convert(combine(source, f.dest, "150x150", "windows-tile-150x150.png", additionalOpts));
-                        convert(combine(source, f.dest, "310x310", "windows-tile-310x310.png", additionalOpts));
-                        grunt.log.ok();
+                        convert(combine(source, options.dest, "70x70", "windows-tile-70x70.png", additionalOpts));
+                        convert(combine(source, options.dest, "144x144", "windows-tile-144x144.png", additionalOpts));
+                        convert(combine(source, options.dest, "150x150", "windows-tile-150x150.png", additionalOpts));
+                        convert(combine(source, options.dest, "310x310", "windows-tile-310x310.png", additionalOpts));
+                        console.log("okay");
 
                     }
 
                     // Append icons to <HEAD>
                     if (needHTML) {
-                        grunt.log.write('Updating HTML... ');
+                        console.log('Updating HTML... ');
                         var elements = "";
 
                         if (options.windowsTile) {
@@ -404,24 +398,20 @@
                         }
 
                         // Saving HTML
-                        grunt.file.write(options.html, out);
+                        fs.writeSync(options.html, out);
 
-                        grunt.log.ok();
+                        console.log("okay");
                     }
 
                     // Cleanup
                     if (options.regular) {
                         ['16x16', '32x32', '48x48'].forEach(function(size) {
-                            fs.unlink(path.join(f.dest, size + '.png'));
+                            fs.unlink(path.join(options.dest, size + '.png'));
                         });
                     }
 
-                });
 
-            });
-        });
 
-    };
 
     };
 
