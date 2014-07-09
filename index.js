@@ -20,11 +20,10 @@
             dest: 'images',
             trueColor: false,
             html: '',
-            appleTouchBackgroundColor: 'auto', // none, auto, #color
+            background: '#c00', // "color" or "none"
             windowsTile: true,
             coast: false,
             tileBlackWhite: true,
-            tileColor: 'auto', // none, auto, #color
             firefox: false,
             apple: true,
             favicons: true,
@@ -67,18 +66,6 @@
             }
         }
 
-        // Generate background color for Apple touch icons
-        function generateColor(src) {
-            var ret = execute('convert ' + src + " -polaroid 180 -resize 1x1 -colors 1 -alpha off -unique-colors txt:- | grep -v ImageMagick | sed -n 's/.*\\(#[0-9A-F]*\\).*/\\1/p'");
-            return ret.stdout.trim();
-        }
-
-        // Generate background color for Windows 8 tile
-        function generateTileColor(src) {
-            var ret = execute("convert " + src + " +dither -colors 1 -alpha off -unique-colors txt:- | grep -v ImageMagick | sed -n 's/.*\\(#[0-9A-F]*\\).*/\\1/p'");
-            return ret.stdout.trim();
-        }
-
         // Combine arguments into command
         function combine(src, dest, size, fname, additionalOpts) {
             var out = [src, "-resize", size].concat(additionalOpts);
@@ -113,16 +100,11 @@
             console.log('Created output folder at "', options.dest, '"');
         }
 
-        // Create resized version of source image
-        // 16x16: desktop browsers, address bar, tabs
-        // 32x32: safari reading list, non-retina iPhone, windows 7+ taskbar
-        // 48x48: windows desktop
-
         files = [];
         ext = path.extname(options.source);
         basename = path.basename(options.source, ext);
         dirname = path.dirname(options.source);
-        additionalOpts = options.appleTouchBackgroundColor !== "none" ? [ "-background", '"' + options.appleTouchBackgroundColor + '"', "-flatten"] : [];
+        additionalOpts = options.background !== "none" ? [ "-background", '"' + options.background + '"', "-flatten"] : [];
         console.log('Resizing images for "' + options.source + '"... ');
 
         if (options.favicons) {
@@ -159,30 +141,24 @@
 
         ////// PNG's for iOS and Android icons
 
+        // iOS
         if (options.apple) {
-
-            // Convert options for transparent and flatten
-            if (options.appleTouchBackgroundColor === "auto") {
-                options.appleTouchBackgroundColor = generateColor(options.source);
-            }
-
             appleSizes.forEach(function (size) {
                 var type = size + 'x' + size,
                     rule = (size === 57 ? '' : '-' + type);
                 console.log('apple-touch-icon' + rule + '.png... ');
                 convert(combine(options.source, options.dest, type, 'apple-touch-icon' + rule + '.png', additionalOpts));
             });
-
         }
 
-        // 228x228: Coast
+        // Coast
         if (options.coast) {
             console.log('coast-icon-228x228.png... ');
             convert(combine(options.source, options.dest, "228x228", "coast-icon-228x228.png", additionalOpts));
 
         }
 
-        // Android Homescreen app
+        // Android
         if (options.androidHomescreen) {
             console.log('homescreen-196x196.png... ');
             convert(combine(options.source, options.dest, "196x196", "homescreen-196x196.png", additionalOpts));
@@ -241,17 +217,12 @@
                 additionalOpts = [];
             }
 
-            // Tile BG color (experimental)
-            if (options.tileColor === "auto") {
-                options.tileColor = generateTileColor(options.source);
-            }
-
             // Setting background color in image
             if (!writeHTML()) {
-                if (options.tileColor !== "none") {
+                if (options.background !== "none") {
                     additionalOpts = additionalOpts.concat([
                         "-background",
-                        '"' + options.tileColor + '"',
+                        '"' + options.background + '"',
                         "-flatten"
                     ]);
                 }
@@ -277,8 +248,8 @@
                 elements += "\t<meta name=\"msapplication-square310x310logo\" content=\""  + "windows-tile-310x310.png\"/>\n";
                 elements += "\t<meta name=\"msapplication-TileImage\" content=\""  + "windows-tile-144x144.png\"/>\n";
 
-                if (options.tileColor !== "none") {
-                    elements += "\t<meta name=\"msapplication-TileColor\" content=\"" + options.tileColor + "\"/>\n";
+                if (options.background !== "none") {
+                    elements += "\t<meta name=\"msapplication-TileColor\" content=\"" + options.background + "\"/>\n";
                 }
             }
 
