@@ -16,22 +16,18 @@
 
         // Default options
         var options = defaults(params || {}, {
-            source: ['logo.png'],
+            source: 'logo.png',
             dest: 'images',
             trueColor: false,
-            precomposed: true,
             HTMLPrefix: "",
             appleTouchBackgroundColor: "auto", // none, auto, #color
-            appleTouchPadding: 0,
             windowsTile: true,
             coast: false,
-            sharp: 0,
             tileBlackWhite: true,
             tileColor: "auto", // none, auto, #color
             firefox: false,
             apple: true,
-            regular: true,
-            firefoxRound: false,
+            favicons: true,
             firefoxManifest: "",
             androidHomescreen: false
         }),
@@ -44,7 +40,6 @@
             ext,
             basename,
             dirname,
-            prefix,
             additionalOpts,
             updateFirefoxManifest,
             contentsFirefox,
@@ -81,12 +76,7 @@
         function combine(src, dest, size, fname, additionalOpts, padding) {
             var out = [src, "-resize", size].concat(additionalOpts),
                 thumb;
-            if (options.sharp > 0) {
-                out = out.concat([
-                    "-adaptive-sharpen",
-                    options.sharp + "x" + options.sharp
-                ]);
-            }
+
             // icon padding
             if (typeof padding === 'number' && padding >= 0 && padding < 100) {
                 thumb = Math.round((100 - padding) * parseInt(size.split("x")[0], 10) / 100);
@@ -111,7 +101,6 @@
             $('link[rel="shortcut icon"]').remove();
             $('link[rel="icon"]').remove();
             $('link[rel="apple-touch-icon"]').remove();
-            $('link[rel="apple-touch-icon-precomposed"]').remove();
             $('meta').each(function () {
                 var name = $(this).attr('name');
                 if (name && (name === 'msapplication-TileImage' ||
@@ -146,11 +135,10 @@
         ext = path.extname(source);
         basename = path.basename(source, ext);
         dirname = path.dirname(source);
-        prefix = options.precomposed ? "-precomposed" : "";
         additionalOpts = options.appleTouchBackgroundColor !== "none" ? [ "-background", '"' + options.appleTouchBackgroundColor + '"', "-flatten"] : [];
         console.log('Resizing images for "' + source + '"... ');
 
-        if (options.regular) {
+        if (options.favicons) {
 
             // regular png
             ['16x16', '32x32', '48x48'].forEach(function (size) {
@@ -191,48 +179,41 @@
 
             // 57x57: iPhone non-retina, Android 2.1+
             console.log('apple-touch-icon.png... ');
-            convert(combine(source, options.dest, "57x57", "apple-touch-icon.png", additionalOpts, options.appleTouchPadding));
-
-
-            if (options.precomposed) {
-                console.log('apple-touch-icon' + prefix + '.png... ');
-                convert(combine(source, options.dest, "57x57", "apple-touch-icon" + prefix + ".png", additionalOpts, options.appleTouchPadding));
-
-            }
+            convert(combine(source, options.dest, "57x57", "apple-touch-icon.png", additionalOpts));
 
             // 60x60: iPhone iOS 7 without size
-            console.log('apple-touch-icon-60x60-precomposed.png... ');
-            convert(combine(source, options.dest, "60x60", "apple-touch-icon-60x60-precomposed.png", additionalOpts, options.appleTouchPadding));
+            console.log('apple-touch-icon-60x60.png... ');
+            convert(combine(source, options.dest, "60x60", "apple-touch-icon-60x60.png", additionalOpts));
 
 
             // 72x72: iPad non-retina, iOS 6 and lower
-            console.log('apple-touch-icon-72x72' + prefix + '.png... ');
-            convert(combine(source, options.dest, "72x72", "apple-touch-icon-72x72" + prefix + ".png", additionalOpts, options.appleTouchPadding));
+            console.log('apple-touch-icon-72x72' + '.png... ');
+            convert(combine(source, options.dest, "72x72", "apple-touch-icon-72x72" + ".png", additionalOpts));
 
 
             // 76x76: iPad non-retina, iOS 7 and higher
-            console.log('apple-touch-icon-76x76-precomposed.png... ');
-            convert(combine(source, options.dest, "76x76", "apple-touch-icon-76x76-precomposed.png", additionalOpts, options.appleTouchPadding));
+            console.log('apple-touch-icon-76x76.png... ');
+            convert(combine(source, options.dest, "76x76", "apple-touch-icon-76x76.png", additionalOpts));
 
 
             // 114x114: iPhone retina, iOS 6 and lower
-            console.log('apple-touch-icon-114x114' + prefix + '.png... ');
-            convert(combine(source, options.dest, "114x114", "apple-touch-icon-114x114" + prefix + ".png", additionalOpts, options.appleTouchPadding));
+            console.log('apple-touch-icon-114x114' + '.png... ');
+            convert(combine(source, options.dest, "114x114", "apple-touch-icon-114x114" + ".png", additionalOpts));
 
 
             // 120x120: iPhone retina, iOS 7 and higher
-            console.log('apple-touch-icon-120x120-precomposed.png... ');
-            convert(combine(source, options.dest, "120x120", "apple-touch-icon-120x120-precomposed.png", additionalOpts, options.appleTouchPadding));
+            console.log('apple-touch-icon-120x120.png... ');
+            convert(combine(source, options.dest, "120x120", "apple-touch-icon-120x120.png", additionalOpts));
 
 
             // 144x144: iPad retina, iOS 6 and lower
-            console.log('apple-touch-icon-144x144' + prefix + '.png... ');
-            convert(combine(source, options.dest, "144x144", "apple-touch-icon-144x144" + prefix + ".png", additionalOpts, options.appleTouchPadding));
+            console.log('apple-touch-icon-144x144' + '.png... ');
+            convert(combine(source, options.dest, "144x144", "apple-touch-icon-144x144" + ".png", additionalOpts));
 
 
             // 152x152: iPad retina, iOS 7 and higher
-            console.log('apple-touch-icon-152x152-precomposed.png... ');
-            convert(combine(source, options.dest, "152x152", "apple-touch-icon-152x152-precomposed.png", additionalOpts, options.appleTouchPadding));
+            console.log('apple-touch-icon-152x152.png... ');
+            convert(combine(source, options.dest, "152x152", "apple-touch-icon-152x152.png", additionalOpts));
 
         }
 
@@ -266,10 +247,6 @@
                     fifname = "firefox-icon-" + dimensions + ".png";
                 console.log(fifname + '... ');
                 convert(combine(source, options.dest, dimensions, fifname, []));
-
-                if (options.firefoxRound) {
-                    convert(["-size", dimensions, "xc:none", "-fill", path.join(options.dest, fifname), "-draw", '"' + dhalf + '"', path.join(options.dest, fifname)]);
-                }
 
                 if (updateFirefoxManifest) {
                     contentFirefox.icons[size] = options.HTMLPrefix + fifname;
@@ -352,16 +329,16 @@
 
             // iOS
             if (options.apple) {
-                elements += "\t<link rel=\"apple-touch-icon-precomposed\" sizes=\"152x152\" href=\"" + options.HTMLPrefix + "apple-touch-icon-152x152-precomposed.png\">\n";
-                elements += "\t<link rel=\"apple-touch-icon-precomposed\" sizes=\"120x120\" href=\"" + options.HTMLPrefix + "apple-touch-icon-120x120-precomposed.png\">\n";
+                elements += "\t<link rel=\"apple-touch-icon\" sizes=\"152x152\" href=\"" + options.HTMLPrefix + "apple-touch-icon-152x152.png\">\n";
+                elements += "\t<link rel=\"apple-touch-icon\" sizes=\"120x120\" href=\"" + options.HTMLPrefix + "apple-touch-icon-120x120.png\">\n";
 
-                elements += "\t<link rel=\"apple-touch-icon-precomposed\" sizes=\"76x76\" href=\"" + options.HTMLPrefix + "apple-touch-icon-76x76-precomposed.png\">\n";
-                elements += "\t<link rel=\"apple-touch-icon-precomposed\" sizes=\"60x60\" href=\"" + options.HTMLPrefix + "apple-touch-icon-60x60-precomposed.png\">\n";
+                elements += "\t<link rel=\"apple-touch-icon\" sizes=\"76x76\" href=\"" + options.HTMLPrefix + "apple-touch-icon-76x76.png\">\n";
+                elements += "\t<link rel=\"apple-touch-icon\" sizes=\"60x60\" href=\"" + options.HTMLPrefix + "apple-touch-icon-60x60.png\">\n";
 
-                elements += "\t<link rel=\"apple-touch-icon" + prefix + "\" sizes=\"144x144\" href=\"" + options.HTMLPrefix + "apple-touch-icon-144x144" + prefix + ".png\">\n";
-                elements += "\t<link rel=\"apple-touch-icon" + prefix + "\" sizes=\"114x114\" href=\"" + options.HTMLPrefix + "apple-touch-icon-114x114" + prefix + ".png\">\n";
+                elements += "\t<link rel=\"apple-touch-icon" + "\" sizes=\"144x144\" href=\"" + options.HTMLPrefix + "apple-touch-icon-144x144" + ".png\">\n";
+                elements += "\t<link rel=\"apple-touch-icon" + "\" sizes=\"114x114\" href=\"" + options.HTMLPrefix + "apple-touch-icon-114x114" + ".png\">\n";
 
-                elements += "\t<link rel=\"apple-touch-icon" + prefix + "\" sizes=\"72x72\" href=\"" + options.HTMLPrefix + "apple-touch-icon-72x72" + prefix + ".png\">\n";
+                elements += "\t<link rel=\"apple-touch-icon" + "\" sizes=\"72x72\" href=\"" + options.HTMLPrefix + "apple-touch-icon-72x72" + ".png\">\n";
                 elements += "\t<link rel=\"apple-touch-icon\" sizes=\"57x57\" href=\"" + options.HTMLPrefix + "apple-touch-icon.png\">\n";
             }
 
@@ -377,7 +354,7 @@
             }
 
             // Default
-            if (options.regular) {
+            if (options.favicon) {
                 elements += "\t<link rel=\"shortcut icon\" href=\"" + options.HTMLPrefix + "favicon.ico\" />\n";
                 elements += "\t<link rel=\"icon\" type=\"image/png\" sizes=\"64x64\" href=\"" + options.HTMLPrefix + "favicon.png\" />\n";
             }
@@ -404,7 +381,7 @@
         }
 
         // Cleanup
-        if (options.regular) {
+        if (options.favicons) {
             ['16x16', '32x32', '48x48'].forEach(function (size) {
                 fs.unlink(path.join(options.dest, size + '.png'));
             });
