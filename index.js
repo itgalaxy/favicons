@@ -10,7 +10,8 @@
         execSync = require("execSync"),
         mkdirp = require('mkdirp'),
         defaults = require('lodash.defaults'),
-        cheerio = require("cheerio");
+        cheerio = require("cheerio"),
+        tidy = require('htmltidy').tidy;
 
     module.exports = function (params) {
 
@@ -28,11 +29,10 @@
             apple: true,
             favicons: true,
             firefoxManifest: 'manifest.webapp',
-            android: false,
+            android: true,
             logging: true
         }),
             elements = '',
-            html,
             files = [],
             ext = path.extname(options.source),
             basename = path.basename(options.source, ext),
@@ -81,13 +81,14 @@
         }
 
         function writeTags(callback) {
-            var $ = cheerio.load(fs.readFileSync(options.html));
+            var $ = cheerio.load(fs.readFileSync(options.html)),
+                html = '';
             $('link[rel="shortcut icon"]').remove();
             $('link[rel="icon"]').remove();
             $('link[rel="apple-touch-icon"]').remove();
             $('meta').each(function () {
                 var name = $(this).attr('name');
-                if (name && (name === 'msapplication-TileImage' || name === 'msapplication-TileColor' || name.indexOf('msapplication-square') >= 0)) {
+                if (name && (name === 'msapplication-TileImage' || name === 'msapplication-TileColor' || name.indexOf('msapplication-square') >= 0 || name === 'mobile-web-app-capable')) {
                     $(this).remove();
                 }
             });
@@ -98,9 +99,14 @@
             if ($('head').length > 0) {
                 $("head").append(elements);
             } else {
-                $.root().append(elements);
+                print("HTML has no <head>.");
             }
-            return callback($.html());
+            tidy($.html(), { wrap: 0, indent: true }, function (err, data) {
+                if (err) {
+                    return print(err);
+                }
+                return callback(data);
+            });
         }
 
         function makeFavicons() {
@@ -115,15 +121,15 @@
                 convert([src, '-resize', dimensions, saveTo]);
                 files.push(saveTo);
             });
-
             convert(files.concat([
                 '-alpha on',
                 '-background none',
                 options.trueColor ? '' : '-bordercolor white -border 0 -colors 64',
                 path.join(options.dest, 'favicon.ico')
             ]), 'favicon.ico');
-
             convert([options.source, '-resize', "64x64", path.join(options.dest, 'favicon.png')], 'favicon.png');
+            elements += '\t<link rel="shortcut icon" href="favicon.ico" />\n';
+            elements += '\t<link rel="icon" type="image/png" sizes="64x64" href="favicon.png" />\n';
         }
 
         function makeIOS() {
@@ -133,19 +139,25 @@
                     name = 'apple-touch-icon' + rule + '.png',
                     command = combine(options.source, options.dest, dimensions, name, opts);
                 convert(command, name);
+                elements += '\t<link rel="apple-touch-icon" sizes="' + dimensions + '" href="' + name + '" />\n';
             });
         }
 
         function makeCoast() {
-            var name = 'coast-icon-228x228.png',
-                command = combine(options.source, options.dest, "228x228", name, opts);
+            var dimensions = '228x228',
+                name = 'coast-icon-' + dimensions + '.png',
+                command = combine(options.source, options.dest, dimensions, name, opts);
             convert(command, name);
+            elements += '\t<link rel="icon" sizes="' + dimensions + '" href="' + name + '" />\n';
         }
 
         function makeAndroid() {
-            var name = 'homescreen-196x196.png',
-                command = combine(options.source, options.dest, "196x196", name, opts);
+            var dimensions = '196x196',
+                name = 'homescreen-' + dimensions + '.png',
+                command = combine(options.source, options.dest, dimensions, name, opts);
             convert(command, name);
+            elements += '\t<meta name="mobile-web-app-capable" value="yes" />\n';
+            elements += '\t<link rel="icon" sizes="' + dimensions + '" href="' + name + '" />\n';
         }
 
         function makeFirefox() {
@@ -173,16 +185,22 @@
             if (writeHTML() || options.background === "none") {
                 opts = [];
             }
-
+            if (options.background !== "none") {
+                elements += '\t<meta name="msapplication-TileColor" content="' + options.background + '" />\n';
+            }
             if (options.tileBlackWhite) {
                 opts.push('-fuzz 100%', '-fill black', '-opaque red', '-fuzz 100%', '-fill black', '-opaque blue', '-fuzz 100%', '-fill white', '-opaque green');
             }
-
             windowsSizes.forEach(function (size) {
                 var dimensions = size + 'x' + size,
                     name = 'windows-tile-' + dimensions + '.png',
                     command = combine(options.source, options.dest, dimensions, name, opts);
                 convert(command, name);
+                if (size === 144) {
+                    elements += '\t<meta name="msapplication-TileImage" content="' + name + '" />\n';
+                } else {
+                    elements += '\t<meta name="msapplication-square' + dimensions + 'logo" content="' + name + '" />\n';
+                }
             });
         }
 
@@ -203,55 +221,15 @@
                 console.log('Updating HTML... ');
             }
 
-            if (options.windowsTile) {
-                elements += '\t<meta name="msapplication-square70x70logo" content="windows-tile-70x70.png" />\n';
-                elements += '\t<meta name="msapplication-square150x150logo" content="windows-tile-150x150.png" />\n';
-                elements += '\t<meta name="msapplication-square310x310logo" content="windows-tile-310x310.png" />\n';
-                elements += '\t<meta name="msapplication-TileImage" content="windows-tile-144x144.png" />\n';
-
-                if (options.background !== "none") {
-                    elements += '\t<meta name="msapplication-TileColor" content="' + options.background + '" />\n';
-                }
-            }
-
-            // iOS
-            if (options.apple) {
-                appleSizes.forEach(function (size) {
-                    var dimensions = size + 'x' + size;
-                    elements += '\t<link rel="apple-touch-icon" sizes="' + dimensions + '" href="apple-touch-icon' + (size === 57 ? '' : '-' + dimensions) + '.png" />\n';
-                });
-            }
-
-            // Coast browser
-            if (options.coast) {
-                elements += '\t<link rel="icon" sizes="228x228" href="coast-icon-228x228.png" />\n';
-            }
-
-            // Android Homescreen app
-            if (options.android) {
-                elements += '\t<meta name="mobile-web-app-capable" value="yes" />\n';
-                elements += '\t<link rel="icon" sizes="196x196" href="homescreen-196x196.png" />\n';
-            }
-
-            // Default
-            if (options.favicons) {
-                elements += '\t<link rel="shortcut icon" href="favicon.ico" />\n';
-                elements += '\t<link rel="icon" type="image/png" sizes="64x64" href="favicon.png" />\n';
-            }
-
-            // Windows 8 tile. In HTML version background color will be as meta-tag
-
-            writeTags(function (data) {
-                output = data;
-            });
-
             // Hack for php tags
             if (path.extname(options.html) === ".php") {
                 output = output.replace(/&lt;\?/gi, '<?').replace(/\?&gt;/gi, '?>');
             }
 
             // Saving HTML
-            fs.writeFileSync(options.html, output);
+            writeTags(function (data) {
+                fs.writeFileSync(options.html, data);
+            });
 
         }
 
