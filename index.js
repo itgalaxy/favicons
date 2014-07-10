@@ -31,10 +31,10 @@
             windows: true,
 
             // Miscellaneous
-            html: 'index.html',
-            background: '#c00',
+            html: '',
+            background: '#222',
             tileBlackWhite: false,
-            manifest: 'manifest.webapp',
+            manifest: '',
             trueColor: false,
             logging: true
 
