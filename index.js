@@ -23,29 +23,29 @@
             background: '#c00', // "color" or "none"
             windowsTile: true,
             coast: false,
-            tileBlackWhite: true,
-            firefox: false,
+            tileBlackWhite: false,
+            firefox: true,
             apple: true,
             favicons: true,
-            firefoxManifest: '',
-            androidHomescreen: false,
+            firefoxManifest: 'manifest.webapp',
+            android: false,
             logging: true
         }),
-            $,
+            elements = '',
             html,
             files = [],
             ext = path.extname(options.source),
             basename = path.basename(options.source, ext),
             dirname = path.dirname(options.source),
-            additionalOpts,
+            opts = options.background !== "none" ? [ "-background", '"' + options.background + '"', "-flatten"] : [],
             updateFirefoxManifest,
             contentsFirefox,
             contentFirefox,
-            elements,
             output,
             appleSizes = [57, 60, 72, 76, 144, 120, 144, 152],
             faviconSizes = [16, 32, 48],
-            windowsSizes = [70, 144, 150, 310];
+            windowsSizes = [70, 144, 150, 310],
+            firefoxSizes = [16, 30, 32, 48, 60, 64, 90, 120, 128, 256];
 
         function print(message) {
             console.log(message);
@@ -62,14 +62,14 @@
         }
 
         // Convert image with Imagemagick
-        function convert(args, message) {
+        function convert(args, name) {
             args.unshift('convert');
             var ret = execute(args.join(' '));
             if (ret.code === 127) {
                 return print('You need to have ImageMagick installed in your PATH for this task to work.');
             }
-            if (options.logging && message) {
-                print(message);
+            if (options.logging && name) {
+                print('Created ' + name);
             }
         }
 
@@ -80,8 +80,8 @@
             return out;
         }
 
-        function removeTags() {
-            $ = cheerio.load(fs.readFileSync(options.html));
+        function writeTags(callback) {
+            var $ = cheerio.load(fs.readFileSync(options.html));
             $('link[rel="shortcut icon"]').remove();
             $('link[rel="icon"]').remove();
             $('link[rel="apple-touch-icon"]').remove();
@@ -95,18 +95,24 @@
             if (html === '') {
                 $ = cheerio.load('');
             }
+            if ($('head').length > 0) {
+                $("head").append(elements);
+            } else {
+                $.root().append(elements);
+            }
+            return callback($.html());
         }
 
         function makeFavicons() {
             faviconSizes.forEach(function (size) {
-                var type = size + 'x' + size,
-                    p = path.join(dirname, basename + "." + type + ext),
-                    saveTo = path.join(options.dest, type + '.png'),
+                var dimensions = size + 'x' + size,
+                    p = path.join(dirname, basename + "." + dimensions + ext),
+                    saveTo = path.join(options.dest, dimensions + '.png'),
                     src = options.source;
                 if (fs.existsSync(p)) {
                     src = p;
                 }
-                convert([src, '-resize', type, saveTo]);
+                convert([src, '-resize', dimensions, saveTo]);
                 files.push(saveTo);
             });
 
@@ -115,16 +121,68 @@
                 '-background none',
                 options.trueColor ? '' : '-bordercolor white -border 0 -colors 64',
                 path.join(options.dest, 'favicon.ico')
-            ]), 'Created favicon.ico');
+            ]), 'favicon.ico');
 
-            convert([options.source, '-resize', "64x64", path.join(options.dest, 'favicon.png')], 'Created favicon.png');
+            convert([options.source, '-resize', "64x64", path.join(options.dest, 'favicon.png')], 'favicon.png');
         }
 
         function makeIOS() {
             appleSizes.forEach(function (size) {
-                var type = size + 'x' + size,
-                    rule = (size === 57 ? '' : '-' + type);
-                convert(combine(options.source, options.dest, type, 'apple-touch-icon' + rule + '.png', additionalOpts), 'Created apple-touch-icon' + rule + '.png');
+                var dimensions = size + 'x' + size,
+                    rule = (size === 57 ? '' : '-' + dimensions),
+                    name = 'apple-touch-icon' + rule + '.png',
+                    command = combine(options.source, options.dest, dimensions, name, opts);
+                convert(command, name);
+            });
+        }
+
+        function makeCoast() {
+            var name = 'coast-icon-228x228.png',
+                command = combine(options.source, options.dest, "228x228", name, opts);
+            convert(command, name);
+        }
+
+        function makeAndroid() {
+            var name = 'homescreen-196x196.png',
+                command = combine(options.source, options.dest, "196x196", name, opts);
+            convert(command, name);
+        }
+
+        function makeFirefox() {
+            updateFirefoxManifest = (options.firefoxManifest !== undefined && options.firefoxManifest !== '');
+            if (updateFirefoxManifest) {
+                contentsFirefox = (fs.existsSync(options.firefoxManifest)) ? fs.readFileSync(options.firefoxManifest) : '{}';
+                contentFirefox = JSON.parse(contentsFirefox);
+                contentFirefox.icons = {};
+            }
+            firefoxSizes.forEach(function (size) {
+                var dimensions = size + 'x' + size,
+                    name = "firefox-icon-" + dimensions + ".png";
+                convert(combine(options.source, options.dest, dimensions, name, []), name);
+                if (updateFirefoxManifest) {
+                    contentFirefox.icons[size] = name;
+                }
+            });
+            if (updateFirefoxManifest) {
+                print('Updating Firefox manifest... ');
+                fs.writeFileSync(options.firefoxManifest, JSON.stringify(contentFirefox, null, 2));
+            }
+        }
+
+        function makeWindows() {
+            if (writeHTML() || options.background === "none") {
+                opts = [];
+            }
+
+            if (options.tileBlackWhite) {
+                opts.push('-fuzz 100%', '-fill black', '-opaque red', '-fuzz 100%', '-fill black', '-opaque blue', '-fuzz 100%', '-fill white', '-opaque green');
+            }
+
+            windowsSizes.forEach(function (size) {
+                var dimensions = size + 'x' + size,
+                    name = 'windows-tile-' + dimensions + '.png',
+                    command = combine(options.source, options.dest, dimensions, name, opts);
+                convert(command, name);
             });
         }
 
@@ -132,107 +190,18 @@
             mkdirp(options.dest);
         }
 
-        additionalOpts = options.background !== "none" ? [ "-background", '"' + options.background + '"', "-flatten"] : [];
-
-        if (options.favicons) {
-            makeFavicons();
-        }
-
-        ////// PNG's for iOS and Android icons
-
-        // iOS
-        if (options.apple) {
-            makeIOS();
-        }
-
-        // Coast
-        if (options.coast) {
-            convert(combine(options.source, options.dest, "228x228", "coast-icon-228x228.png", additionalOpts), 'Created coast-icon-228x228.png');
-        }
-
-        // Android
-        if (options.androidHomescreen) {
-            convert(combine(options.source, options.dest, "196x196", "homescreen-196x196.png", additionalOpts), 'Created homescreen-196x196.png');
-        }
-
-        // Firefox
-        if (options.firefox) {
-            updateFirefoxManifest = (options.firefoxManifest !== undefined && options.firefoxManifest !== '');
-
-            if (updateFirefoxManifest) {
-                contentsFirefox = (fs.existsSync(options.firefoxManifest)) ? fs.read(options.firefoxManifest) : '{}';
-                contentFirefox = JSON.parse(contentsFirefox);
-                contentFirefox.icons = {};
-            }
-
-            [16, 30, 32, 48, 60, 64, 90, 120, 128, 256].forEach(function (size) {
-                var dimensions = size + 'x' + size,
-                    fifname = "firefox-icon-" + dimensions + ".png";
-                console.log(fifname + '... ');
-                convert(combine(options.source, options.dest, dimensions, fifname, []));
-
-                if (updateFirefoxManifest) {
-                    contentFirefox.icons[size] = fifname;
-                }
-
-            });
-
-            if (updateFirefoxManifest) {
-                console.log('Updating Firefox manifest... ');
-                fs.writeFileSync(options.firefoxManifest, JSON.stringify(contentFirefox, null, 2));
-            }
-
-
-        }
-
-        ////// Windows 8 Tile
-
-        if (options.windowsTile) {
-
-            // MS Tiles
-
-            if (options.tileBlackWhite) {
-                additionalOpts = [
-                    "-fuzz 100%",
-                    "-fill black",
-                    "-opaque red",
-                    "-fuzz 100%",
-                    "-fill black",
-                    "-opaque blue",
-                    "-fuzz 100%",
-                    "-fill white",
-                    "-opaque green"
-                ];
-            } else {
-                additionalOpts = [];
-            }
-
-            // Setting background color in image
-            if (!writeHTML()) {
-                if (options.background !== "none") {
-                    additionalOpts = additionalOpts.concat([
-                        "-background",
-                        '"' + options.background + '"',
-                        "-flatten"
-                    ]);
-                }
-            }
-
-            // Create Windows 8 icons
-            windowsSizes.forEach(function (size) {
-                var type = size + 'x' + size;
-                convert(combine(options.source, options.dest, type, 'windows-tile-' + type + '.png', additionalOpts), 'Created windows-tile-' + type + '.png');
-            });
-
-        }
+        if (options.favicons) { makeFavicons(); }
+        if (options.apple) { makeIOS(); }
+        if (options.coast) { makeCoast(); }
+        if (options.android) { makeAndroid(); }
+        if (options.firefox) { makeFirefox(); }
+        if (options.windowsTile) { makeWindows(); }
 
         // Append icons to <HEAD>
         if (writeHTML()) {
-            removeTags();
             if (options.logging) {
                 console.log('Updating HTML... ');
             }
-            elements = '';
 
             if (options.windowsTile) {
                 elements += '\t<meta name="msapplication-square70x70logo" content="windows-tile-70x70.png" />\n';
@@ -248,8 +217,8 @@
             // iOS
             if (options.apple) {
                 appleSizes.forEach(function (size) {
-                    var type = size + 'x' + size;
-                    elements += '\t<link rel="apple-touch-icon" sizes="' + type + '" href="apple-touch-icon' + (size === 57 ? '' : '-' + type) + '.png" />\n';
+                    var dimensions = size + 'x' + size;
+                    elements += '\t<link rel="apple-touch-icon" sizes="' + dimensions + '" href="apple-touch-icon' + (size === 57 ? '' : '-' + dimensions) + '.png" />\n';
                 });
             }
 
@@ -259,7 +228,7 @@
             }
 
             // Android Homescreen app
-            if (options.androidHomescreen) {
+            if (options.android) {
                 elements += '\t<meta name="mobile-web-app-capable" value="yes" />\n';
                 elements += '\t<link rel="icon" sizes="196x196" href="homescreen-196x196.png" />\n';
             }
@@ -272,13 +241,9 @@
 
             // Windows 8 tile. In HTML version background color will be as meta-tag
 
-            if ($('head').length > 0) {
-                $("head").append(elements);
-            } else {
-                $.root().append(elements);
-            }
-
-            output = $.html();
+            writeTags(function (data) {
+                output = data;
+            });
 
             // Hack for php tags
             if (path.extname(options.html) === ".php") {

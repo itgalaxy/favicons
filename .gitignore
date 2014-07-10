@@ -35,3 +35,4 @@ node_modules
 images
 logo.png
 index.html
+manifest.webapp
