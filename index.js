@@ -19,7 +19,7 @@
             source: 'logo.png',
             dest: 'images',
             trueColor: false,
-            html: '',
+            html: 'index.html',
             background: '#c00', // "color" or "none"
             windowsTile: true,
             coast: false,
@@ -28,15 +28,15 @@
             apple: true,
             favicons: true,
             firefoxManifest: '',
-            androidHomescreen: false
+            androidHomescreen: false,
+            logging: true
         }),
-            contents,
             $,
             html,
-            files,
-            ext,
-            basename,
-            dirname,
+            files = [],
+            ext = path.extname(options.source),
+            basename = path.basename(options.source, ext),
+            dirname = path.dirname(options.source),
             additionalOpts,
             updateFirefoxManifest,
             contentsFirefox,
@@ -46,6 +46,10 @@
             appleSizes = [57, 60, 72, 76, 144, 120, 144, 152],
             faviconSizes = [16, 32, 48],
             windowsSizes = [70, 144, 150, 310];
+
+        function print(message) {
+            console.log(message);
+        }
 
         // Determine whether HTML is to be produced
         function writeHTML() {
@@ -58,11 +62,14 @@
         }
 
         // Convert image with Imagemagick
-        function convert(args) {
+        function convert(args, message) {
             args.unshift('convert');
             var ret = execute(args.join(' '));
             if (ret.code === 127) {
-                return console.log('You need to have ImageMagick installed in your PATH for this task to work.');
+                return print('You need to have ImageMagick installed in your PATH for this task to work.');
+            }
+            if (options.logging && message) {
+                print(message);
             }
         }
 
@@ -73,19 +80,14 @@
             return out;
         }
 
-        // Append all icons to HTML as meta tags
-        if (writeHTML()) {
-            contents = (fs.existsSync(options.html)) ? fs.read(options.html) : '';
-            $ = cheerio.load(contents);
-            // Removing exists favicon from HTML
+        function removeTags() {
+            $ = cheerio.load(fs.readFileSync(options.html));
             $('link[rel="shortcut icon"]').remove();
             $('link[rel="icon"]').remove();
             $('link[rel="apple-touch-icon"]').remove();
             $('meta').each(function () {
                 var name = $(this).attr('name');
-                if (name && (name === 'msapplication-TileImage' ||
-                            name === 'msapplication-TileColor' ||
-                            name.indexOf('msapplication-square') >= 0)) {
+                if (name && (name === 'msapplication-TileImage' || name === 'msapplication-TileColor' || name.indexOf('msapplication-square') >= 0)) {
                     $(this).remove();
                 }
             });
@@ -95,21 +97,7 @@
             }
         }
 
-        if (!fs.existsSync(options.dest) || !fs.lstatSync(options.dest).isDirectory()) {
-            mkdirp(options.dest);
-            console.log('Created output folder at "', options.dest, '"');
-        }
-
-        files = [];
-        ext = path.extname(options.source);
-        basename = path.basename(options.source, ext);
-        dirname = path.dirname(options.source);
-        additionalOpts = options.background !== "none" ? [ "-background", '"' + options.background + '"', "-flatten"] : [];
-        console.log('Resizing images for "' + options.source + '"... ');
-
-        if (options.favicons) {
-
-            // regular png
+        function makeFavicons() {
             faviconSizes.forEach(function (size) {
                 var type = size + 'x' + size,
                     p = path.join(dirname, basename + "." + type + ext),
@@ -122,47 +110,49 @@
                 files.push(saveTo);
             });
 
-
-            // favicon.ico
-            console.log('favicon.ico... ');
             convert(files.concat([
-                "-alpha on",
-                "-background none",
-                options.trueColor ? "" : "-bordercolor white -border 0 -colors 64",
+                '-alpha on',
+                '-background none',
+                options.trueColor ? '' : '-bordercolor white -border 0 -colors 64',
                 path.join(options.dest, 'favicon.ico')
-            ]));
+            ]), 'Created favicon.ico');
 
+            convert([options.source, '-resize', "64x64", path.join(options.dest, 'favicon.png')], 'Created favicon.png');
+        }
 
-            // 64x64 favicon.png higher priority than .ico
-            console.log('favicon.png... ');
-            convert([options.source, '-resize', "64x64", path.join(options.dest, 'favicon.png')]);
+        function makeIOS() {
+            appleSizes.forEach(function (size) {
+                var type = size + 'x' + size,
+                    rule = (size === 57 ? '' : '-' + type);
+                convert(combine(options.source, options.dest, type, 'apple-touch-icon' + rule + '.png', additionalOpts), 'Created apple-touch-icon' + rule + '.png');
+            });
+        }
 
+        if (!fs.existsSync(options.dest) || !fs.lstatSync(options.dest).isDirectory()) {
+            mkdirp(options.dest);
+        }
+
+        additionalOpts = options.background !== "none" ? [ "-background", '"' + options.background + '"', "-flatten"] : [];
+
+        if (options.favicons) {
+            makeFavicons();
         }
 
         ////// PNG's for iOS and Android icons
 
         // iOS
         if (options.apple) {
-            appleSizes.forEach(function (size) {
-                var type = size + 'x' + size,
-                    rule = (size === 57 ? '' : '-' + type);
-                console.log('apple-touch-icon' + rule + '.png... ');
-                convert(combine(options.source, options.dest, type, 'apple-touch-icon' + rule + '.png', additionalOpts));
-            });
+            makeIOS();
         }
 
         // Coast
         if (options.coast) {
-            console.log('coast-icon-228x228.png... ');
-            convert(combine(options.source, options.dest, "228x228", "coast-icon-228x228.png", additionalOpts));
-
+            convert(combine(options.source, options.dest, "228x228", "coast-icon-228x228.png", additionalOpts), 'Created coast-icon-228x228.png');
         }
 
         // Android
         if (options.androidHomescreen) {
-            console.log('homescreen-196x196.png... ');
-            convert(combine(options.source, options.dest, "196x196", "homescreen-196x196.png", additionalOpts));
-
+            convert(combine(options.source, options.dest, "196x196", "homescreen-196x196.png", additionalOpts), 'Created homescreen-196x196.png');
         }
 
         // Firefox
@@ -175,7 +165,7 @@
                 contentFirefox.icons = {};
             }
 
-            ['16', '30', '32', '48', '60', '64', '90', '120', '128', '256'].forEach(function (size) {
+            [16, 30, 32, 48, 60, 64, 90, 120, 128, 256].forEach(function (size) {
                 var dimensions = size + 'x' + size,
                     fifname = "firefox-icon-" + dimensions + ".png";
                 console.log(fifname + '... ');
@@ -231,25 +221,27 @@
             // Create Windows 8 icons
             windowsSizes.forEach(function (size) {
                 var type = size + 'x' + size;
-                console.log('windows-tile-' + type + '.png... ');
-                convert(combine(options.source, options.dest, type, 'windows-tile-' + type + '.png', additionalOpts));
+                convert(combine(options.source, options.dest, type, 'windows-tile-' + type + '.png', additionalOpts), 'Created windows-tile-' + type + '.png');
             });
 
         }
 
         // Append icons to <HEAD>
         if (writeHTML()) {
-            console.log('Updating HTML... ');
-            elements = "";
+            removeTags();
+            if (options.logging) {
+                console.log('Updating HTML... ');
+            }
+            elements = '';
 
             if (options.windowsTile) {
-                elements += "\t<meta name=\"msapplication-square70x70logo\" content=\""  + "windows-tile-70x70.png\"/>\n";
-                elements += "\t<meta name=\"msapplication-square150x150logo\" content=\""  + "windows-tile-150x150.png\"/>\n";
-                elements += "\t<meta name=\"msapplication-square310x310logo\" content=\""  + "windows-tile-310x310.png\"/>\n";
-                elements += "\t<meta name=\"msapplication-TileImage\" content=\""  + "windows-tile-144x144.png\"/>\n";
+                elements += '\t<meta name="msapplication-square70x70logo" content="windows-tile-70x70.png" />\n';
+                elements += '\t<meta name="msapplication-square150x150logo" content="windows-tile-150x150.png" />\n';
+                elements += '\t<meta name="msapplication-square310x310logo" content="windows-tile-310x310.png" />\n';
+                elements += '\t<meta name="msapplication-TileImage" content="windows-tile-144x144.png" />\n';
 
                 if (options.background !== "none") {
-                    elements += "\t<meta name=\"msapplication-TileColor\" content=\"" + options.background + "\"/>\n";
+                    elements += '\t<meta name="msapplication-TileColor" content="' + options.background + '" />\n';
                 }
             }
 
@@ -257,7 +249,7 @@
             if (options.apple) {
                 appleSizes.forEach(function (size) {
                     var type = size + 'x' + size;
-                    elements += '\t<link rel="apple-touch-icon" sizes="' + type + '" href="apple-touch-icon' + (size === 57 ? '' : '-' + type) + '.png">\n';
+                    elements += '\t<link rel="apple-touch-icon" sizes="' + type + '" href="apple-touch-icon' + (size === 57 ? '' : '-' + type) + '.png" />\n';
                 });
             }
 
@@ -273,9 +265,9 @@
             }
 
             // Default
-            if (options.favicon) {
-                elements += "\t<link rel=\"shortcut icon\" href=\""  + "favicon.ico\" />\n";
-                elements += "\t<link rel=\"icon\" type=\"image/png\" sizes=\"64x64\" href=\""  + "favicon.png\" />\n";
+            if (options.favicons) {
+                elements += '\t<link rel="shortcut icon" href="favicon.ico" />\n';
+                elements += '\t<link rel="icon" type="image/png" sizes="64x64" href="favicon.png" />\n';
             }
 
             // Windows 8 tile. In HTML version background color will be as meta-tag
@@ -293,8 +285,8 @@
                 output = output.replace(/&lt;\?/gi, '<?').replace(/\?&gt;/gi, '?>');
             }
 
-            // Saving HTML (ERROR)
-            fs.writeSync(options.html, output);
+            // Saving HTML
+            fs.writeFileSync(options.html, output);
 
         }
 
