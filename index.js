@@ -17,20 +17,27 @@
 
         // Default options
         var options = defaults(params || {}, {
+
+            // I/O
             source: 'logo.png',
             dest: 'images',
-            trueColor: false,
-            html: 'index.html',
-            background: '#c00', // "color" or "none"
-            windowsTile: true,
-            coast: false,
-            tileBlackWhite: false,
-            firefox: true,
-            apple: true,
-            favicons: true,
-            firefoxManifest: 'manifest.webapp',
+
+            // Icon Types
             android: true,
+            apple: true,
+            coast: true,
+            favicons: true,
+            firefox: true,
+            windows: true,
+
+            // Miscellaneous
+            html: 'index.html',
+            background: '#c00',
+            tileBlackWhite: false,
+            manifest: 'manifest.webapp',
+            trueColor: false,
             logging: true
+
         }),
             elements = [],
             files = [],
@@ -161,11 +168,11 @@
 
         // Make Firefox icons
         function makeFirefox() {
-            var updateFirefoxManifest = (options.firefoxManifest !== undefined && options.firefoxManifest !== ''),
+            var updateManifest = (options.manifest !== undefined && options.manifest !== ''),
                 contentsFirefox,
                 contentFirefox;
-            if (updateFirefoxManifest) {
-                contentsFirefox = (fs.existsSync(options.firefoxManifest)) ? fs.readFileSync(options.firefoxManifest) : '{}';
+            if (updateManifest) {
+                contentsFirefox = (fs.existsSync(options.manifest)) ? fs.readFileSync(options.manifest) : '{}';
                 contentFirefox = JSON.parse(contentsFirefox);
                 contentFirefox.icons = {};
             }
@@ -173,13 +180,13 @@
                 var dimensions = size + 'x' + size,
                     name = "firefox-icon-" + dimensions + ".png";
                 convert(combine(options.source, options.dest, dimensions, name, []), name);
-                if (updateFirefoxManifest) {
+                if (updateManifest) {
                     contentFirefox.icons[size] = name;
                 }
             });
-            if (updateFirefoxManifest) {
+            if (updateManifest) {
                 print('Updating Firefox manifest... ');
-                fs.writeFileSync(options.firefoxManifest, JSON.stringify(contentFirefox, null, 2));
+                fs.writeFileSync(options.manifest, JSON.stringify(contentFirefox, null, 2));
             }
         }
 
@@ -224,7 +231,7 @@
             if (options.coast) { makeCoast(); }
             if (options.android) { makeAndroid(); }
             if (options.firefox) { makeFirefox(); }
-            if (options.windowsTile) { makeWindows(); }
+            if (options.windows) { makeWindows(); }
             if (writeHTML()) {
                 if (options.logging) {
                     console.log('Updating HTML... ');
