@@ -217,7 +217,7 @@
         // Clean temporary favicons
         function clean() {
             faviconSizes.forEach(function (size) {
-                fs.unlink(path.join(options.dest, size + 'x' + size + '.png'));
+                fs.unlinkSync(path.join(options.dest, size + 'x' + size + '.png'));
             });
         }
 
