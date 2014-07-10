@@ -32,16 +32,9 @@
             android: true,
             logging: true
         }),
-            elements = '',
+            elements = [],
             files = [],
-            ext = path.extname(options.source),
-            basename = path.basename(options.source, ext),
-            dirname = path.dirname(options.source),
             opts = options.background !== "none" ? [ "-background", '"' + options.background + '"', "-flatten"] : [],
-            updateFirefoxManifest,
-            contentsFirefox,
-            contentFirefox,
-            output,
             appleSizes = [57, 60, 72, 76, 144, 120, 144, 152],
             faviconSizes = [16, 32, 48],
             windowsSizes = [70, 144, 150, 310],
@@ -80,6 +73,7 @@
             return out;
         }
 
+        // Delete and rewrite HTML tags
         function writeTags(callback) {
             var $ = cheerio.load(fs.readFileSync(options.html)),
                 html = '';
@@ -97,7 +91,7 @@
                 $ = cheerio.load('');
             }
             if ($('head').length > 0) {
-                $("head").append(elements);
+                $("head").append(elements.join('\n'));
             } else {
                 print("HTML has no <head>.");
             }
@@ -109,9 +103,13 @@
             });
         }
 
+        // Make regular favicon files
         function makeFavicons() {
             faviconSizes.forEach(function (size) {
                 var dimensions = size + 'x' + size,
+                    ext = path.extname(options.source),
+                    basename = path.basename(options.source, ext),
+                    dirname = path.dirname(options.source),
                     p = path.join(dirname, basename + "." + dimensions + ext),
                     saveTo = path.join(options.dest, dimensions + '.png'),
                     src = options.source;
@@ -128,10 +126,10 @@
                 path.join(options.dest, 'favicon.ico')
             ]), 'favicon.ico');
             convert([options.source, '-resize', "64x64", path.join(options.dest, 'favicon.png')], 'favicon.png');
-            elements += '\t<link rel="shortcut icon" href="favicon.ico" />\n';
-            elements += '\t<link rel="icon" type="image/png" sizes="64x64" href="favicon.png" />\n';
+            elements.push('\t<link rel="shortcut icon" href="favicon.ico" />', '\t<link rel="icon" type="image/png" sizes="64x64" href="favicon.png" />');
         }
 
+        // Make Apple touch icons
         function makeIOS() {
             appleSizes.forEach(function (size) {
                 var dimensions = size + 'x' + size,
@@ -139,29 +137,33 @@
                     name = 'apple-touch-icon' + rule + '.png',
                     command = combine(options.source, options.dest, dimensions, name, opts);
                 convert(command, name);
-                elements += '\t<link rel="apple-touch-icon" sizes="' + dimensions + '" href="' + name + '" />\n';
+                elements.push('\t<link rel="apple-touch-icon" sizes="' + dimensions + '" href="' + name + '" />');
             });
         }
 
+        // Make Coast icon
         function makeCoast() {
             var dimensions = '228x228',
                 name = 'coast-icon-' + dimensions + '.png',
                 command = combine(options.source, options.dest, dimensions, name, opts);
             convert(command, name);
-            elements += '\t<link rel="icon" sizes="' + dimensions + '" href="' + name + '" />\n';
+            elements.push('\t<link rel="icon" sizes="' + dimensions + '" href="' + name + '" />');
         }
 
+        // Make Android homescreen icon
         function makeAndroid() {
             var dimensions = '196x196',
                 name = 'homescreen-' + dimensions + '.png',
                 command = combine(options.source, options.dest, dimensions, name, opts);
             convert(command, name);
-            elements += '\t<meta name="mobile-web-app-capable" value="yes" />\n';
-            elements += '\t<link rel="icon" sizes="' + dimensions + '" href="' + name + '" />\n';
+            elements.push('\t<meta name="mobile-web-app-capable" value="yes" />', '\t<link rel="icon" sizes="' + dimensions + '" href="' + name + '" />');
         }
 
+        // Make Firefox icons
         function makeFirefox() {
-            updateFirefoxManifest = (options.firefoxManifest !== undefined && options.firefoxManifest !== '');
+            var updateFirefoxManifest = (options.firefoxManifest !== undefined && options.firefoxManifest !== ''),
+                contentsFirefox,
+                contentFirefox;
             if (updateFirefoxManifest) {
                 contentsFirefox = (fs.existsSync(options.firefoxManifest)) ? fs.readFileSync(options.firefoxManifest) : '{}';
                 contentFirefox = JSON.parse(contentsFirefox);
@@ -181,12 +183,13 @@
             }
         }
 
+        // Make Windows 8 tile icons
         function makeWindows() {
             if (writeHTML() || options.background === "none") {
                 opts = [];
             }
             if (options.background !== "none") {
-                elements += '\t<meta name="msapplication-TileColor" content="' + options.background + '" />\n';
+                elements.push('\t<meta name="msapplication-TileColor" content="' + options.background + '" />');
             }
             if (options.tileBlackWhite) {
                 opts.push('-fuzz 100%', '-fill black', '-opaque red', '-fuzz 100%', '-fill black', '-opaque blue', '-fuzz 100%', '-fill white', '-opaque green');
@@ -197,48 +200,47 @@
                     command = combine(options.source, options.dest, dimensions, name, opts);
                 convert(command, name);
                 if (size === 144) {
-                    elements += '\t<meta name="msapplication-TileImage" content="' + name + '" />\n';
+                    elements.push('\t<meta name="msapplication-TileImage" content="' + name + '" />');
                 } else {
-                    elements += '\t<meta name="msapplication-square' + dimensions + 'logo" content="' + name + '" />\n';
+                    elements.push('\t<meta name="msapplication-square' + dimensions + 'logo" content="' + name + '" />');
                 }
             });
         }
 
-        if (!fs.existsSync(options.dest) || !fs.lstatSync(options.dest).isDirectory()) {
-            mkdirp(options.dest);
-        }
-
-        if (options.favicons) { makeFavicons(); }
-        if (options.apple) { makeIOS(); }
-        if (options.coast) { makeCoast(); }
-        if (options.android) { makeAndroid(); }
-        if (options.firefox) { makeFirefox(); }
-        if (options.windowsTile) { makeWindows(); }
-
-        // Append icons to <HEAD>
-        if (writeHTML()) {
-            if (options.logging) {
-                console.log('Updating HTML... ');
-            }
-
-            // Hack for php tags
-            if (path.extname(options.html) === ".php") {
-                output = output.replace(/&lt;\?/gi, '<?').replace(/\?&gt;/gi, '?>');
-            }
-
-            // Saving HTML
-            writeTags(function (data) {
-                fs.writeFileSync(options.html, data);
-            });
-
-        }
-
-        // Cleanup
-        if (options.favicons) {
+        // Clean temporary favicons
+        function clean() {
             faviconSizes.forEach(function (size) {
                 fs.unlink(path.join(options.dest, size + 'x' + size + '.png'));
             });
         }
+
+        // Initialise
+        function init() {
+            if (!fs.existsSync(options.dest) || !fs.lstatSync(options.dest).isDirectory()) {
+                mkdirp(options.dest);
+            }
+            if (options.favicons) { makeFavicons(); }
+            if (options.apple) { makeIOS(); }
+            if (options.coast) { makeCoast(); }
+            if (options.android) { makeAndroid(); }
+            if (options.firefox) { makeFirefox(); }
+            if (options.windowsTile) { makeWindows(); }
+            if (writeHTML()) {
+                if (options.logging) {
+                    console.log('Updating HTML... ');
+                }
+                writeTags(function (data) {
+                    var output = data;
+                    if (path.extname(options.html) === ".php") {
+                        output = output.replace(/&lt;\?/gi, '<?').replace(/\?&gt;/gi, '?>');
+                    }
+                    fs.writeFileSync(options.html, output);
+                });
+            }
+            if (options.favicons) { clean(); }
+        }
+
+        init();
 
     };
 
