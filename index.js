@@ -221,7 +221,7 @@
         function clean() {
             [16, 32, 48].forEach(function (size) {
                 var file = path.join(options.dest, size + 'x' + size + '.png');
-                if (fs.existsSync(file)) {
+                if (fs.existsSync(options.dest) && fs.existsSync(file)) {
                     fs.unlinkSync(file);
                 }
             });
