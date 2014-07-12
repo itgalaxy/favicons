@@ -220,7 +220,10 @@
         // Delete temporary images
         function clean() {
             [16, 32, 48].forEach(function (size) {
-                fs.unlinkSync(path.join(options.dest, size + 'x' + size + '.png'));
+                var file = path.join(options.dest, size + 'x' + size + '.png');
+                if (fs.existsSync(file)) {
+                    fs.unlinkSync(file);
+                }
             });
         }
 
