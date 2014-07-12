@@ -1,11 +1,11 @@
 {
-  "name": "favicon-generator",
-  "version": "1.1.5",
-  "description": "Favicon.ico generator for Node.js",
+  "name": "favicons",
+  "version": "1.2.0",
+  "description": "Favicon generator for Node.js",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/haydenbleasel/favicon-generator.git"
+    "url": "https://github.com/haydenbleasel/favicons.git"
   },
   "scripts": {
     "test": "node test.js"
@@ -20,9 +20,9 @@
   "author": "Hayden Bleasel <haydenbleasel@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/haydenbleasel/favicon-generator/issues"
+    "url": "https://github.com/haydenbleasel/favicons/issues"
   },
-  "homepage": "https://github.com/haydenbleasel/favicon-generator",
+  "homepage": "https://github.com/haydenbleasel/favicons",
   "dependencies": {
     "cheerio": "^0.17.0",
     "execSync": "^1.0.1-pre",
