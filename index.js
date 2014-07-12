@@ -31,18 +31,19 @@
             windows: true,
 
             // Miscellaneous
-            html: '',
-            background: '#222',
-            tileBlackWhite: false,
-            manifest: '',
+            html: null,
+            background: '#1d1d1d',
+            tileBlackWhite: true,
+            manifest: null,
             trueColor: false,
-            logging: true
+            logging: false,
+            callback: null
 
         }),
 
             elements = [],
             files = [],
-            opts = options.background !== "none" ? [ "-background", '"' + options.background + '"', "-flatten"] : [];
+            opts = ["-background", '"' + options.background + '"', "-flatten"];
 
         // Print to the console.
         function print(message) {
@@ -53,7 +54,7 @@
 
         // Determine whether HTML is to be produced
         function writeHTML() {
-            return options.html !== undefined && options.html !== '';
+            return options.html && options.html !== '';
         }
 
         // Execute external command
@@ -74,40 +75,44 @@
         }
 
         // Combine arguments into command
-        function combine(src, dest, size, fname, additionalOpts) {
-            var out = [src, "-resize", size].concat(additionalOpts);
+        function combine(src, dest, size, fname, opts) {
+            var out = [src, "-resize", size].concat(opts);
             out.push(path.join(dest, fname));
             return out;
         }
 
         // Delete and rewrite HTML tags
         function writeTags(callback) {
-            var $ = cheerio.load(fs.readFileSync(options.html)),
-                html = '';
-            $('link[rel="shortcut icon"]').remove();
-            $('link[rel="icon"]').remove();
-            $('link[rel="apple-touch-icon"]').remove();
-            $('meta').each(function () {
-                var name = $(this).attr('name');
-                if (name && (name === 'msapplication-TileImage' || name === 'msapplication-TileColor' || name.indexOf('msapplication-square') >= 0 || name === 'mobile-web-app-capable')) {
-                    $(this).remove();
+            var $, html = '';
+            if (options.html && fs.existsSync(options.source)) {
+                $ = cheerio.load(fs.readFileSync(options.html));
+                $('link[rel="shortcut icon"]').remove();
+                $('link[rel="icon"]').remove();
+                $('link[rel="apple-touch-icon"]').remove();
+                $('meta').each(function () {
+                    var name = $(this).attr('name');
+                    if (name && (name === 'msapplication-TileImage' || name === 'msapplication-TileColor' || name.indexOf('msapplication-square') >= 0 || name === 'mobile-web-app-capable')) {
+                        $(this).remove();
+                    }
+                });
+                html = $.html().replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ');
+                if (html === '') {
+                    $ = cheerio.load('');
                 }
-            });
-            html = $.html().replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ');
-            if (html === '') {
-                $ = cheerio.load('');
-            }
-            if ($('head').length > 0) {
-                $("head").append(elements.join('\n'));
+                if ($('head').length > 0) {
+                    $("head").append(elements.join('\n'));
+                } else {
+                    print("HTML has no <head>.");
+                }
+                tidy($.html(), { wrap: 0, indent: true }, function (err, data) {
+                    if (err) {
+                        return print(err);
+                    }
+                    return callback(data);
+                });
             } else {
-                print("HTML has no <head>.");
+                return callback(elements.join('\n'));
             }
-            tidy($.html(), { wrap: 0, indent: true }, function (err, data) {
-                if (err) {
-                    return print(err);
-                }
-                return callback(data);
-            });
         }
 
         // Make regular favicon files
@@ -168,7 +173,7 @@
 
         // Make Firefox icons
         function makeFirefox() {
-            var updateManifest = (options.manifest !== undefined && options.manifest !== ''),
+            var updateManifest = (options.manifest && options.manifest !== ''),
                 contentsFirefox,
                 contentFirefox;
             if (updateManifest) {
@@ -192,12 +197,10 @@
 
         // Make Windows 8 tile icons
         function makeWindows() {
-            if (writeHTML() || options.background === "none") {
+            if (writeHTML()) {
                 opts = [];
             }
-            if (options.background !== "none") {
-                elements.push('<meta name="msapplication-TileColor" content="' + options.background + '" />');
-            }
+            elements.push('<meta name="msapplication-TileColor" content="' + options.background + '" />');
             if (options.tileBlackWhite) {
                 opts.push('-fuzz 100%', '-fill black', '-opaque red', '-fuzz 100%', '-fill black', '-opaque blue', '-fuzz 100%', '-fill white', '-opaque green');
             }
@@ -214,16 +217,6 @@
             });
         }
 
-        // Create the appropriate icons
-        function makeIcons() {
-            if (options.favicons) { makeFavicons(); }
-            if (options.apple) { makeApple(); }
-            if (options.coast) { makeCoast(); }
-            if (options.android) { makeAndroid(); }
-            if (options.firefox) { makeFirefox(); }
-            if (options.windows) { makeWindows(); }
-        }
-
         // Delete temporary images
         function clean() {
             [16, 32, 48].forEach(function (size) {
@@ -231,20 +224,32 @@
             });
         }
 
+        // Create the appropriate icons
+        function makeIcons() {
+            if (options.favicons) { makeFavicons(); clean(); }
+            if (options.apple) { makeApple(); }
+            if (options.coast) { makeCoast(); }
+            if (options.android) { makeAndroid(); }
+            if (options.firefox) { makeFirefox(); }
+            if (options.windows) { makeWindows(); }
+        }
+
         // Initialise
         function init() {
+            var html;
             if (!fs.existsSync(options.dest) || !fs.lstatSync(options.dest).isDirectory()) {
                 mkdirp(options.dest);
             }
             makeIcons();
+            writeTags(function (data) {
+                html = data;
+            });
             if (writeHTML()) {
                 print('Updating HTML... ');
-                writeTags(function (data) {
-                    fs.writeFileSync(options.html, data);
-                });
+                fs.writeFileSync(options.html, html);
             }
-            if (options.favicons) {
-                clean();
+            if (options.callback) {
+                return options.callback('Generated favions', html);
             }
         }
 
