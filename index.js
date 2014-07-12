@@ -249,7 +249,7 @@
                     fs.writeFileSync(options.html, data);
                 }
                 if (options.callback) {
-                    return options.callback('Generated favions', data);
+                    return options.callback('Generated favicons', data);
                 }
             });
         }
