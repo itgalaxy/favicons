@@ -1,6 +1,6 @@
 # Favicons [![Build Status](https://travis-ci.org/haydenbleasel/favicons.svg?branch=node)](https://travis-ci.org/haydenbleasel/favicons)
 
-Favicons generator for Node.js. Produces a multi-size favicon from a single image. Port of [grunt-favicons](grunt-favicons) (the good parts at least). Originally "favicon-generator" and "metaimage-generator". Installed through NPM with:
+Favicons generator for Node.js. Produces a multi-size favicon from a single image. Port of [grunt-favicons](https://github.com/gleero/grunt-favicons/) (the good parts at least). Originally "favicon-generator" and "metaimage-generator". Installed through NPM with:
 
 ```
 npm install favicons --save-dev
