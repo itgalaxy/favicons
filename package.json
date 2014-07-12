@@ -1,6 +1,6 @@
 {
   "name": "favicons",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Favicon generator for Node.js",
   "main": "index.js",
   "repository": {
@@ -26,7 +26,6 @@
   "dependencies": {
     "cheerio": "^0.17.0",
     "execSync": "^1.0.1-pre",
-    "htmltidy": "0.0.6",
     "lodash.defaults": "^2.4.1",
     "mkdirp": "^0.5.0"
   }

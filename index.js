@@ -10,8 +10,7 @@
         execSync = require("execSync"),
         mkdirp = require('mkdirp'),
         defaults = require('lodash.defaults'),
-        cheerio = require("cheerio"),
-        tidy = require('htmltidy').tidy;
+        cheerio = require("cheerio");
 
     module.exports = function (params) {
 
@@ -104,15 +103,9 @@
                 } else {
                     print("HTML has no <head>.");
                 }
-                tidy($.html(), { wrap: 0, indent: true }, function (err, data) {
-                    if (err) {
-                        return print(err);
-                    }
-                    return callback(data);
-                });
-            } else {
-                return callback(elements.join('\n'));
+                return callback($.html());
             }
+            return callback(elements.join('\n'));
         }
 
         // Make regular favicon files
