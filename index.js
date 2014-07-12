@@ -239,21 +239,19 @@
 
         // Initialise
         function init() {
-            var html;
             if (!fs.existsSync(options.dest) || !fs.lstatSync(options.dest).isDirectory()) {
                 mkdirp(options.dest);
             }
             makeIcons();
             writeTags(function (data) {
-                html = data;
+                if (writeHTML()) {
+                    print('Updating HTML... ');
+                    fs.writeFileSync(options.html, data);
+                }
+                if (options.callback) {
+                    return options.callback('Generated favions', data);
+                }
             });
-            if (writeHTML()) {
-                print('Updating HTML... ');
-                fs.writeFileSync(options.html, html);
-            }
-            if (options.callback) {
-                return options.callback('Generated favions', html);
-            }
         }
 
         init();
