@@ -1,2 +1,2 @@
-var favicon = require('./index.js');
-favicon();
+var favicons = require('./index.js');
+favicons();
