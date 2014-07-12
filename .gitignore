@@ -32,4 +32,7 @@ node_modules
 
 
 ### Custom ###
-favicon.ico
+images
+logo.png
+index.html
+manifest.webapp
