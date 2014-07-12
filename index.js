@@ -83,7 +83,7 @@
         // Delete and rewrite HTML tags
         function writeTags(callback) {
             var $, html = '';
-            if (options.html && fs.existsSync(options.source)) {
+            if (options.html && fs.existsSync(options.html)) {
                 $ = cheerio.load(fs.readFileSync(options.html));
                 $('link[rel="shortcut icon"]').remove();
                 $('link[rel="icon"]').remove();
