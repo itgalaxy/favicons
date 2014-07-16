@@ -12,7 +12,7 @@ Requires ImageMagick which you can get through Brew with:
 brew install imagemagick
 ```
 
-Simply require the module and execute it with an optional array of configuration.
+Simply require the module and execute it with an optional object of configuration.
 
 - I/O
     - Source: The source image used to produce the favicon `string`
@@ -38,7 +38,7 @@ Defaults are shown below:
 ```
 var favicons = require('favicons');
 
-favicon({
+favicons({
     // I/O
     source: 'logo.png',
     dest: 'images',
