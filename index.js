@@ -125,7 +125,7 @@
                 files.push(saveTo);
             });
             convert(files.concat([
-                '-alpha on',
+                '-alpha off',
                 '-background none',
                 options.trueColor ? '' : '-bordercolor white -border 0 -colors 64',
                 path.join(options.dest, 'favicon.ico')
