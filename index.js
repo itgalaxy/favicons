@@ -18,7 +18,7 @@
         var options = defaults(params || {}, {
 
             // I/O
-            source: 'logo.png',
+            source: null,
             dest: 'images',
 
             // Icon Types
@@ -66,7 +66,7 @@
             args.unshift('convert');
             var ret = execute(args.join(' '));
             if (ret.code === 127) {
-                return print('You need to have ImageMagick installed in your PATH for this task to work.');
+                return console.log('You need to have ImageMagick installed in your PATH for this task to work.');
             }
             if (name) {
                 print('Created ' + name);
@@ -101,7 +101,7 @@
                 if ($('head').length > 0) {
                     $("head").append(elements.join('\n'));
                 } else {
-                    print("HTML has no <head>.");
+                    console.log("HTML has no <head>.");
                 }
                 return callback($.html());
             }
@@ -232,6 +232,9 @@
 
         // Initialise
         function init() {
+            if (!options.source) {
+                return console.log('A source image is required');
+            }
             if (!fs.existsSync(options.dest) || !fs.lstatSync(options.dest).isDirectory()) {
                 mkdirp(options.dest);
             }
