@@ -84,7 +84,7 @@
         function writeTags(callback) {
             var $, html = '';
             if (options.html && fs.existsSync(options.html)) {
-                $ = cheerio.load(fs.readFileSync(options.html));
+                $ = cheerio.load(fs.readFileSync(options.html), {decodeEntities: false});
                 $('link[rel="shortcut icon"]').remove();
                 $('link[rel="icon"]').remove();
                 $('link[rel="apple-touch-icon"]').remove();
