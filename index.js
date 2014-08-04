@@ -84,7 +84,7 @@
         function writeTags(callback) {
             var $, html = '';
             if (options.html && fs.existsSync(options.html)) {
-                $ = cheerio.load(fs.readFileSync(options.html));
+                $ = cheerio.load(fs.readFileSync(options.html), {decodeEntities: false});
                 $('link[rel="shortcut icon"]').remove();
                 $('link[rel="icon"]').remove();
                 $('link[rel="apple-touch-icon"]').remove();
@@ -125,7 +125,6 @@
                 files.push(saveTo);
             });
             convert(files.concat([
-                '-alpha off',
                 '-background none',
                 options.trueColor ? '' : '-bordercolor white -border 0 -colors 64',
                 path.join(options.dest, 'favicon.ico')
