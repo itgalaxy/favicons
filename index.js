@@ -235,7 +235,7 @@
                 return console.log('A source image is required');
             }
             if (!fs.existsSync(options.dest) || !fs.lstatSync(options.dest).isDirectory()) {
-                mkdirp(options.dest);
+                mkdirp.sync(options.dest);
             }
             makeIcons();
             writeTags(function (data) {
