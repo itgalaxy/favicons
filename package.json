@@ -25,7 +25,7 @@
   "homepage": "https://github.com/haydenbleasel/favicons",
   "dependencies": {
     "cheerio": "^0.17.0",
-    "execSync": "^1.0.1-pre",
+    "execSync": "^1.0.2",
     "lodash.defaults": "^2.4.1",
     "mkdirp": "^0.5.0"
   }
