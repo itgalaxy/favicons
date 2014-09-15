@@ -126,14 +126,18 @@
             }
         }
 
-        // Make PNG favicon
-        function makeNewFavicon(callback) {
-            var dimensions = '64x64',
-                name = 'favicon.png',
-                command = combine(options.source, options.dest, dimensions, name, opts);
-            convert(command, name, function () {
-                elements.push('<link rel="icon" type="image/png" sizes="64x64" href="favicon.png" />');
-                return callback();
+        // Make PNG favicons
+        function makeNewFavicons(callback) {
+            async.each([16, 32, 96, 160, 196], function (size, callback) {
+                var dimensions = size + 'x' + size,
+                    name = 'favicon-' + dimensions + '.png',
+                    command = combine(options.source, options.dest, dimensions, name, opts);
+                convert(command, name, function () {
+                    elements.push('<link rel="icon" type="image/png" sizes="' + dimensions + '" href="' + name + '" />');
+                    return callback();
+                });
+            }, function (error) {
+                return error || callback();
             });
         }
 
@@ -241,8 +245,8 @@
         function makeWindows(callback) {
             if (writeHTML()) {
                 opts = [];
+                elements.push('<meta name="msapplication-TileColor" content="' + options.background + '" />');
             }
-            elements.push('<meta name="msapplication-TileColor" content="' + options.background + '" />');
             if (options.tileBlackWhite) {
                 opts.push('-fuzz 100%', '-fill black', '-opaque red', '-fuzz 100%', '-fill black', '-opaque blue', '-fuzz 100%', '-fill white', '-opaque green');
             }
@@ -271,7 +275,7 @@
                 },
                 function (callback) {
                     if (options.favicons) {
-                        makeNewFavicon(function () {
+                        makeNewFavicons(function () {
                             callback(null);
                         });
                     }
