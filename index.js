@@ -7,9 +7,9 @@
 
     var path = require('path'),
         fs = require('fs'),
-        exec = require("child_process").exec,
+        exec = require('child_process').exec,
         async = require('async'),
-        cheerio = require("cheerio"),
+        cheerio = require('cheerio'),
         defaults = require('lodash.defaults'),
         mkdirp = require('mkdirp');
 
@@ -42,8 +42,7 @@
         }),
 
             elements = [],
-            files = [],
-            opts = ["-background", '"' + options.background + '"', "-flatten"];
+            opts = ['-background', '"' + options.background + '"', '-flatten'];
 
         // Print to the console.
         function print(message) {
@@ -68,18 +67,32 @@
         function convert(args, name, callback) {
             args.unshift('convert');
             execute(args.join(' '), function () {
-                if (name) {
-                    print('Created ' + name);
-                }
+                print('Created ' + name);
                 return callback();
             });
         }
 
         // Combine arguments into command
         function combine(src, dest, size, fname, opts) {
-            var out = [src, "-resize", size].concat(opts);
+            var out = [src, '-resize', size].concat(opts);
             out.push(path.join(dest, fname));
             return out;
+        }
+
+        // Clean unused files
+        function clean(callback) {
+            async.each([16, 32, 48], function (size, callback) {
+                var file = path.join(options.dest, size + 'x' + size + '.png');
+                fs.exists(file, function (exists) {
+                    if (exists) {
+                        fs.unlink(file, function (error) {
+                            return error || callback();
+                        });
+                    }
+                });
+            }, function (error) {
+                return error || callback();
+            });
         }
 
         // Delete and rewrite HTML tags
@@ -91,9 +104,7 @@
                         return error;
                     }
                     $ = cheerio.load(data, { decodeEntities: false });
-                    $('link[rel="shortcut icon"]').remove();
-                    $('link[rel="icon"]').remove();
-                    $('link[rel="apple-touch-icon"]').remove();
+                    $('link[rel="shortcut icon"]', 'link[rel="icon"]', 'link[rel="apple-touch-icon"]').remove();
                     $('meta').each(function () {
                         var name = $(this).attr('name');
                         if (name && (name === 'msapplication-TileImage' || name === 'msapplication-TileColor' || name.indexOf('msapplication-square') >= 0 || name === 'mobile-web-app-capable')) {
@@ -105,7 +116,7 @@
                         $ = cheerio.load('');
                     }
                     if ($('head').length > 0) {
-                        $("head").append(elements.join('\n'));
+                        $('head').append(elements.join('\n'));
                         return callback($.html());
                     }
                     return callback(elements.join('\n'));
@@ -115,45 +126,37 @@
             }
         }
 
+        // Make PNG favicon
+        function makeNewFavicon(callback) {
+            var dimensions = '64x64',
+                name = 'favicon.png',
+                command = combine(options.source, options.dest, dimensions, name, opts);
+            convert(command, name, function () {
+                elements.push('<link rel="icon" type="image/png" sizes="64x64" href="favicon.png" />');
+                return callback();
+            });
+        }
+
         // Make regular favicon files
         function makeFavicons(callback) {
+            var files = [];
             async.each([16, 32, 48], function (size, callback) {
                 var dimensions = size + 'x' + size,
-                    ext = path.extname(options.source),
-                    basename = path.basename(options.source, ext),
-                    dirname = path.dirname(options.source),
-                    p = path.join(dirname, basename + "." + dimensions + ext),
-                    saveTo = path.join(options.dest, dimensions + '.png'),
-                    src = options.source;
-                fs.exists(p, function (exists) {
-                    if (exists) {
-                        src = p;
-                    }
-                    convert([src, '-resize', dimensions, saveTo], null, function () {
-                        files.push(saveTo);
-                        return callback();
-                    });
+                    name = dimensions + '.png',
+                    command = combine(options.source, options.dest, dimensions, name, opts);
+                convert(command, name, function () {
+                    files.push(path.join(options.dest, name));
+                    return callback();
                 });
-            }, function () {
+            }, function (error) {
                 convert(files.concat([
                     '-background none',
                     options.trueColor ? '' : '-bordercolor white -border 0 -colors 64',
                     path.join(options.dest, 'favicon.ico')
                 ]), 'favicon.ico', function () {
-                    convert([options.source, '-resize', "64x64", path.join(options.dest, 'favicon.png')], 'favicon.png', function () {
-                        elements.push('<link rel="shortcut icon" href="favicon.ico" />', '<link rel="icon" type="image/png" sizes="64x64" href="favicon.png" />');
-                        async.each([16, 32, 48], function (size, callback) {
-                            var file = path.join(options.dest, size + 'x' + size + '.png');
-                            fs.exists(file, function (exists) {
-                                if (exists) {
-                                    fs.unlink(file, function (error) {
-                                        return error || callback();
-                                    });
-                                }
-                            });
-                        }, function (error) {
-                            return error || callback();
-                        });
+                    elements.push('<link rel="shortcut icon" href="favicon.ico" />');
+                    return error || clean(function (error) {
+                        return error || callback();
                     });
                 });
             });
@@ -214,7 +217,7 @@
             }
             async.each([16, 30, 32, 48, 60, 64, 90, 120, 128, 256], function (size, callback) {
                 var dimensions = size + 'x' + size,
-                    name = "firefox-icon-" + dimensions + ".png",
+                    name = 'firefox-icon-' + dimensions + '.png',
                     command = combine(options.source, options.dest, dimensions, name, opts);
                 convert(command, name, function () {
                     if (updateManifest) {
@@ -248,11 +251,7 @@
                     name = 'windows-tile-' + dimensions + '.png',
                     command = combine(options.source, options.dest, dimensions, name, opts);
                 convert(command, name, function () {
-                    if (size === 144) {
-                        elements.push('<meta name="msapplication-TileImage" content="' + name + '" />');
-                    } else {
-                        elements.push('<meta name="msapplication-square' + dimensions + 'logo" content="' + name + '" />');
-                    }
+                    elements.push('<meta name="msapplication-' + (size === 144 ? 'TileImage' : 'square' + dimensions + 'logo') + '" content="' + name + '" />');
                     return callback();
                 });
             }, function (error) {
@@ -266,6 +265,13 @@
                 function (callback) {
                     if (options.favicons) {
                         makeFavicons(function () {
+                            callback(null);
+                        });
+                    }
+                },
+                function (callback) {
+                    if (options.favicons) {
+                        makeNewFavicon(function () {
                             callback(null);
                         });
                     }
@@ -315,18 +321,19 @@
             if (!options.source) {
                 return console.log('A source image is required');
             }
-            mkdirp.sync(options.dest);
-            makeIcons(function () {
-                writeTags(function (data) {
-                    if (writeHTML()) {
-                        fs.writeFile(options.html, data, function () {
-                            if (options.callback) {
-                                return options.callback('Generated favicons');
-                            }
-                        });
-                    } else if (options.callback) {
-                        return options.callback('Generated favicons', data);
-                    }
+            mkdirp(options.dest, function () {
+                makeIcons(function () {
+                    writeTags(function (data) {
+                        if (writeHTML()) {
+                            fs.writeFile(options.html, data, function () {
+                                if (options.callback) {
+                                    return options.callback('Generated favicons');
+                                }
+                            });
+                        } else if (options.callback) {
+                            return options.callback('Generated favicons', data);
+                        }
+                    });
                 });
             });
         }
