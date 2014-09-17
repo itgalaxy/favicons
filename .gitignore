@@ -32,7 +32,5 @@ node_modules
 
 
 ### Custom ###
-images
-logo.png
-index.html
-manifest.webapp
+test/images
+test/favicons.html

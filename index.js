@@ -59,7 +59,10 @@
         // Execute external command
         function execute(cmd, callback) {
             exec(cmd, function (error) {
-                return error || callback();
+                if (error) {
+                    throw error;
+                }
+                return callback();
             });
         }
 
@@ -86,12 +89,18 @@
                 fs.exists(file, function (exists) {
                     if (exists) {
                         fs.unlink(file, function (error) {
-                            return error || callback();
+                            if (error) {
+                                throw error;
+                            }
+                            return callback();
                         });
                     }
                 });
             }, function (error) {
-                return error || callback();
+                if (error) {
+                    throw error;
+                }
+                return callback();
             });
         }
 
@@ -100,24 +109,23 @@
             var $, html = '';
             if (options.html) {
                 fs.readFile(options.html, function (error, data) {
-                    if (error) {
-                        return error;
-                    }
-                    $ = cheerio.load(data, { decodeEntities: false });
-                    $('link[rel="shortcut icon"]', 'link[rel="icon"]', 'link[rel="apple-touch-icon"]').remove();
-                    $('meta').each(function () {
-                        var name = $(this).attr('name');
-                        if (name && (name === 'msapplication-TileImage' || name === 'msapplication-TileColor' || name.indexOf('msapplication-square') >= 0 || name === 'mobile-web-app-capable')) {
-                            $(this).remove();
+                    if (!error) {
+                        $ = cheerio.load(data, { decodeEntities: false });
+                        $('link[rel="shortcut icon"]', 'link[rel="icon"]', 'link[rel="apple-touch-icon"]').remove();
+                        $('meta').each(function () {
+                            var name = $(this).attr('name');
+                            if (name && (name === 'msapplication-TileImage' || name === 'msapplication-TileColor' || name.indexOf('msapplication-square') >= 0 || name === 'mobile-web-app-capable')) {
+                                $(this).remove();
+                            }
+                        });
+                        html = $.html().replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ');
+                        if (html === '') {
+                            $ = cheerio.load('');
                         }
-                    });
-                    html = $.html().replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ');
-                    if (html === '') {
-                        $ = cheerio.load('');
-                    }
-                    if ($('head').length > 0) {
-                        $('head').append(elements.join('\n'));
-                        return callback($.html());
+                        if ($('head').length > 0) {
+                            $('head').append(elements.join('\n'));
+                            return callback($.html());
+                        }
                     }
                     return callback(elements.join('\n'));
                 });
@@ -137,7 +145,10 @@
                     return callback();
                 });
             }, function (error) {
-                return error || callback();
+                if (error) {
+                    throw error;
+                }
+                return callback();
             });
         }
 
@@ -153,14 +164,20 @@
                     return callback();
                 });
             }, function (error) {
+                if (error) {
+                    throw error;
+                }
                 convert(files.concat([
                     '-background none',
                     options.trueColor ? '' : '-bordercolor white -border 0 -colors 64',
                     path.join(options.dest, 'favicon.ico')
                 ]), 'favicon.ico', function () {
                     elements.push('<link rel="shortcut icon" href="favicon.ico" />');
-                    return error || clean(function (error) {
-                        return error || callback();
+                    clean(function (error) {
+                        if (error) {
+                            throw error;
+                        }
+                        return callback();
                     });
                 });
             });
@@ -178,7 +195,10 @@
                     return callback();
                 });
             }, function (error) {
-                return error || callback();
+                if (error) {
+                    throw error;
+                }
+                return callback();
             });
         }
 
@@ -212,7 +232,7 @@
             if (updateManifest) {
                 fs.readFile(options.manifest, function (error, data) {
                     if (error) {
-                        return error;
+                        throw error;
                     }
                     contentsFirefox = data || '{}';
                     contentFirefox = JSON.parse(contentsFirefox);
@@ -233,10 +253,16 @@
                 if (updateManifest) {
                     print('Updating Firefox manifest... ');
                     fs.writeFile(options.manifest, JSON.stringify(contentFirefox, null, 2), function () {
-                        return error || callback();
+                        if (error) {
+                            throw error;
+                        }
+                        return callback();
                     });
                 } else {
-                    return error || callback();
+                    if (error) {
+                        throw error;
+                    }
+                    return callback();
                 }
             });
         }
@@ -259,7 +285,10 @@
                     return callback();
                 });
             }, function (error) {
-                return error || callback();
+                if (error) {
+                    throw error;
+                }
+                return callback();
             });
         }
 
