@@ -219,7 +219,7 @@
                 name = 'homescreen-' + dimensions + '.png',
                 command = combine(options.source, options.dest, dimensions, name, opts);
             convert(command, name, function () {
-                elements.push('<meta name="mobile-web-app-capable" value="yes" />', '<link rel="icon" sizes="' + dimensions + '" href="' + name + '" />');
+                elements.push('<meta name="mobile-web-app-capable" content="yes" />', '<link rel="icon" sizes="' + dimensions + '" href="' + name + '" />');
                 return callback();
             });
         }
