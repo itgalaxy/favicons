@@ -231,7 +231,11 @@
                 contentFirefox;
             if (updateManifest) {
                 fs.readFile(options.manifest, function (error, data) {
-                    contentsFirefox = error ? '{}' : data;
+                    if (error || data.length === 0) {
+                        contentsFirefox = '{}';
+                    } else {
+                        contentsFirefox = data;
+                    }
                     contentFirefox = JSON.parse(contentsFirefox);
                     contentFirefox.icons = {};
                 });
