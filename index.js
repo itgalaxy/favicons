@@ -231,10 +231,7 @@
                 contentFirefox;
             if (updateManifest) {
                 fs.readFile(options.manifest, function (error, data) {
-                    if (error) {
-                        throw error;
-                    }
-                    contentsFirefox = data || '{}';
+                    contentsFirefox = error ? '{}' : data;
                     contentFirefox = JSON.parse(contentsFirefox);
                     contentFirefox.icons = {};
                 });

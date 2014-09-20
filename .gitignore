@@ -34,3 +34,4 @@ node_modules
 ### Custom ###
 test/images
 test/favicons.html
+test/manifest.webapp
