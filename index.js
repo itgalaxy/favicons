@@ -185,7 +185,7 @@
 
         // Make Apple touch icons
         function makeApple(callback) {
-            async.each([57, 60, 72, 76, 144, 120, 144, 152], function (size, callback) {
+            async.each([57, 60, 72, 76, 144, 120, 144, 152, 180], function (size, callback) {
                 var dimensions = size + 'x' + size,
                     rule = (size === 57 ? '' : '-' + dimensions),
                     name = 'apple-touch-icon' + rule + '.png',
@@ -215,7 +215,7 @@
 
         // Make Android homescreen icon
         function makeAndroid(callback) {
-            var dimensions = '196x196',
+            var dimensions = '192x192',
                 name = 'homescreen-' + dimensions + '.png',
                 command = combine(options.source, options.dest, dimensions, name, opts);
             convert(command, name, function () {
