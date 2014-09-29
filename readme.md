@@ -54,7 +54,7 @@ favicons({
     // Miscellaneous
     html: null,
     background: '#1d1d1d',
-    tileBlackWhite: true,
+    tileBlackWhite: false,
     manifest: null,
     trueColor: false,
     logging: false,
