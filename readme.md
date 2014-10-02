@@ -38,9 +38,9 @@ You can either specify a string for the source e.g. `logo.png` or a series of im
 
 ```
 source: {
-    small: 'logo-small.png',
-    medium: 'logo-medium.png',
-    large: 'logo-large.png'
+    small: 'logo-small.png',    // Should be 64x64px or smaller
+    medium: 'logo-medium.png',  // Should be between 65x65px to 310x310px
+    large: 'logo-large.png'     // Should be 311x311px or larger
 }
 ```
 
