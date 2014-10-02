@@ -1,6 +1,10 @@
 var favicons = require('./index.js');
 favicons({
-    source: 'test/logo.png',
+    source: {
+        small: 'test/source/logo-small.png',
+        medium: 'test/source/logo-medium.png',
+        large: 'test/source/logo-large.png'
+    },
     dest: 'test/images',
     html: 'test/favicons.html',
     background: '#1d1d1d',

@@ -135,12 +135,31 @@
             }
         }
 
+        function whichImage(size) {
+            var source = options.source,
+                image = source;
+            if (typeof source === 'object') {
+                if (source.small && source.medium && source.large) {
+                    if (size <= 64) {
+                        image = source.small;
+                    } else if (size > 64 && size <= 310) {
+                        image = source.medium;
+                    } else if (size > 310) {
+                        image = source.large;
+                    }
+                } else {
+                    throw 'Source configuration is invalid';
+                }
+            }
+            return image;
+        }
+
         // Make PNG favicons
         function makeNewFavicons(callback) {
             async.each([16, 32, 96, 160, 196], function (size, callback) {
                 var dimensions = size + 'x' + size,
                     name = 'favicon-' + dimensions + '.png',
-                    command = combine(options.source, options.dest, dimensions, name, opts);
+                    command = combine(whichImage(size), options.dest, dimensions, name, opts);
                 convert(command, name, function () {
                     elements.push('<link rel="icon" type="image/png" sizes="' + dimensions + '" href="' + name + '" />');
                     return callback();
@@ -159,7 +178,7 @@
             async.each([16, 32, 48], function (size, callback) {
                 var dimensions = size + 'x' + size,
                     name = dimensions + '.png',
-                    command = combine(options.source, options.dest, dimensions, name, opts);
+                    command = combine(whichImage(size), options.dest, dimensions, name, opts);
                 convert(command, name, function () {
                     files.push(path.join(options.dest, name));
                     return callback();
@@ -190,7 +209,7 @@
                 var dimensions = size + 'x' + size,
                     rule = (size === 57 ? '' : '-' + dimensions),
                     name = 'apple-touch-icon' + rule + '.png',
-                    command = combine(options.source, options.dest, dimensions, name, opts);
+                    command = combine(whichImage(size), options.dest, dimensions, name, opts);
                 convert(command, name, function () {
                     elements.push('<link rel="apple-touch-icon" sizes="' + dimensions + '" href="' + name + '" />');
                     return callback();
@@ -205,9 +224,10 @@
 
         // Make Coast icon
         function makeCoast(callback) {
-            var dimensions = '228x228',
+            var size = 228,
+                dimensions = size + 'x' + size,
                 name = 'coast-icon-' + dimensions + '.png',
-                command = combine(options.source, options.dest, dimensions, name, opts);
+                command = combine(whichImage(size), options.dest, dimensions, name, opts);
             convert(command, name, function () {
                 elements.push('<link rel="icon" sizes="' + dimensions + '" href="' + name + '" />');
                 return callback();
@@ -216,9 +236,10 @@
 
         // Make Android homescreen icon
         function makeAndroid(callback) {
-            var dimensions = '192x192',
+            var size = 192,
+                dimensions = size + 'x' + size,
                 name = 'homescreen-' + dimensions + '.png',
-                command = combine(options.source, options.dest, dimensions, name, opts);
+                command = combine(whichImage(size), options.dest, dimensions, name, opts);
             convert(command, name, function () {
                 elements.push('<meta name="mobile-web-app-capable" content="yes" />', '<link rel="icon" sizes="' + dimensions + '" href="' + name + '" />');
                 return callback();
@@ -228,52 +249,66 @@
         // Make Firefox icons
         function makeFirefox(callback) {
             var updateManifest = (options.manifest && options.manifest !== ''),
-                contentsFirefox,
                 contentFirefox;
-            if (updateManifest) {
-                fs.readFile(options.manifest, function (error, data) {
-                    if (error || data.length === 0) {
-                        contentsFirefox = '{}';
-                    } else {
-                        contentsFirefox = data;
-                    }
-                    contentFirefox = JSON.parse(contentsFirefox);
-                    contentFirefox.icons = {};
-                });
-            }
-            async.each([16, 30, 32, 48, 60, 64, 90, 120, 128, 256], function (size, callback) {
-                var dimensions = size + 'x' + size,
-                    name = 'firefox-icon-' + dimensions + '.png',
-                    command = combine(options.source, options.dest, dimensions, name, opts);
-                convert(command, name, function () {
+            async.waterfall([
+                function (callback) {
+                    var contentsFirefox;
                     if (updateManifest) {
-                        contentFirefox.icons[size] = name;
+                        fs.readFile(options.manifest, function (error, data) {
+                            if (error || data.length === 0) {
+                                contentsFirefox = '{}';
+                            } else {
+                                contentsFirefox = data;
+                            }
+                            contentFirefox = JSON.parse(contentsFirefox);
+                            contentFirefox.icons = {};
+                            return callback(null, contentFirefox);
+                        });
+                    } else {
+                        return callback(null);
                     }
-                    return callback();
-                });
-            }, function (error) {
-                if (updateManifest) {
-                    print('Updating Firefox manifest... ');
-                    fs.writeFile(options.manifest, JSON.stringify(contentFirefox, null, 2), function () {
+                }, function (contentFirefox, callback) {
+                    async.each([16, 30, 32, 48, 60, 64, 90, 120, 128, 256], function (size, callback) {
+                        var dimensions = size + 'x' + size,
+                            name = 'firefox-icon-' + dimensions + '.png',
+                            command = combine(whichImage(size), options.dest, dimensions, name, opts);
+                        convert(command, name, function () {
+                            if (contentFirefox) {
+                                contentFirefox.icons[size] = name;
+                            }
+                            return callback();
+                        });
+                    }, function (error) {
                         if (error) {
                             throw error;
                         }
-                        return callback();
+                        return callback(null, contentFirefox);
+                    });
+                }
+            ], function (error, contentFirefox) {
+                if (error) {
+                    throw error;
+                }
+                if (contentFirefox) {
+                    print('Updating Firefox manifest... ');
+                    fs.writeFile(options.manifest, JSON.stringify(contentFirefox, null, 2), function (error) {
+                        if (error) {
+                            throw error;
+                        }
+                        return callback(null);
                     });
                 } else {
-                    if (error) {
-                        throw error;
-                    }
-                    return callback();
+                    return callback(null);
                 }
             });
         }
 
         // Make OpenGraph icon
         function makeOpenGraph(callback) {
-            var dimensions = '1500x1500',
+            var size = 1500,
+                dimensions = size + 'x' + size,
                 name = 'opengraph.png',
-                command = combine(options.source, options.dest, dimensions, name, opts);
+                command = combine(whichImage(size), options.dest, dimensions, name, opts);
             convert(command, name, function () {
                 return callback();
             });
@@ -291,7 +326,7 @@
             async.each([70, 144, 150, 310], function (size, callback) {
                 var dimensions = size + 'x' + size,
                     name = 'windows-tile-' + dimensions + '.png',
-                    command = combine(options.source, options.dest, dimensions, name, opts);
+                    command = combine(whichImage(size), options.dest, dimensions, name, opts);
                 convert(command, name, function () {
                     elements.push('<meta name="msapplication-' + (size === 144 ? 'TileImage' : 'square' + dimensions + 'logo') + '" content="' + name + '" />');
                     return callback();
