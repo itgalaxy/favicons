@@ -49,6 +49,7 @@ favicons({
     coast: true,
     favicons: true,
     firefox: true,
+    opengraph: true,
     windows: true,
 
     // Miscellaneous

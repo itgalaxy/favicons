@@ -28,6 +28,7 @@
             coast: true,
             favicons: true,
             firefox: true,
+            opengraph: true,
             windows: true,
 
             // Miscellaneous
@@ -268,6 +269,16 @@
             });
         }
 
+        // Make OpenGraph icon
+        function makeOpenGraph(callback) {
+            var dimensions = '1500x1500',
+                name = 'opengraph.png',
+                command = combine(options.source, options.dest, dimensions, name, opts);
+            convert(command, name, function () {
+                return callback();
+            });
+        }
+
         // Make Windows 8 tile icons
         function makeWindows(callback) {
             if (writeHTML()) {
@@ -334,6 +345,13 @@
                 function (callback) {
                     if (options.firefox) {
                         makeFirefox(function () {
+                            callback(null);
+                        });
+                    }
+                },
+                function (callback) {
+                    if (options.opengraph) {
+                        makeOpenGraph(function () {
                             callback(null);
                         });
                     }
