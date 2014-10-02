@@ -15,7 +15,7 @@ brew install imagemagick
 Simply require the module and execute it with an optional object of configuration.
 
 - I/O
-    - Source: The source image used to produce the favicon `string`
+    - Source: The source image used to produce the favicon `string` or `object`
     - Dest: The destination path `string`
 - Icons
     - Android: create Android homescreen icon `boolean`
@@ -23,6 +23,7 @@ Simply require the module and execute it with an optional object of configuratio
     - Coast: create Opera Coast icon `boolean`
     - Favicons: create regular favicons `boolean`
     - Firefox: create Firefox OS icons `boolean`
+    - OpenGraph: create OpenGraph image for Facebook `boolean`
     - Windows: create Windows 8 tiles `boolean`
 - Miscellaneous:
     - HTML: optional file to write metadata links to `string`, typically "index.html"
@@ -32,6 +33,16 @@ Simply require the module and execute it with an optional object of configuratio
     - TrueColor: use true color for favicon.ico or 256 сolor. True color is larger `boolean`
     - Logging: print logs to console
     - Callback: function to execute upon completion `function` (params include 'response' and 'html')
+
+You can either specify a string for the source e.g. `logo.png` or a series of images e.g.
+
+```
+source: {
+    small: 'logo-small.png',
+    medium: 'logo-medium.png',
+    large: 'logo-large.png'
+}
+```
 
 Defaults are shown below:
 
@@ -62,3 +73,5 @@ favicons({
     callback: null
 });
 ```
+
+Thanks to @addyosmani, @gauntface, @paulirish, @mathiasbynens and @pbakaus for [their input](https://github.com/google/web-starter-kit/pull/442) on multiple source images for v1.4.0.
