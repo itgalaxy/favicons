@@ -265,15 +265,16 @@
                             return callback(null, contentFirefox);
                         });
                     } else {
-                        return callback(null);
+                        return callback(null, null);
                     }
-                }, function (contentFirefox, callback) {
+                },
+                function (contentFirefox, callback) {
                     async.each([16, 30, 32, 48, 60, 64, 90, 120, 128, 256], function (size, callback) {
                         var dimensions = size + 'x' + size,
                             name = 'firefox-icon-' + dimensions + '.png',
                             command = combine(whichImage(size), options.dest, dimensions, name, opts);
                         convert(command, name, function () {
-                            if (contentFirefox) {
+                            if (updateManifest) {
                                 contentFirefox.icons[size] = name;
                             }
                             return callback();
@@ -289,7 +290,7 @@
                 if (error) {
                     throw error;
                 }
-                if (contentFirefox) {
+                if (updateManifest) {
                     print('Updating Firefox manifest... ');
                     fs.writeFile(options.manifest, JSON.stringify(contentFirefox, null, 2), function (error) {
                         if (error) {
