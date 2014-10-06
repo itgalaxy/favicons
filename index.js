@@ -11,6 +11,7 @@
         async = require('async'),
         cheerio = require('cheerio'),
         defaults = require('lodash.defaults'),
+        sizeOf = require('image-size'),
         mkdirp = require('mkdirp');
 
     module.exports = function (params) {
@@ -37,6 +38,7 @@
             tileBlackWhite: false,
             manifest: null,
             trueColor: false,
+            url: null,
             logging: false,
             callback: null
 
@@ -310,12 +312,16 @@
 
         // Make OpenGraph icon
         function makeOpenGraph(callback) {
-            var size = 1500,
+            var source = options.source,
+                size = source.large ? sizeOf(source.large).width : sizeOf(source).width,
                 dimensions = size + 'x' + size,
                 name = 'opengraph.png',
                 command = combine(whichImage(size), options.dest, dimensions, name, opts);
             convert(command, name, function () {
-                elements.push('<meta property="og:image" content="' + filePath(name) + '" />');
+                if (!options.url && writeHTML()) {
+                    throw "URL must be specified for OpenGraph metadata";
+                }
+                elements.push('<meta property="og:image" content="' + path.join(options.url, filePath(name)) + '" />');
                 return callback();
             });
         }

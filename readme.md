@@ -31,6 +31,7 @@ Simply require the module and execute it with an optional object of configuratio
     - TileBlackWhite: make white-only icon on Windows 8 tile `boolean`
     - Manifest: path to Firefox manifest you want to add links to icons `string`, typically "manifest.webapp"
     - TrueColor: use true color for favicon.ico or 256 сolor. True color is larger `boolean`
+    - URL: OpenGraph requires an absolute image URL. This is the URL for your website.
     - Logging: print logs to console
     - Callback: function to execute upon completion `function` (params include 'response' and 'html')
 
@@ -69,6 +70,7 @@ favicons({
     tileBlackWhite: false,
     manifest: null,
     trueColor: false,
+    url: null,
     logging: false,
     callback: null
 });

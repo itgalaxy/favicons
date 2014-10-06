@@ -9,5 +9,6 @@ favicons({
     html: 'test/favicons.html',
     background: '#1d1d1d',
     manifest: 'test/manifest.webapp',
-    logging: true
+    url: 'http://haydenbleasel.com',
+    logging: true,
 });
