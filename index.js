@@ -57,6 +57,18 @@
             return options.html && options.html !== '';
         }
 
+        // Create a filepath.
+        function filePath(filename) {
+            var html = path.dirname(options.html),
+                filepath = path.join(options.dest, filename);
+
+            if (writeHTML()) {
+                return path.relative(html, filepath);
+            }
+
+            return filepath;
+        }
+
         // Execute external command
         function execute(cmd, callback) {
             exec(cmd, function (error) {
@@ -161,7 +173,7 @@
                     name = 'favicon-' + dimensions + '.png',
                     command = combine(whichImage(size), options.dest, dimensions, name, opts);
                 convert(command, name, function () {
-                    elements.push('<link rel="icon" type="image/png" sizes="' + dimensions + '" href="' + name + '" />');
+                    elements.push('<link rel="icon" type="image/png" sizes="' + dimensions + '" href="' + filePath(name) + '" />');
                     return callback();
                 });
             }, function (error) {
@@ -184,6 +196,7 @@
                     return callback();
                 });
             }, function (error) {
+                var name = 'favicon.ico';
                 if (error) {
                     throw error;
                 }
@@ -192,7 +205,7 @@
                     options.trueColor ? '' : '-bordercolor white -border 0 -colors 64',
                     path.join(options.dest, 'favicon.ico')
                 ]), 'favicon.ico', function () {
-                    elements.push('<link rel="shortcut icon" href="favicon.ico" />');
+                    elements.push('<link rel="shortcut icon" href="' + filePath(name) + '" />');
                     clean(function (error) {
                         if (error) {
                             throw error;
@@ -211,7 +224,7 @@
                     name = 'apple-touch-icon' + rule + '.png',
                     command = combine(whichImage(size), options.dest, dimensions, name, opts);
                 convert(command, name, function () {
-                    elements.push('<link rel="apple-touch-icon" sizes="' + dimensions + '" href="' + name + '" />');
+                    elements.push('<link rel="apple-touch-icon" sizes="' + dimensions + '" href="' + filePath(name) + '" />');
                     return callback();
                 });
             }, function (error) {
@@ -229,7 +242,7 @@
                 name = 'coast-icon-' + dimensions + '.png',
                 command = combine(whichImage(size), options.dest, dimensions, name, opts);
             convert(command, name, function () {
-                elements.push('<link rel="icon" sizes="' + dimensions + '" href="' + name + '" />');
+                elements.push('<link rel="icon" sizes="' + dimensions + '" href="' + filePath(name) + '" />');
                 return callback();
             });
         }
@@ -241,7 +254,7 @@
                 name = 'homescreen-' + dimensions + '.png',
                 command = combine(whichImage(size), options.dest, dimensions, name, opts);
             convert(command, name, function () {
-                elements.push('<meta name="mobile-web-app-capable" content="yes" />', '<link rel="icon" sizes="' + dimensions + '" href="' + name + '" />');
+                elements.push('<meta name="mobile-web-app-capable" content="yes" />', '<link rel="icon" sizes="' + dimensions + '" href="' + filePath(name) + '" />');
                 return callback();
             });
         }
@@ -311,6 +324,7 @@
                 name = 'opengraph.png',
                 command = combine(whichImage(size), options.dest, dimensions, name, opts);
             convert(command, name, function () {
+                elements.push('<meta property="og:image" content="' + filePath(name) + '" />');
                 return callback();
             });
         }
@@ -329,7 +343,7 @@
                     name = 'windows-tile-' + dimensions + '.png',
                     command = combine(whichImage(size), options.dest, dimensions, name, opts);
                 convert(command, name, function () {
-                    elements.push('<meta name="msapplication-' + (size === 144 ? 'TileImage' : 'square' + dimensions + 'logo') + '" content="' + name + '" />');
+                    elements.push('<meta name="msapplication-' + (size === 144 ? 'TileImage' : 'square' + dimensions + 'logo') + '" content="' + filePath(name) + '" />');
                     return callback();
                 });
             }, function (error) {
