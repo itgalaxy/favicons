@@ -61,12 +61,7 @@
         function filePath(filename) {
             var html = path.dirname(options.html),
                 filepath = path.join(options.dest, filename);
-
-            if (writeHTML()) {
-                return path.relative(html, filepath);
-            }
-
-            return filepath;
+            return writeHTML() ? path.relative(html, filepath) : filepath;
         }
 
         // Execute external command
@@ -268,11 +263,7 @@
                     var contentsFirefox;
                     if (updateManifest) {
                         fs.readFile(options.manifest, function (error, data) {
-                            if (error || data.length === 0) {
-                                contentsFirefox = '{}';
-                            } else {
-                                contentsFirefox = data;
-                            }
+                            contentsFirefox = error || data.length === 0 ? '{}' : data;
                             contentFirefox = JSON.parse(contentsFirefox);
                             contentFirefox.icons = {};
                             return callback(null, contentFirefox);
