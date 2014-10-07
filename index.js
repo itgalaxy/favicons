@@ -121,13 +121,6 @@
                 fs.readFile(options.html, function (error, data) {
                     if (!error) {
                         $ = cheerio.load(data, { decodeEntities: false });
-                        $('link[rel="shortcut icon"]', 'link[rel="icon"]', 'link[rel="apple-touch-icon"]').remove();
-                        $('meta').each(function () {
-                            var name = $(this).attr('name');
-                            if (name && (name === 'msapplication-TileImage' || name === 'msapplication-TileColor' || name.indexOf('msapplication-square') >= 0 || name === 'mobile-web-app-capable')) {
-                                $(this).remove();
-                            }
-                        });
                         html = $.html().replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ');
                         if (html === '') {
                             $ = cheerio.load('');

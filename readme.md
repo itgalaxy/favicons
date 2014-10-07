@@ -76,4 +76,6 @@ favicons({
 });
 ```
 
+Note: If you're going to write the HTML metadata to a file, make sure the tags aren't already there or there will be duplicates.
+
 Thanks to [@addyosmani](https://github.com/addyosmani), [@gauntface](https://github.com/gauntface), [@paulirish](https://github.com/paulirish), [@mathiasbynens](https://github.com/mathiasbynens) and [@pbakaus](https://github.com/pbakaus) for [their input](https://github.com/google/web-starter-kit/pull/442) on multiple source images for v1.4.0.
