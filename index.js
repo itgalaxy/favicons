@@ -59,6 +59,10 @@
             return options.html && options.html !== '';
         }
 
+        function getSize(source) {
+            return path.extname(source) === '.svg' ? 1500 : sizeOf(source).width;
+        }
+
         // Create a filepath.
         function filePath(filename) {
             var html = path.dirname(options.html),
@@ -306,7 +310,7 @@
         // Make OpenGraph icon
         function makeOpenGraph(callback) {
             var source = options.source,
-                size = source.large ? sizeOf(source.large).width : sizeOf(source).width,
+                size = source.large ? getSize(source.large) : getSize(source),
                 dimensions = size + 'x' + size,
                 name = 'opengraph.png',
                 command = combine(whichImage(size), options.dest, dimensions, name, opts);
