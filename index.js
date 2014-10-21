@@ -12,7 +12,8 @@
         cheerio = require('cheerio'),
         defaults = require('lodash.defaults'),
         sizeOf = require('image-size'),
-        mkdirp = require('mkdirp');
+        mkdirp = require('mkdirp'),
+        rfg = require('real-favicon');
 
     module.exports = function (params) {
 
@@ -96,28 +97,6 @@
             return out;
         }
 
-        // Clean unused files
-        function clean(callback) {
-            async.each([16, 32, 48], function (size, callback) {
-                var file = path.join(options.dest, size + 'x' + size + '.png');
-                fs.exists(file, function (exists) {
-                    if (exists) {
-                        fs.unlink(file, function (error) {
-                            if (error) {
-                                throw error;
-                            }
-                            return callback();
-                        });
-                    }
-                });
-            }, function (error) {
-                if (error) {
-                    throw error;
-                }
-                return callback();
-            });
-        }
-
         // Delete and rewrite HTML tags
         function writeTags(callback) {
             var $, html = '';
@@ -158,75 +137,6 @@
                 }
             }
             return image;
-        }
-
-        // Make PNG favicons
-        function makeNewFavicons(callback) {
-            async.each([16, 32, 96, 160, 196], function (size, callback) {
-                var dimensions = size + 'x' + size,
-                    name = 'favicon-' + dimensions + '.png',
-                    command = combine(whichImage(size), options.dest, dimensions, name, opts);
-                convert(command, name, function () {
-                    elements.push('<link rel="icon" type="image/png" sizes="' + dimensions + '" href="' + filePath(name) + '" />');
-                    return callback();
-                });
-            }, function (error) {
-                if (error) {
-                    throw error;
-                }
-                return callback();
-            });
-        }
-
-        // Make regular favicon files
-        function makeFavicons(callback) {
-            var files = [];
-            async.each([16, 32, 48], function (size, callback) {
-                var dimensions = size + 'x' + size,
-                    name = dimensions + '.png',
-                    command = combine(whichImage(size), options.dest, dimensions, name, opts);
-                convert(command, name, function () {
-                    files.push(path.join(options.dest, name));
-                    return callback();
-                });
-            }, function (error) {
-                var name = 'favicon.ico';
-                if (error) {
-                    throw error;
-                }
-                convert(files.concat([
-                    '-background none',
-                    options.trueColor ? '' : '-bordercolor white -border 0 -colors 64',
-                    path.join(options.dest, 'favicon.ico')
-                ]), 'favicon.ico', function () {
-                    elements.push('<link rel="shortcut icon" href="' + filePath(name) + '" />');
-                    clean(function (error) {
-                        if (error) {
-                            throw error;
-                        }
-                        return callback();
-                    });
-                });
-            });
-        }
-
-        // Make Apple touch icons
-        function makeApple(callback) {
-            async.each([57, 60, 72, 76, 144, 120, 144, 152, 180], function (size, callback) {
-                var dimensions = size + 'x' + size,
-                    rule = (size === 57 ? '' : '-' + dimensions),
-                    name = 'apple-touch-icon' + rule + '.png',
-                    command = combine(whichImage(size), options.dest, dimensions, name, opts);
-                convert(command, name, function () {
-                    elements.push('<link rel="apple-touch-icon" sizes="' + dimensions + '" href="' + filePath(name) + '" />');
-                    return callback();
-                });
-            }, function (error) {
-                if (error) {
-                    throw error;
-                }
-                return callback();
-            });
         }
 
         // Make Coast icon
@@ -323,55 +233,9 @@
             });
         }
 
-        // Make Windows 8 tile icons
-        function makeWindows(callback) {
-            if (writeHTML()) {
-                opts = [];
-                elements.push('<meta name="msapplication-TileColor" content="' + options.background + '" />');
-            }
-            if (options.tileBlackWhite) {
-                opts.push('-fuzz 100%', '-fill black', '-opaque red', '-fuzz 100%', '-fill black', '-opaque blue', '-fuzz 100%', '-fill white', '-opaque green');
-            }
-            async.each([70, 144, 150, 310], function (size, callback) {
-                var dimensions = size + 'x' + size,
-                    name = 'windows-tile-' + dimensions + '.png',
-                    command = combine(whichImage(size), options.dest, dimensions, name, opts);
-                convert(command, name, function () {
-                    elements.push('<meta name="msapplication-' + (size === 144 ? 'TileImage' : 'square' + dimensions + 'logo') + '" content="' + filePath(name) + '" />');
-                    return callback();
-                });
-            }, function (error) {
-                if (error) {
-                    throw error;
-                }
-                return callback();
-            });
-        }
-
         // Create the appropriate icons
         function makeIcons(callback) {
             async.parallel([
-                function (callback) {
-                    if (options.favicons) {
-                        makeFavicons(function () {
-                            callback(null);
-                        });
-                    }
-                },
-                function (callback) {
-                    if (options.favicons) {
-                        makeNewFavicons(function () {
-                            callback(null);
-                        });
-                    }
-                },
-                function (callback) {
-                    if (options.apple) {
-                        makeApple(function () {
-                            callback(null);
-                        });
-                    }
-                },
                 function (callback) {
                     if (options.coast) {
                         makeCoast(function () {
@@ -399,21 +263,38 @@
                             callback(null);
                         });
                     }
-                },
-                function (callback) {
-                    if (options.windows) {
-                        makeWindows(function () {
-                            callback(null);
-                        });
-                    }
                 }
             ], function () {
                 return callback();
             });
         }
 
+        function realFaviconGenerator() {
+            rfg({
+                src: options.source.large,
+                dest: 'test/images-rfg/',
+                icons_path: path.relative(path.dirname(options.html), options.dest),
+                html: options.html,
+                design: {
+                    ios: {
+                        picture_aspect: 'background_and_margin',
+                        background_color: options.background,
+                        margin: 0
+                    },
+                    windows: {
+                        picture_aspect: 'white_silhouette',
+                        background_color: options.background
+                    }
+                },
+                settings: {
+                    compression: 5
+                }
+            });
+        }
+
         // Initialise
         function init() {
+            realFaviconGenerator();
             if (!options.source) {
                 return console.log('A source image is required');
             }
