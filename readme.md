@@ -1,16 +1,16 @@
 # Favicons [![Build Status](https://travis-ci.org/haydenbleasel/favicons.svg?branch=node)](https://travis-ci.org/haydenbleasel/favicons)
 
-Favicons generator for Node.js. Produces a multi-size favicon from a single image. Port of [grunt-favicons](https://github.com/gleero/grunt-favicons/) (the good parts at least). Originally "favicon-generator" and "metaimage-generator". Installed through NPM with:
+## Installation
 
-```
-npm install favicons --save-dev
-```
+Favicons generator for Node.js. Basically an intelligence wrapper around RealFaviconGenerator built for [Google's Web Starter Kit](https://github.com/google/web-starter-kit) and [Catalyst](https://github.com/haydenbleasel/catalyst). Originally a port of [grunt-favicons](https://github.com/gleero/grunt-favicons/) (the good parts at least) and two other repositories: "favicon-generator" and "metaimage-generator". Installed through NPM with:
+
+    npm install favicons --save-dev
 
 Requires ImageMagick which you can get through Brew with:
 
-```
-brew install imagemagick
-```
+    brew install imagemagick
+
+## Configuration
 
 Simply require the module and execute it with an optional object of configuration.
 
@@ -37,45 +37,47 @@ Simply require the module and execute it with an optional object of configuratio
 
 You can either specify a string for the source e.g. `logo.png` or a series of images e.g.
 
-```
-source: {
-    small: 'logo-small.png',    // Should be 64x64px or smaller
-    medium: 'logo-medium.png',  // Should be between 65x65px to 310x310px
-    large: 'logo-large.png'     // Should be 311x311px or larger
-}
-```
+    source: {
+        small: 'logo-small.png',    // Should be 64x64px or smaller
+        medium: 'logo-medium.png',  // Should be between 65x65px to 310x310px
+        large: 'logo-large.png'     // Should be 311x311px or larger
+    }
 
-Defaults are shown below:
+## Usage
 
-```
-var favicons = require('favicons');
+An example of usage with the default configuration is shown below:
 
-favicons({
-    // I/O
-    source: 'logo.png',
-    dest: 'images',
+    var favicons = require('favicons');
 
-    // Icon Types
-    android: true,
-    apple: true,
-    coast: true,
-    favicons: true,
-    firefox: true,
-    opengraph: true,
-    windows: true,
+    favicons({
+        // I/O
+        source: 'logo.png',
+        dest: 'images',
 
-    // Miscellaneous
-    html: null,
-    background: '#1d1d1d',
-    tileBlackWhite: false,
-    manifest: null,
-    trueColor: false,
-    url: null,
-    logging: false,
-    callback: null
-});
-```
+        // Icon Types
+        android: true,
+        apple: true,
+        coast: true,
+        favicons: true,
+        firefox: true,
+        opengraph: true,
+        windows: true,
 
-Note: If you're going to write the HTML metadata to a file, make sure the tags aren't already there or there will be duplicates. Also, Favicons currently only supports JPG, PNG, GIF and SVG files. You can try other file types but it might explode.
+        // Miscellaneous
+        html: null,
+        background: '#1d1d1d',
+        tileBlackWhite: false,
+        manifest: null,
+        trueColor: false,
+        url: null,
+        logging: false,
+        callback: null
+    });
+
+## Credits
+
+Thanks to [@phbernard](https://github.com/phbernard) for all the work we did together on [RealFaviconGenerator](https://github.com/realfavicongenerator) to make Favicons awesome.
 
 Thanks to [@addyosmani](https://github.com/addyosmani), [@gauntface](https://github.com/gauntface), [@paulirish](https://github.com/paulirish), [@mathiasbynens](https://github.com/mathiasbynens) and [@pbakaus](https://github.com/pbakaus) for [their input](https://github.com/google/web-starter-kit/pull/442) on multiple source images for v1.4.0.
+
+And naturally, thanks to everyone who opens an issue or submits a pull request to this repo :)
