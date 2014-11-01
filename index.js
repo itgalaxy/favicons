@@ -6,10 +6,8 @@
     'use strict';
 
     var path = require('path'),
-        fs = require('fs'),
         exec = require('child_process').exec,
         async = require('async'),
-        cheerio = require('cheerio'),
         defaults = require('lodash.defaults'),
         sizeOf = require('image-size'),
         mkdirp = require('mkdirp'),
@@ -97,29 +95,6 @@
             return out;
         }
 
-        // Delete and rewrite HTML tags
-        function writeTags(callback) {
-            var $, html = '';
-            if (options.html) {
-                fs.readFile(options.html, function (error, data) {
-                    if (!error) {
-                        $ = cheerio.load(data, { decodeEntities: false });
-                        html = $.html().replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ');
-                        if (html === '') {
-                            $ = cheerio.load('');
-                        }
-                        if ($('head').length > 0) {
-                            $('head').append(elements.join('\n'));
-                            return callback($.html());
-                        }
-                    }
-                    return callback(elements.join('\n'));
-                });
-            } else {
-                return callback(elements.join('\n'));
-            }
-        }
-
         function whichImage(size) {
             var source = options.source,
                 image = source;
@@ -163,60 +138,6 @@
             });
         }
 
-        // Make Firefox icons
-        function makeFirefox(callback) {
-            var updateManifest = (options.manifest && options.manifest !== ''),
-                contentFirefox;
-            async.waterfall([
-                function (callback) {
-                    var contentsFirefox;
-                    if (updateManifest) {
-                        fs.readFile(options.manifest, function (error, data) {
-                            contentsFirefox = error || data.length === 0 ? '{}' : data;
-                            contentFirefox = JSON.parse(contentsFirefox);
-                            contentFirefox.icons = {};
-                            return callback(null, contentFirefox);
-                        });
-                    } else {
-                        return callback(null, null);
-                    }
-                },
-                function (contentFirefox, callback) {
-                    async.each([16, 30, 32, 48, 60, 64, 90, 120, 128, 256], function (size, callback) {
-                        var dimensions = size + 'x' + size,
-                            name = 'firefox-icon-' + dimensions + '.png',
-                            command = combine(whichImage(size), options.dest, dimensions, name, opts);
-                        convert(command, name, function () {
-                            if (updateManifest) {
-                                contentFirefox.icons[size] = name;
-                            }
-                            return callback();
-                        });
-                    }, function (error) {
-                        if (error) {
-                            throw error;
-                        }
-                        return callback(null, contentFirefox);
-                    });
-                }
-            ], function (error, contentFirefox) {
-                if (error) {
-                    throw error;
-                }
-                if (updateManifest) {
-                    print('Updating Firefox manifest... ');
-                    fs.writeFile(options.manifest, JSON.stringify(contentFirefox, null, 2), function (error) {
-                        if (error) {
-                            throw error;
-                        }
-                        return callback(null);
-                    });
-                } else {
-                    return callback(null);
-                }
-            });
-        }
-
         // Make OpenGraph icon
         function makeOpenGraph(callback) {
             var source = options.source,
@@ -251,13 +172,6 @@
                     }
                 },
                 function (callback) {
-                    if (options.firefox) {
-                        makeFirefox(function () {
-                            callback(null);
-                        });
-                    }
-                },
-                function (callback) {
                     if (options.opengraph) {
                         makeOpenGraph(function () {
                             callback(null);
@@ -284,6 +198,16 @@
                     windows: {
                         picture_aspect: 'white_silhouette',
                         background_color: options.background
+                    },
+                    firefox_app: {
+                        picture_aspect: "circle",
+                        keep_picture_in_circle: "true",
+                        circle_inner_margin: "5",
+                        background_color: "#456789",
+                        app_name: "My sample app",
+                        app_description: "Yet another sample application",
+                        developer_name: "Philippe Bernard",
+                        developer_url: "http://stackoverflow.com/users/499917/philippe-b"
                     }
                 },
                 settings: {
@@ -300,17 +224,10 @@
             }
             mkdirp(options.dest, function () {
                 makeIcons(function () {
-                    writeTags(function (data) {
-                        if (writeHTML()) {
-                            fs.writeFile(options.html, data, function () {
-                                if (options.callback) {
-                                    return options.callback('Generated favicons');
-                                }
-                            });
-                        } else if (options.callback) {
-                            return options.callback('Generated favicons', data);
-                        }
-                    });
+                    if (options.callback) {
+                        return options.callback('Generated favicons');
+                    }
+                    return;
                 });
             });
         }
