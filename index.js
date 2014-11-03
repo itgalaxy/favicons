@@ -356,6 +356,8 @@
                         makeFavicons(function () {
                             callback(null);
                         });
+                    } else {
+                        callback(null);
                     }
                 },
                 function (callback) {
@@ -363,6 +365,8 @@
                         makeNewFavicons(function () {
                             callback(null);
                         });
+                    } else {
+                        callback(null);
                     }
                 },
                 function (callback) {
@@ -370,6 +374,8 @@
                         makeApple(function () {
                             callback(null);
                         });
+                    } else {
+                        callback(null);
                     }
                 },
                 function (callback) {
@@ -377,6 +383,8 @@
                         makeCoast(function () {
                             callback(null);
                         });
+                    } else {
+                        callback(null);
                     }
                 },
                 function (callback) {
@@ -384,6 +392,8 @@
                         makeAndroid(function () {
                             callback(null);
                         });
+                    } else {
+                        callback(null);
                     }
                 },
                 function (callback) {
@@ -391,6 +401,8 @@
                         makeFirefox(function () {
                             callback(null);
                         });
+                    } else {
+                        callback(null);
                     }
                 },
                 function (callback) {
@@ -398,6 +410,8 @@
                         makeOpenGraph(function () {
                             callback(null);
                         });
+                    } else {
+                        callback(null);
                     }
                 },
                 function (callback) {
@@ -405,6 +419,8 @@
                         makeWindows(function () {
                             callback(null);
                         });
+                    } else {
+                        callback(null);
                     }
                 }
             ], function () {
