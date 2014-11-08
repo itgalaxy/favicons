@@ -126,18 +126,6 @@
             });
         }
 
-        // Make Android homescreen icon
-        function makeAndroid(callback) {
-            var size = 192,
-                dimensions = size + 'x' + size,
-                name = 'homescreen-' + dimensions + '.png',
-                command = combine(whichImage(size), options.dest, dimensions, name, opts);
-            convert(command, name, function () {
-                elements.push('<meta name="mobile-web-app-capable" content="yes" />', '<link rel="icon" sizes="' + dimensions + '" href="' + filePath(name) + '" />');
-                return callback();
-            });
-        }
-
         // Make OpenGraph icon
         function makeOpenGraph(callback) {
             var source = options.source,
@@ -165,13 +153,6 @@
                     }
                 },
                 function (callback) {
-                    if (options.android) {
-                        makeAndroid(function () {
-                            callback(null);
-                        });
-                    }
-                },
-                function (callback) {
                     if (options.opengraph) {
                         makeOpenGraph(function () {
                             callback(null);
@@ -183,46 +164,76 @@
             });
         }
 
-        function realFaviconGenerator() {
+        // Execute RealFaviconGenerator
+        function realFaviconGenerator(design) {
             rfg({
                 src: options.source.large,
                 dest: 'test/images-rfg/',
                 icons_path: path.relative(path.dirname(options.html), options.dest),
                 html: options.html,
-                design: {
-                    ios: {
-                        picture_aspect: 'background_and_margin',
-                        background_color: options.background,
-                        margin: 0
-                    },
-                    windows: {
-                        picture_aspect: 'white_silhouette',
-                        background_color: options.background
-                    },
-                    firefox_app: {
-                        picture_aspect: "circle",
-                        keep_picture_in_circle: "true",
-                        circle_inner_margin: "5",
-                        background_color: "#456789",
-                        app_name: "My sample app",
-                        app_description: "Yet another sample application",
-                        developer_name: "Philippe Bernard",
-                        developer_url: "http://stackoverflow.com/users/499917/philippe-b"
-                    }
-                },
+                design: design,
                 settings: {
                     compression: 5
                 }
             });
         }
 
+        // Create design object for RFG
+        function design(callback) {
+            var settings = {};
+
+            if (options.apple) {
+                settings.apple = {
+                    picture_aspect: 'background_and_margin',
+                    background_color: options.background,
+                    margin: 0
+                };
+            }
+
+            if (options.windows) {
+                settings.windows = {
+                    picture_aspect: 'white_silhouette',
+                    background_color: options.background
+                };
+            }
+
+            if (options.firefox) {
+                settings.firefox_app = {
+                    picture_aspect: "circle",
+                    keep_picture_in_circle: "true",
+                    circle_inner_margin: "5",
+                    background_color: "#456789",
+                    app_name: "My sample app",
+                    app_description: "Yet another sample application",
+                    developer_name: "Philippe Bernard",
+                    developer_url: "http://stackoverflow.com/users/499917/philippe-b"
+                };
+            }
+
+            if (options.android) {
+                settings.android_chrome = {
+                    picture_aspect: "shadow",
+                    manifest: {
+                        name: "My sample app",
+                        display: "standalone",
+                        orientation: "portrait",
+                        start_url: "/homepage.html"
+                    }
+                };
+            }
+
+            return callback(settings);
+        }
+
         // Initialise
         function init() {
-            realFaviconGenerator();
             if (!options.source) {
                 return console.log('A source image is required');
             }
             mkdirp(options.dest, function () {
+                design(function (settings) {
+                    realFaviconGenerator(settings);
+                });
                 makeIcons(function () {
                     if (options.callback) {
                         return options.callback('Generated favicons');
