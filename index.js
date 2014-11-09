@@ -34,7 +34,6 @@
             // Miscellaneous
             html: null,
             background: '#1d1d1d',
-            tileBlackWhite: false,
             manifest: null,
             trueColor: false,
             url: null,
@@ -122,10 +121,10 @@
                 name = 'opengraph.png',
                 command = combine(whichImage(size), options.dest, dimensions, name, opts);
             convert(command, name, function () {
-                if (!options.url && writeHTML()) {
-                    throw "URL must be specified for OpenGraph metadata";
+                if (writeHTML()) {
+                    // TODO: Elements don't actually write to the file anymore. Find a way to append to RFG output?
+                    elements.push('<meta property="og:image" content="' + path.join(options.url || 'TODO', filePath(name)) + '" />');
                 }
-                elements.push('<meta property="og:image" content="' + path.join(options.url, filePath(name)) + '" />');
                 return callback();
             });
         }
@@ -183,11 +182,11 @@
                     picture_aspect: "circle",
                     keep_picture_in_circle: "true",
                     circle_inner_margin: "5",
-                    background_color: "#456789",
+                    background_color: options.background,
                     app_name: "My sample app",
                     app_description: "Yet another sample application",
                     developer_name: "Philippe Bernard",
-                    developer_url: "http://stackoverflow.com/users/499917/philippe-b"
+                    developer_url: options.url
                 };
             }
 
@@ -206,7 +205,7 @@
             if (options.coast) {
                 settings.coast = {
                     picture_aspect: "background_and_margin",
-                    background_color: "#136497",
+                    background_color: options.background,
                     margin: "12%"
                 };
             }
