@@ -114,18 +114,6 @@
             return image;
         }
 
-        // Make Coast icon
-        function makeCoast(callback) {
-            var size = 228,
-                dimensions = size + 'x' + size,
-                name = 'coast-icon-' + dimensions + '.png',
-                command = combine(whichImage(size), options.dest, dimensions, name, opts);
-            convert(command, name, function () {
-                elements.push('<link rel="icon" sizes="' + dimensions + '" href="' + filePath(name) + '" />');
-                return callback();
-            });
-        }
-
         // Make OpenGraph icon
         function makeOpenGraph(callback) {
             var source = options.source,
@@ -145,13 +133,6 @@
         // Create the appropriate icons
         function makeIcons(callback) {
             async.parallel([
-                function (callback) {
-                    if (options.coast) {
-                        makeCoast(function () {
-                            callback(null);
-                        });
-                    }
-                },
                 function (callback) {
                     if (options.opengraph) {
                         makeOpenGraph(function () {
@@ -219,6 +200,14 @@
                         orientation: "portrait",
                         start_url: "/homepage.html"
                     }
+                };
+            }
+
+            if (options.coast) {
+                settings.coast = {
+                    picture_aspect: "background_and_margin",
+                    background_color: "#136497",
+                    margin: "12%"
                 };
             }
 
