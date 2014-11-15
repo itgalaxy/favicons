@@ -113,32 +113,17 @@
             return image;
         }
 
-        // Make OpenGraph icon
-        function makeOpenGraph(callback) {
-            var source = options.source,
-                size = source.large ? getSize(source.large) : getSize(source),
-                dimensions = size + 'x' + size,
-                name = 'opengraph.png',
-                command = combine(whichImage(size), options.dest, dimensions, name, opts);
-            convert(command, name, function () {
-                if (writeHTML()) {
-                    // TODO: Elements don't actually write to the file anymore. Find a way to append to RFG output?
-                    elements.push('<meta property="og:image" content="' + path.join(options.url || 'TODO', filePath(name)) + '" />');
-                }
-                return callback();
-            });
-        }
 
         // Create the appropriate icons
         function makeIcons(callback) {
             async.parallel([
-                function (callback) {
+                /*function (callback) {
                     if (options.opengraph) {
-                        makeOpenGraph(function () {
+                        makeAppleSplash(function () {
                             callback(null);
                         });
                     }
-                }
+                }*/
             ], function () {
                 return callback();
             });
@@ -207,6 +192,25 @@
                     picture_aspect: "background_and_margin",
                     background_color: options.background,
                     margin: "12%"
+                };
+            }
+
+            if (options.opengraph) {
+                settings.open_graph = {
+                    picture_aspect: "background_and_margin",
+                    background_color: "#136497",
+                    margin: "12%",
+                    ratio: "1.91:1"
+                };
+            }
+
+            if (options.yandex) {
+                settings.yandex_browser = {
+                    background_color: options.background,
+                    manifest: {
+                        show_title: true,
+                        version: "1.0"
+                    }
                 };
             }
 
