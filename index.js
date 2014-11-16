@@ -10,7 +10,8 @@
         async = require('async'),
         defaults = require('lodash.defaults'),
         mkdirp = require('mkdirp'),
-        rfg = require('real-favicon');
+        rfg = require('real-favicon'),
+        metaparser = require('metaparser');
 
     module.exports = function (params) {
 
@@ -64,22 +65,32 @@
             return writeHTML() ? path.relative(html, filepath) : filepath;
         }
 
+        // Write HTML
+        function writeTags(callback) {
+            metaparser({
+                source: options.html,
+                add: elements.join('\n'),
+                remove: 'link[rel="apple-touch-startup-image"]',
+                out: options.html,
+                callback: function (error) {
+                    return callback(error);
+                }
+            });
+        }
+
         // Execute external command
         function execute(cmd, callback) {
             exec(cmd, function (error) {
-                if (error) {
-                    throw error;
-                }
-                return callback();
+                return callback(error);
             });
         }
 
         // Convert image with Imagemagick
         function convert(args, name, callback) {
             args.unshift('convert');
-            execute(args.join(' '), function () {
+            execute(args.join(' '), function (error) {
                 print('Created ' + name);
-                return callback();
+                return callback(error);
             });
         }
 
@@ -160,17 +171,14 @@
             async.each(['1536x2008', '1496x2048', '768x1004', '748x1024', '640x1096', '640x920', '320x460'], function (size, callback) {
                 var name = 'apple-touch-startup-image-' + size + '.png',
                     ratio = (size === '640x920' || size === '640x1096' || size === '1496x2048' || size === '1536x2008' ? 2 : 1),
-                    media = '(device-width: ' + size.substr(0, size.indexOf('x')) + ') and (device-height: ' + size.substr(size.indexOf('x'), size.length - 1) + ')',
+                    media = '(device-width: ' + size.substr(0, size.indexOf('x')) + 'px) and (device-height: ' + size.substr(size.indexOf('x') + 1, size.length - 1) + 'px)',
                     command = combine(whichImage(320), options.dest, size, name, opts);
-                convert(command, name, function () {
+                convert(command, name, function (error) {
                     elements.push('<link href="' + filePath(name) + '" media="' + media + ' and (-webkit-device-pixel-ratio: ' + ratio + ')" rel="apple-touch-startup-image" />');
-                    return callback();
+                    return callback(error);
                 });
             }, function (error) {
-                if (error) {
-                    throw error;
-                }
-                return callback();
+                return callback(error);
             });
         }
 
@@ -179,13 +187,13 @@
             async.parallel([
                 function (callback) {
                     if (options.appleStartup) {
-                        makeAppleStartup(function () {
-                            callback(null);
+                        makeAppleStartup(function (error) {
+                            callback(error);
                         });
                     }
                 }
-            ], function () {
-                return callback();
+            ], function (error) {
+                return callback(error);
             });
         }
 
@@ -277,25 +285,36 @@
             return callback(settings);
         }
 
-        // Initialise
-        function init() {
-            if (!options.source) {
-                return console.log('A source image is required');
-            }
-            mkdirp(options.dest, function () {
+        async.waterfall([
+            function (callback) {
+                mkdirp(options.dest, function (error) {
+                    callback(error);
+                });
+            },
+            function (callback) {
+                makeIcons(function (error) {
+                    callback(error);
+                });
+            },
+            function (callback) {
+                writeTags(function (error) {
+                    callback(error);
+                });
+            },
+            function (callback) {
                 design(function (settings) {
-                    realFaviconGenerator(settings);
+                    callback(null, settings);
                 });
-                makeIcons(function () {
-                    if (options.callback) {
-                        return options.callback('Generated favicons');
-                    }
-                    return;
-                });
-            });
-        }
-
-        init();
+            },
+            function (settings, callback) {
+                realFaviconGenerator(settings);
+                callback(null);
+            }
+        ], function (error) {
+            if (options.callback) {
+                return options.callback(error);
+            }
+        });
 
     };
 
