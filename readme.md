@@ -19,12 +19,14 @@ Simply require the module and execute it with an optional object of configuratio
     - Dest: The destination path `string`
 - Icons
     - Android: create Android homescreen icon `boolean`
-    - Apple: create Apple touch icons `boolean`
+    - AppleIcon: create Apple touch icons `boolean`
+    - AppleStartup: create Apple startup images `boolean`
     - Coast: create Opera Coast icon `boolean`
     - Favicons: create regular favicons `boolean`
     - Firefox: create Firefox OS icons `boolean`
     - OpenGraph: create OpenGraph image for Facebook `boolean`
     - Windows: create Windows 8 tiles `boolean`
+    - Yandex: create Yandex Browser icon `boolean`
 - Miscellaneous:
     - HTML: optional file to write metadata links to `string`, typically "index.html"
     - Background: background for Windows 8 tiles and Apple touch icons `#string`
@@ -56,7 +58,8 @@ An example of usage with the default configuration is shown below:
 
         // Icon Types
         android: true,
-        apple: true,
+        appleIcon: true,
+        appleStartup: true,
         coast: true,
         favicons: true,
         firefox: true,
