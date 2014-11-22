@@ -1,22 +1,21 @@
-/*jslint devel:true*/
-/*global module, require*/
+/*jslint node:true, nomen:true*/
 
 (function () {
 
     'use strict';
 
     var path = require('path'),
-        exec = require('child_process').exec,
         async = require('async'),
-        defaults = require('lodash.defaults'),
+        _ = require('underscore'),
         mkdirp = require('mkdirp'),
         rfg = require('real-favicon'),
-        metaparser = require('metaparser');
+        metaparser = require('metaparser'),
+        gm = require('gm');
 
     module.exports = function (params) {
 
         // Default options
-        var options = defaults(params || {}, {
+        var options = _.defaults(params || {}, {
 
             // I/O
             source: null,
@@ -43,8 +42,7 @@
 
         }),
 
-            elements = [],
-            opts = ['-background', '"' + options.background + '"', '-flatten'];
+            elements = [];
 
         // Print to the console.
         function print(message) {
@@ -78,27 +76,23 @@
             });
         }
 
-        // Execute external command
-        function execute(cmd, callback) {
-            exec(cmd, function (error) {
-                return callback(error);
-            });
-        }
-
         // Convert image with Imagemagick
-        function convert(args, name, callback) {
-            args.unshift('convert');
-            execute(args.join(' '), function (error) {
-                print('Created ' + name);
-                return callback(error);
-            });
-        }
+        function resize(opts, callback) {
+            gm(opts.source)
+                .resize(opts.width, opts.height)
+                .noProfile()
+                .write(path.join(options.dest, opts.name), function (error) {
+                    print('Created ' + opts.name);
+                    return callback(error);
+                });
 
-        // Combine arguments into command
-        function combine(src, dest, size, fname, opts) {
-            var out = [src, '-resize', size].concat(opts);
-            out.push(path.join(dest, fname));
-            return out;
+            // WIP for Apple Startup Images
+            /*gm(opts.width, opts.height, options.background)
+                .noProfile()
+                .write(path.join(options.dest, opts.name), function (error) {
+                    print('Created ' + opts.name);
+                    return callback(error);
+                });*/
         }
 
         function whichImage(size) {
@@ -169,12 +163,16 @@
         // Make Apple Startup Images
         function makeAppleStartup(callback) {
             async.each(['1536x2008', '1496x2048', '768x1004', '748x1024', '640x1096', '640x920', '320x460'], function (size, callback) {
-                var name = 'apple-touch-startup-image-' + size + '.png',
-                    ratio = (size === '640x920' || size === '640x1096' || size === '1496x2048' || size === '1536x2008' ? 2 : 1),
-                    media = '(device-width: ' + size.substr(0, size.indexOf('x')) + 'px) and (device-height: ' + size.substr(size.indexOf('x') + 1, size.length - 1) + 'px)',
-                    command = combine(whichImage(320), options.dest, size, name, opts);
-                convert(command, name, function (error) {
-                    elements.push('<link href="' + filePath(name) + '" media="' + media + ' and (-webkit-device-pixel-ratio: ' + ratio + ')" rel="apple-touch-startup-image" />');
+                var opts = {
+                    source: whichImage(320),
+                    height: size.substr(size.indexOf('x') + 1, size.length - 1),
+                    width: size.substr(0, size.indexOf('x')),
+                    name: 'apple-touch-startup-image-' + size + '.png'
+                },
+                    media = '(device-width: ' + opts.width + 'px) and (device-height: ' + opts.height + 'px)',
+                    ratio = (size === '640x920' || size === '640x1096' || size === '1496x2048' || size === '1536x2008' ? 2 : 1);
+                resize(opts, function (error) {
+                    elements.push('<link href="' + filePath(opts.name) + '" media="' + media + ' and (-webkit-device-pixel-ratio: ' + ratio + ')" rel="apple-touch-startup-image" />');
                     return callback(error);
                 });
             }, function (error) {
@@ -266,7 +264,7 @@
             if (options.opengraph) {
                 settings.open_graph = {
                     picture_aspect: "background_and_margin",
-                    background_color: "#136497",
+                    background_color: options.background,
                     margin: "12%",
                     ratio: "1.91:1"
                 };
