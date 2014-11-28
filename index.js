@@ -12,36 +12,29 @@
         metaparser = require('metaparser'),
         gm = require('gm');
 
-    module.exports = function (params) {
+    module.exports = function (params, next) {
 
         // Default options
         var options = _.defaults(params || {}, {
-
-            // I/O
-            source: null,
+            src: null,
             dest: 'images',
-
-            // Icon Types
-            android: true,
-            appleTouch: true,
-            appleStartup: true,
-            coast: true,
-            favicons: true,
-            firefox: true,
-            opengraph: true,
-            windows: true,
-
-            // Miscellaneous
+            iconTypes: {
+                android: true,
+                appleTouch: true,
+                appleStartup: true,
+                coast: true,
+                favicons: true,
+                firefox: true,
+                opengraph: true,
+                windows: true
+            },
             html: null,
             background: '#1d1d1d',
             manifest: null,
             trueColor: false,
             url: null,
-            logging: false,
-            callback: null
-
+            logging: false
         }),
-
             elements = [];
 
         // Print to the console.
@@ -96,7 +89,7 @@
         }
 
         function whichImage(size) {
-            var source = options.source,
+            var source = options.src,
                 image = source;
             if (typeof source === 'object') {
                 if (source.small && source.medium && source.large) {
@@ -184,10 +177,12 @@
         function makeIcons(callback) {
             async.parallel([
                 function (callback) {
-                    if (options.appleStartup) {
+                    if (options.iconTypes.appleStartup) {
                         makeAppleStartup(function (error) {
                             callback(error);
                         });
+                    } else {
+                        callback(null);
                     }
                 }
             ], function (error) {
@@ -198,7 +193,7 @@
         // Execute RealFaviconGenerator
         function realFaviconGenerator(design) {
             rfg({
-                src: options.source.large,
+                src: options.src.large,
                 dest: 'test/images-rfg/',
                 icons_path: path.relative(path.dirname(options.html), options.dest),
                 html: options.html,
@@ -213,7 +208,7 @@
         function design(callback) {
             var settings = {};
 
-            if (options.appleTouch) {
+            if (options.iconTypes.appleTouch) {
                 settings.apple = {
                     picture_aspect: 'background_and_margin',
                     background_color: options.background,
@@ -221,14 +216,14 @@
                 };
             }
 
-            if (options.windows) {
+            if (options.iconTypes.windows) {
                 settings.windows = {
                     picture_aspect: 'white_silhouette',
                     background_color: options.background
                 };
             }
 
-            if (options.firefox) {
+            if (options.iconTypes.firefox) {
                 settings.firefox_app = {
                     picture_aspect: "circle",
                     keep_picture_in_circle: "true",
@@ -241,7 +236,7 @@
                 };
             }
 
-            if (options.android) {
+            if (options.iconTypes.android) {
                 settings.android_chrome = {
                     picture_aspect: "shadow",
                     manifest: {
@@ -253,7 +248,7 @@
                 };
             }
 
-            if (options.coast) {
+            if (options.iconTypes.coast) {
                 settings.coast = {
                     picture_aspect: "background_and_margin",
                     background_color: options.background,
@@ -261,7 +256,7 @@
                 };
             }
 
-            if (options.opengraph) {
+            if (options.iconTypes.opengraph) {
                 settings.open_graph = {
                     picture_aspect: "background_and_margin",
                     background_color: options.background,
@@ -270,7 +265,7 @@
                 };
             }
 
-            if (options.yandex) {
+            if (options.iconTypes.yandex) {
                 settings.yandex_browser = {
                     background_color: options.background,
                     manifest: {
@@ -309,8 +304,8 @@
                 callback(null);
             }
         ], function (error) {
-            if (options.callback) {
-                return options.callback(error);
+            if (next) {
+                return next(error);
             }
         });
 
