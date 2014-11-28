@@ -12,8 +12,11 @@ Requires ImageMagick which you can get through Brew with:
 
 ## Configuration
 
-Simply require the module and execute it with an optional object of configuration.
+Simply require the module and execute it with an optional object of configuration. The second argument (after options) is the callback. This accepts three parameters:
 
+- `err`: An error that may have occurred during the Favicons build.
+- `css`: The CSS produced for the range of favicons.
+- `images`: An array of favicon images.
 
 You can either specify a string for the source e.g. `logo.png` or a series of images e.g.
 

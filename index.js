@@ -35,7 +35,8 @@
             url: null,
             logging: false
         }),
-            elements = [];
+            elements = [],
+            images = [];
 
         // Print to the console.
         function print(message) {
@@ -305,7 +306,7 @@
             }
         ], function (error) {
             if (next) {
-                return next(error);
+                return next(error, elements, images);
             }
         });
 
