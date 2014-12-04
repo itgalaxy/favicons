@@ -9,7 +9,6 @@
         _ = require('underscore'),
         mkdirp = require('mkdirp'),
         rfg = require('real-favicon'),
-        metaparser = require('metaparser'),
         gm = require('gm');
 
     module.exports = function (params, next) {
@@ -35,7 +34,10 @@
             url: null,
             logging: false
         }),
-            elements = [],
+            tags = {
+                add: [],
+                remove: []
+            },
             images = [];
 
         // Print to the console.
@@ -55,19 +57,6 @@
             var html = path.dirname(options.html),
                 filepath = path.join(options.dest, filename);
             return writeHTML() ? path.relative(html, filepath) : filepath;
-        }
-
-        // Write HTML
-        function writeTags(callback) {
-            metaparser({
-                source: options.html,
-                add: elements.join('\n'),
-                remove: 'link[rel="apple-touch-startup-image"]',
-                out: options.html,
-                callback: function (error) {
-                    return callback(error);
-                }
-            });
         }
 
         // Convert image with Imagemagick
@@ -166,10 +155,11 @@
                     media = '(device-width: ' + opts.width + 'px) and (device-height: ' + opts.height + 'px)',
                     ratio = (size === '640x920' || size === '640x1096' || size === '1496x2048' || size === '1536x2008' ? 2 : 1);
                 resize(opts, function (error) {
-                    elements.push('<link href="' + filePath(opts.name) + '" media="' + media + ' and (-webkit-device-pixel-ratio: ' + ratio + ')" rel="apple-touch-startup-image" />');
+                    tags.add.push('\n<link href="' + filePath(opts.name) + '" media="' + media + ' and (-webkit-device-pixel-ratio: ' + ratio + ')" rel="apple-touch-startup-image" />');
                     return callback(error);
                 });
             }, function (error) {
+                tags.remove.push('link[rel="apple-touch-startup-image"]');
                 return callback(error);
             });
         }
@@ -199,6 +189,10 @@
                 icons_path: path.relative(path.dirname(options.html), options.dest),
                 html: options.html,
                 design: design,
+                tags: {
+                    add: tags.add,
+                    remove: tags.remove
+                },
                 settings: {
                     compression: 5
                 }
@@ -291,11 +285,6 @@
                 });
             },
             function (callback) {
-                writeTags(function (error) {
-                    callback(error);
-                });
-            },
-            function (callback) {
                 design(function (settings) {
                     callback(null, settings);
                 });
@@ -306,7 +295,7 @@
             }
         ], function (error) {
             if (next) {
-                return next(error, elements, images);
+                return next(error, tags, images);
             }
         });
 
