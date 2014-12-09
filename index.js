@@ -38,7 +38,7 @@
             tileBlackWhite: false,
             manifest: null,
             trueColor: false,
-            url: null,
+            url: '',
             logging: false,
             callback: null
 
