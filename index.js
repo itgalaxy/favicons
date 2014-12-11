@@ -25,7 +25,8 @@
                 favicons: true,
                 firefox: true,
                 opengraph: true,
-                windows: true
+                windows: true,
+                yandex: true
             },
             html: null,
             background: '#1d1d1d',
@@ -204,7 +205,7 @@
             var settings = {};
 
             if (options.iconTypes.appleTouch) {
-                settings.apple = {
+                settings.ios = {
                     picture_aspect: 'background_and_margin',
                     background_color: options.background,
                     margin: 0
