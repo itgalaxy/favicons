@@ -76,13 +76,11 @@ src: {
 
 ### Callback
 
-The callback accepts three parameters:
+The callback accepts one parameter:
 
 ```js
-function (err, css, images) {
+function (err) {
     // err: An error that may have occurred during the Favicons build. `object`
-    // css: The CSS produced for the range of favicons. `string`
-    // images: An array of favicon images. `array`
 }
 ```
 

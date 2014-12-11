@@ -16,9 +16,6 @@ favicons({
         url: 'http://haydenbleasel.com',
         logging: true
     }
-}, function (err, css, images) {
-    // Callback is running before RFG finishes.
+}, function (err) {
     if (err) throw err;
-    console.log(css);
-    console.log(images);
 });

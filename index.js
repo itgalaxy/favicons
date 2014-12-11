@@ -47,12 +47,10 @@
                 logging: false
             }
         }),
-            images = [],
             tags = {
                 add: [],
                 remove: []
             };
-
 
         // Print to the console.
         function print(message) {
@@ -249,8 +247,7 @@
             }
         ], function (error) {
             if (next) {
-                // Tags and images only contain custom items.
-                return next(error, tags, images);
+                return next(error);
             }
         });
 
