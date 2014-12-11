@@ -2,7 +2,7 @@
 
 ## Installation
 
-Favicons generator for Node.js. Basically an intelligence wrapper around RealFaviconGenerator built for [Google's Web Starter Kit](https://github.com/google/web-starter-kit) and [Catalyst](https://github.com/haydenbleasel/catalyst). Originally a port of [grunt-favicons](https://github.com/gleero/grunt-favicons/) (the good parts at least) and two other repositories: "favicon-generator" and "metaimage-generator". Installed through NPM with:
+Favicons generator for Node.js. Basically a simplicity wrapper around RealFaviconGenerator built for [Google's Web Starter Kit](https://github.com/google/web-starter-kit) and [Catalyst](https://github.com/haydenbleasel/catalyst). Originally a port of [grunt-favicons](https://github.com/gleero/grunt-favicons/) (the good parts at least). Installed through NPM with:
 
     npm install favicons --save-dev
 
@@ -10,62 +10,101 @@ Requires ImageMagick which you can get through Brew with:
 
     brew install imagemagick
 
-## Configuration
-
-Simply require the module and execute it with an optional object of configuration. The second argument (after options) is the callback. This accepts three parameters:
-
-- `err`: An error that may have occurred during the Favicons build.
-- `css`: The CSS produced for the range of favicons.
-- `images`: An array of favicon images.
-
-You can either specify a string for the source e.g. `logo.png` or a series of images e.g.
-
-    src: {
-        small: 'logo-small.png',    // Should be 64x64px or smaller
-        medium: 'logo-medium.png',  // Should be between 65x65px to 310x310px
-        large: 'logo-large.png'     // Should be 311x311px or larger
-    }
-
 ## Usage
 
-An example of usage with the default configuration is shown below:
+Require the module and call it, optionally specifying configuration and callback objects i.e.
 
 ```js
 var favicons = require('favicons');
-
-favicons({
-    src: 'logo.png',            // The source image used to produce the favicon `string` or `object`
-    dest: 'images',             // The destination path `string`
-    iconTypes: {
-        android: true,          // Create Android homescreen icon `boolean`
-        appleIcon: true,        // Create Apple touch icons `boolean`
-        appleStartup: true,     // Create Apple startup images `boolean`
-        coast: true,            // Create Opera Coast icon `boolean`
-        favicons: true,         // Create regular favicons `boolean`
-        firefox: true,          // Create Firefox OS icons `boolean`
-        opengraph: true,        // Create OpenGraph image for Facebook `boolean`
-        windows: true,          // Create Windows 8 tiles `boolean`
-        yandex: true            // Create Yandex Browser icon `boolean`
-    },
-    html: null,                 // Optional file to write metadata links to `string`, typically "index.html"
-    background: '#1d1d1d',      // Background for Windows 8 tiles and Apple touch icons `#string`
-    tileBlackWhite: false,      // Make white-only icon on Windows 8 tile `boolean`
-    manifest: null,             // Path to Firefox manifest you want to add links to icons `string`, typically "manifest.webapp"
-    trueColor: false,           // Use true color for favicon.ico or 256 сolor. True color is larger `boolean`
-    url: null,                  // OpenGraph requires an absolute image URL. This is the URL for your website.
-    logging: false,             // Print logs to console
-}, function (err, css, images) {
-    console.log(css);
-    console.log(images);
-});
+favicons(config, callback);
 ```
+
+### Configuration
+
+To keep things organised, configuration contains 3 objects: `files`, `icons` and `settings`. An example of usage with the default values is shown below:
+
+```js
+{
+    files: {
+        src: null,                // Path for file to produce the favicons. `string` or `object`
+        dest: null,               // Path for writing the favicons to. `string`
+        html: null,               // Path for HTML file to write metadata. `string`
+        androidManifest: null,    // Path for an existing android_chrome_manifest.json. `string`
+        browserConfig: null,      // Path for an existing browserconfig.xml. `string`
+        firefoxManifest: null,    // Path for an existing manifest.webapp. `string`
+        yandexManifest: null      // Path for an existing yandex-browser-manifest.json. `string`
+    },
+    icons: {
+        android: true,            // Create Android homescreen icon. `boolean`
+        appleIcon: true,          // Create Apple touch icons. `boolean`
+        appleStartup: true,       // Create Apple startup images. `boolean`
+        coast: true,              // Create Opera Coast icon. `boolean`
+        favicons: true,           // Create regular favicons. `boolean`
+        firefox: true,            // Create Firefox OS icons. `boolean`
+        opengraph: true,          // Create Facebook OpenGraph. `boolean`
+        windows: true,            // Create Windows 8 tiles. `boolean`
+        yandex: true              // Create Yandex browser icon. `boolean`
+    },
+    settings: {
+        appName: null,            // Your application's name. `string`
+        appDescription: null,     // Your application's description. `string`
+        developer: null,          // Your (or your developer's) name. `string`
+        developerURL: null,       // Your (or your developer's) URL. `string`
+        background: null,         // Background colour for flattened icons. `string`
+        index: null,              // Path for the initial page on the site. `string`
+        url: null,                // URL for your website. `string`
+        logging: false            // Print logs to console?
+    }
+}
+```
+
+You can either specify a string for the source e.g. `logo.png` or a series of images e.g.
+
+```js
+src: {
+    android: 'logo-android.png',
+    appleIcon: 'logo-appleIcon.png',
+    appleStartup: 'logo-appleStartup.png',
+    coast: 'logo-coast.png',
+    favicons: 'logo-favicons.png',
+    firefox: 'logo-firefox.png',
+    opengraph: 'logo-opengraph.png',
+    windows: 'logo-windows.png',
+    yandex: 'logo-yandex.png'
+}
+```
+
+### Callback
+
+The callback accepts three parameters:
+
+```js
+function (err, css, images) {
+    // err: An error that may have occurred during the Favicons build. `object`
+    // css: The CSS produced for the range of favicons. `string`
+    // images: An array of favicon images. `array`
+}
+```
+
+## Output
+
+Depending on which platforms you opt for, the output includes:
+
+- android: Android Chrome images (36x36 -> 192x192) with Android manifest.json
+- appleIcon: Apple touch icons (57x57 -> 180x180).
+- appleStartup: Apple startup images (320x460 -> 1536x2008).
+- coast: Opera coast icon (228x228)
+- favicons: PNG favicons (16x16 -> 192x192) and ICO favicon (multi-size).
+- firefox: Firefox OS icons (60x60 -> 512x512) with manifest.webapp
+- opengraph: Facebook OpenGraph image (1500x1500).
+- windows: Windows tiles (70x70 -> 310x310) with browserconfig.xml
+- yandex: Yandex browser icoon (50x50) with Yandex manifest.json
 
 ## Credits
 
-Thanks to [@phbernard](https://github.com/phbernard) for all the work we did together on [RealFaviconGenerator](https://github.com/realfavicongenerator) to make Favicons awesome.
+Thank you to...
 
-Thanks to [@addyosmani](https://github.com/addyosmani), [@gauntface](https://github.com/gauntface), [@paulirish](https://github.com/paulirish), [@mathiasbynens](https://github.com/mathiasbynens) and [@pbakaus](https://github.com/pbakaus) for [their input](https://github.com/google/web-starter-kit/pull/442) on multiple source images for v1.4.0.
-
-Thanks to [@sindresorhus](https://github.com/sindresorhus) for his help on documentation and parameter improvements.
-
-And naturally, thanks to everyone who opens an issue or submits a pull request to this repo :)
+- [@phbernard](https://github.com/phbernard) for all the work we did together on [RealFaviconGenerator](https://github.com/realfavicongenerator) to make Favicons and RFG awesome.
+- [@addyosmani](https://github.com/addyosmani), [@gauntface](https://github.com/gauntface), [@paulirish](https://github.com/paulirish), [@mathiasbynens](https://github.com/mathiasbynens) and [@pbakaus](https://github.com/pbakaus) for [their input](https://github.com/google/web-starter-kit/pull/442) on multiple source images.
+- [@sindresorhus](https://github.com/sindresorhus) for his help on documentation and parameter improvements.
+- Everyone who opens an issue or submits a pull request to this repo :)
