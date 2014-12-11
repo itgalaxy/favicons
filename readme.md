@@ -1,81 +1,108 @@
 # Favicons [![Build Status](https://travis-ci.org/haydenbleasel/favicons.svg?branch=node)](https://travis-ci.org/haydenbleasel/favicons)
 
-Favicons generator for Node.js. Produces a multi-size favicon from a single image. Port of [grunt-favicons](https://github.com/gleero/grunt-favicons/) (the good parts at least). Originally "favicon-generator" and "metaimage-generator". Installed through NPM with:
+## Installation
 
-```
-npm install favicons --save-dev
-```
+Favicons generator for Node.js. Basically a simplicity wrapper around RealFaviconGenerator built for [Google's Web Starter Kit](https://github.com/google/web-starter-kit) and [Catalyst](https://github.com/haydenbleasel/catalyst). Originally a port of [grunt-favicons](https://github.com/gleero/grunt-favicons/) (the good parts at least). Installed through NPM with:
+
+    npm install favicons --save-dev
 
 Requires ImageMagick which you can get through Brew with:
 
+    brew install imagemagick
+
+## Usage
+
+Require the module and call it, optionally specifying configuration and callback objects i.e.
+
+```js
+var favicons = require('favicons');
+favicons(config, callback);
 ```
-brew install imagemagick
-```
 
-Simply require the module and execute it with an optional object of configuration.
+### Configuration
 
-- I/O
-    - Source: The source image used to produce the favicon `string` or `object`
-    - Dest: The destination path `string`
-- Icons
-    - Android: create Android homescreen icon `boolean`
-    - Apple: create Apple touch icons `boolean`
-    - Coast: create Opera Coast icon `boolean`
-    - Favicons: create regular favicons `boolean`
-    - Firefox: create Firefox OS icons `boolean`
-    - OpenGraph: create OpenGraph image for Facebook `boolean`
-    - Windows: create Windows 8 tiles `boolean`
-- Miscellaneous:
-    - HTML: optional file to write metadata links to `string`, typically "index.html"
-    - Background: background for Windows 8 tiles and Apple touch icons `#string`
-    - TileBlackWhite: make white-only icon on Windows 8 tile `boolean`
-    - Manifest: path to Firefox manifest you want to add links to icons `string`, typically "manifest.webapp"
-    - TrueColor: use true color for favicon.ico or 256 сolor. True color is larger `boolean`
-    - URL: OpenGraph requires an absolute image URL. This is the URL for your website.
-    - Logging: print logs to console
-    - Callback: function to execute upon completion `function` (params include 'response' and 'html')
+To keep things organised, configuration contains 3 objects: `files`, `icons` and `settings`. An example of usage with the default values is shown below:
 
-You can either specify a string for the source e.g. `logo.png` or a series of images e.g.
-
-```
-source: {
-    small: 'logo-small.png',    // Should be 64x64px or smaller
-    medium: 'logo-medium.png',  // Should be between 65x65px to 310x310px
-    large: 'logo-large.png'     // Should be 311x311px or larger
+```js
+{
+    files: {
+        src: null,                // Path for file to produce the favicons. `string` or `object`
+        dest: null,               // Path for writing the favicons to. `string`
+        html: null,               // Path for HTML file to write metadata. `string`
+        androidManifest: null,    // Path for an existing android_chrome_manifest.json. `string`
+        browserConfig: null,      // Path for an existing browserconfig.xml. `string`
+        firefoxManifest: null,    // Path for an existing manifest.webapp. `string`
+        yandexManifest: null      // Path for an existing yandex-browser-manifest.json. `string`
+    },
+    icons: {
+        android: true,            // Create Android homescreen icon. `boolean`
+        appleIcon: true,          // Create Apple touch icons. `boolean`
+        appleStartup: true,       // Create Apple startup images. `boolean`
+        coast: true,              // Create Opera Coast icon. `boolean`
+        favicons: true,           // Create regular favicons. `boolean`
+        firefox: true,            // Create Firefox OS icons. `boolean`
+        opengraph: true,          // Create Facebook OpenGraph. `boolean`
+        windows: true,            // Create Windows 8 tiles. `boolean`
+        yandex: true              // Create Yandex browser icon. `boolean`
+    },
+    settings: {
+        appName: null,            // Your application's name. `string`
+        appDescription: null,     // Your application's description. `string`
+        developer: null,          // Your (or your developer's) name. `string`
+        developerURL: null,       // Your (or your developer's) URL. `string`
+        background: null,         // Background colour for flattened icons. `string`
+        index: null,              // Path for the initial page on the site. `string`
+        url: null,                // URL for your website. `string`
+        logging: false            // Print logs to console?
+    }
 }
 ```
 
-Defaults are shown below:
+You can either specify a string for the source e.g. `logo.png` or a series of images e.g.
 
-```
-var favicons = require('favicons');
-
-favicons({
-    // I/O
-    source: 'logo.png',
-    dest: 'images',
-
-    // Icon Types
-    android: true,
-    apple: true,
-    coast: true,
-    favicons: true,
-    firefox: true,
-    opengraph: true,
-    windows: true,
-
-    // Miscellaneous
-    html: null,
-    background: '#1d1d1d',
-    tileBlackWhite: false,
-    manifest: null,
-    trueColor: false,
-    url: null,
-    logging: false,
-    callback: null
-});
+```js
+src: {
+    android: 'logo-android.png',
+    appleIcon: 'logo-appleIcon.png',
+    appleStartup: 'logo-appleStartup.png',
+    coast: 'logo-coast.png',
+    favicons: 'logo-favicons.png',
+    firefox: 'logo-firefox.png',
+    opengraph: 'logo-opengraph.png',
+    windows: 'logo-windows.png',
+    yandex: 'logo-yandex.png'
+}
 ```
 
-Note: If you're going to write the HTML metadata to a file, make sure the tags aren't already there or there will be duplicates. Also, Favicons currently only supports JPG, PNG, GIF and SVG files. You can try other file types but it might explode.
+### Callback
 
-Thanks to [@addyosmani](https://github.com/addyosmani), [@gauntface](https://github.com/gauntface), [@paulirish](https://github.com/paulirish), [@mathiasbynens](https://github.com/mathiasbynens) and [@pbakaus](https://github.com/pbakaus) for [their input](https://github.com/google/web-starter-kit/pull/442) on multiple source images for v1.4.0.
+The callback accepts one parameter:
+
+```js
+function (err) {
+    // err: An error that may have occurred during the Favicons build. `object`
+}
+```
+
+## Output
+
+Depending on which platforms you opt for, the output includes:
+
+- android: Android Chrome images (36x36 -> 192x192) with Android manifest.json
+- appleIcon: Apple touch icons (57x57 -> 180x180).
+- appleStartup: Apple startup images (320x460 -> 1536x2008).
+- coast: Opera coast icon (228x228)
+- favicons: PNG favicons (16x16 -> 192x192) and ICO favicon (multi-size).
+- firefox: Firefox OS icons (60x60 -> 512x512) with manifest.webapp
+- opengraph: Facebook OpenGraph image (1500x1500).
+- windows: Windows tiles (70x70 -> 310x310) with browserconfig.xml
+- yandex: Yandex browser icoon (50x50) with Yandex manifest.json
+
+## Credits
+
+Thank you to...
+
+- [@phbernard](https://github.com/phbernard) for all the work we did together on [RealFaviconGenerator](https://github.com/realfavicongenerator) to make Favicons and RFG awesome.
+- [@addyosmani](https://github.com/addyosmani), [@gauntface](https://github.com/gauntface), [@paulirish](https://github.com/paulirish), [@mathiasbynens](https://github.com/mathiasbynens) and [@pbakaus](https://github.com/pbakaus) for [their input](https://github.com/google/web-starter-kit/pull/442) on multiple source images.
+- [@sindresorhus](https://github.com/sindresorhus) for his help on documentation and parameter improvements.
+- Everyone who opens an issue or submits a pull request to this repo :)

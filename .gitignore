@@ -35,3 +35,4 @@ node_modules
 test/images
 test/favicons.html
 test/manifest.webapp
+test/images-rfg/
