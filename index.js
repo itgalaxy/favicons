@@ -9,17 +9,25 @@
         _ = require('underscore'),
         mkdirp = require('mkdirp'),
         rfg = require('real-favicon'),
-        gm = require('gm');
+        gm = require('gm'),
+        appleStartupImages = require('./appleStartup.json');
 
     module.exports = function (params, next) {
 
         // Default options
         var options = _.defaults(params || {}, {
-            src: null,
-            dest: 'images',
-            iconTypes: {
+            files: {
+                src: null,
+                dest: null,
+                html: null,
+                androidManifest: null,
+                browserConfig: null,
+                firefoxManifest: null,
+                yandexManifest: null
+            },
+            icons: {
                 android: true,
-                appleTouch: true,
+                appleIcon: true,
                 appleStartup: true,
                 coast: true,
                 favicons: true,
@@ -28,35 +36,40 @@
                 windows: true,
                 yandex: true
             },
-            html: null,
-            background: '#1d1d1d',
-            manifest: null,
-            trueColor: false,
-            url: null,
-            logging: false
+            settings: {
+                appName: null,
+                appDescription: null,
+                developer: null,
+                developerURL: null,
+                background: null,
+                index: null,
+                url: null,
+                logging: false
+            }
         }),
+            images = [],
             tags = {
                 add: [],
                 remove: []
-            },
-            images = [];
+            };
+
 
         // Print to the console.
         function print(message) {
-            if (message && options.logging) {
+            if (message && options.settings.logging) {
                 console.log(message);
             }
         }
 
         // Determine whether HTML is to be produced
         function writeHTML() {
-            return options.html && options.html !== '';
+            return options.files.html && options.files.html !== '';
         }
 
         // Create a filepath.
         function filePath(filename) {
-            var html = path.dirname(options.html),
-                filepath = path.join(options.dest, filename);
+            var html = path.dirname(options.files.html),
+                filepath = path.join(options.files.dest, filename);
             return writeHTML() ? path.relative(html, filepath) : filepath;
         }
 
@@ -65,99 +78,40 @@
             gm(opts.source)
                 .resize(opts.width, opts.height)
                 .noProfile()
-                .write(path.join(options.dest, opts.name), function (error) {
+                .write(path.join(options.files.dest, opts.name), function (error) {
                     print('Created ' + opts.name);
                     return callback(error);
                 });
 
             // WIP for Apple Startup Images
-            /*gm(opts.width, opts.height, options.background)
+            /*gm(opts.width, opts.height, options.settings.background)
                 .noProfile()
-                .write(path.join(options.dest, opts.name), function (error) {
+                .write(path.join(options.files.dest, opts.name), function (error) {
                     print('Created ' + opts.name);
                     return callback(error);
                 });*/
         }
 
-        function whichImage(size) {
-            var source = options.src,
-                image = source;
-            if (typeof source === 'object') {
-                if (source.small && source.medium && source.large) {
-                    if (size <= 64) {
-                        image = source.small;
-                    } else if (size > 64 && size <= 310) {
-                        image = source.medium;
-                    } else if (size > 310) {
-                        image = source.large;
-                    }
-                } else {
-                    throw 'Source configuration is invalid';
-                }
-            }
-            return image;
-        }
-
-        /*<!-- iOS 6 & 7 iPad (retina, portrait) -->
-        <link href="/static/images/apple-touch-startup-image-1536x2008.png"
-              media="(device-width: 768px) and (device-height: 1024px)
-                 and (orientation: portrait)
-                 and (-webkit-device-pixel-ratio: 2)"
-              rel="apple-touch-startup-image">
-
-        <!-- iOS 6 & 7 iPad (retina, landscape) -->
-        <link href="/static/images/apple-touch-startup-image-1496x2048.png"
-              media="(device-width: 768px) and (device-height: 1024px)
-                 and (orientation: landscape)
-                 and (-webkit-device-pixel-ratio: 2)"
-              rel="apple-touch-startup-image">
-
-        <!-- iOS 6 iPad (portrait) -->
-        <link href="/static/images/apple-touch-startup-image-768x1004.png"
-              media="(device-width: 768px) and (device-height: 1024px)
-                 and (orientation: portrait)
-                 and (-webkit-device-pixel-ratio: 1)"
-              rel="apple-touch-startup-image">
-
-        <!-- iOS 6 iPad (landscape) -->
-        <link href="/static/images/apple-touch-startup-image-748x1024.png"
-              media="(device-width: 768px) and (device-height: 1024px)
-                 and (orientation: landscape)
-                 and (-webkit-device-pixel-ratio: 1)"
-              rel="apple-touch-startup-image">
-
-        <!-- iOS 6 & 7 iPhone 5 -->
-        <link href="/static/images/apple-touch-startup-image-640x1096.png"
-              media="(device-width: 320px) and (device-height: 568px)
-                 and (-webkit-device-pixel-ratio: 2)"
-              rel="apple-touch-startup-image">
-
-        <!-- iOS 6 & 7 iPhone (retina) -->
-        <link href="/static/images/apple-touch-startup-image-640x920.png"
-              media="(device-width: 320px) and (device-height: 480px)
-                 and (-webkit-device-pixel-ratio: 2)"
-              rel="apple-touch-startup-image">
-
-        <!-- iOS 6 iPhone -->
-        <link href="/static/images/apple-touch-startup-image-320x460.png"
-              media="(device-width: 320px) and (device-height: 480px)
-                 and (-webkit-device-pixel-ratio: 1)"
-              rel="apple-touch-startup-image">*/
-
         // Make Apple Startup Images
         function makeAppleStartup(callback) {
-            async.each(['1536x2008', '1496x2048', '768x1004', '748x1024', '640x1096', '640x920', '320x460'], function (size, callback) {
-                var opts = {
-                    source: whichImage(320),
-                    height: size.substr(size.indexOf('x') + 1, size.length - 1),
-                    width: size.substr(0, size.indexOf('x')),
-                    name: 'apple-touch-startup-image-' + size + '.png'
-                },
-                    media = '(device-width: ' + opts.width + 'px) and (device-height: ' + opts.height + 'px)',
-                    ratio = (size === '640x920' || size === '640x1096' || size === '1496x2048' || size === '1536x2008' ? 2 : 1);
+            var appleStartups = [];
+            _.chain(appleStartupImages)
+                .values(appleStartupImages)
+                .each(function (object) {
+                    appleStartups.push({
+                        source: options.files.src,
+                        height: object.height,
+                        width: object.width,
+                        name: 'apple-touch-startup-image-' + object.width + 'x' + object.height + '.png',
+                        media: '(device-width: ' + object.deviceWidth + 'px) and (device-height: ' + object.deviceHeight + 'px)',
+                        orientation: object.orientation ? ' and (orientation: ' + object.orientation + ')' : '',
+                        ratio: ' and (-webkit-device-pixel-ratio: ' + object.ratio
+                    });
+                });
+            async.each(appleStartups, function (opts, callback) {
                 resize(opts, function (error) {
-                    tags.add.push('\n<link href="' + filePath(opts.name) + '" media="' + media + ' and (-webkit-device-pixel-ratio: ' + ratio + ')" rel="apple-touch-startup-image" />');
-                    return callback(error);
+                    tags.add.push('\n<link href="' + filePath(opts.name) + '" media="' + opts.media + opts.orientation + opts.ratio + ')" rel="apple-touch-startup-image" />');
+                    callback(error);
                 });
             }, function (error) {
                 tags.remove.push('link[rel="apple-touch-startup-image"]');
@@ -169,7 +123,7 @@
         function makeIcons(callback) {
             async.parallel([
                 function (callback) {
-                    if (options.iconTypes.appleStartup) {
+                    if (options.icons.appleStartup) {
                         makeAppleStartup(function (error) {
                             callback(error);
                         });
@@ -185,17 +139,17 @@
         // Execute RealFaviconGenerator
         function realFaviconGenerator(design) {
             rfg({
-                src: options.src.large,
-                dest: 'test/images-rfg/',
-                icons_path: path.relative(path.dirname(options.html), options.dest),
-                html: options.html,
+                src: options.files.src,
+                dest: options.files.dest,
+                icons_path: path.relative(path.dirname(options.files.html), options.files.dest),
+                html: options.files.html,
                 design: design,
                 tags: {
                     add: tags.add,
                     remove: tags.remove
                 },
                 settings: {
-                    compression: 5
+                    compression: "5"
                 }
             });
         }
@@ -204,66 +158,70 @@
         function design(callback) {
             var settings = {};
 
-            if (options.iconTypes.appleTouch) {
+            if (options.icons.appleTouch) {
                 settings.ios = {
                     picture_aspect: 'background_and_margin',
-                    background_color: options.background,
-                    margin: 0
+                    margin: "0",
+                    background_color: options.settings.background
                 };
             }
 
-            if (options.iconTypes.windows) {
+            if (options.icons.windows) {
                 settings.windows = {
                     picture_aspect: 'white_silhouette',
-                    background_color: options.background
+                    background_color: options.settings.background
                 };
             }
 
-            if (options.iconTypes.firefox) {
+            if (options.icons.firefox) {
                 settings.firefox_app = {
                     picture_aspect: "circle",
                     keep_picture_in_circle: "true",
                     circle_inner_margin: "5",
-                    background_color: options.background,
-                    app_name: "My sample app",
-                    app_description: "Yet another sample application",
-                    developer_name: "Philippe Bernard",
-                    developer_url: options.url
-                };
-            }
-
-            if (options.iconTypes.android) {
-                settings.android_chrome = {
-                    picture_aspect: "shadow",
+                    background_color: options.settings.background,
                     manifest: {
-                        name: "My sample app",
-                        display: "standalone",
-                        orientation: "portrait",
-                        start_url: "/homepage.html"
+                        app_name: options.settings.appName,
+                        app_description: options.settings.appDescription,
+                        developer_name: options.settings.developer,
+                        developer_url: options.settings.developerURL
                     }
                 };
             }
 
-            if (options.iconTypes.coast) {
+            if (options.icons.android) {
+                settings.android_chrome = {
+                    picture_aspect: "shadow",
+                    manifest: {
+                        name: options.settings.appName,
+                        display: "standalone",
+                        orientation: "portrait",
+                        start_url: options.settings.index,
+                        existing_manifest: options.files.androidManifest
+                    },
+                    theme_color: options.settings.background
+                };
+            }
+
+            if (options.icons.coast) {
                 settings.coast = {
                     picture_aspect: "background_and_margin",
-                    background_color: options.background,
+                    background_color: options.settings.background,
                     margin: "12%"
                 };
             }
 
-            if (options.iconTypes.opengraph) {
+            if (options.icons.opengraph) {
                 settings.open_graph = {
                     picture_aspect: "background_and_margin",
-                    background_color: options.background,
+                    background_color: options.settings.background,
                     margin: "12%",
                     ratio: "1.91:1"
                 };
             }
 
-            if (options.iconTypes.yandex) {
+            if (options.icons.yandex) {
                 settings.yandex_browser = {
-                    background_color: options.background,
+                    background_color: options.settings.background,
                     manifest: {
                         show_title: true,
                         version: "1.0"
@@ -276,7 +234,7 @@
 
         async.waterfall([
             function (callback) {
-                mkdirp(options.dest, function (error) {
+                mkdirp(options.files.dest, function (error) {
                     callback(error);
                 });
             },
@@ -296,6 +254,7 @@
             }
         ], function (error) {
             if (next) {
+                // Tags and images only contain custom items.
                 return next(error, tags, images);
             }
         });

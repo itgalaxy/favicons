@@ -1,0 +1,55 @@
+{
+  "iOS6&7iPad(retina,portrait)": {
+    "width": 1536,
+    "height": 2008,
+    "deviceWidth": 768,
+    "deviceHeight": 1024,
+    "orientation": "portrait",
+    "ratio": 2
+  },
+  "iOS6&7iPad(retina,landscape)": {
+    "width": 1496,
+    "height": 2048,
+    "deviceWidth": 768,
+    "deviceHeight": 1024,
+    "orientation": "landscape",
+    "ratio": 2
+  },
+  "iOS6iPad(portrait)": {
+    "width": 768,
+    "height": 1004,
+    "deviceWidth": 768,
+    "deviceHeight": 1024,
+    "orientation": "portrait",
+    "ratio": 1
+  },
+  "iOS6iPad(landscape)": {
+    "width": 748,
+    "height": 1024,
+    "deviceWidth": 768,
+    "deviceHeight": 1024,
+    "orientation": "landscape",
+    "ratio": 1
+  },
+  "iOS6&7iPhone5": {
+    "width": 640,
+    "height": 1096,
+    "deviceWidth": 320,
+    "deviceHeight": 568,
+    "ratio": 2
+  },
+  "iOS6&7iPhone(retina)": {
+    "width": 640,
+    "height": 920,
+    "deviceWidth": 320,
+    "deviceHeight": 480,
+    "ratio": 2
+  },
+  "iOS6iPhone": {
+    "width": 320,
+    "height": 460,
+    "deviceWidth": 320,
+    "deviceHeight": 480,
+    "ratio": 1
+  }
+}
