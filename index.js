@@ -76,20 +76,15 @@
         // Convert image with Imagemagick
         function resize(opts, callback) {
             gm(opts.source)
-                .resize(opts.width, opts.height)
+                .background(options.settings.background)
+                .resize(opts.width * 0.88, opts.height * 0.88)
+                .gravity('Center')
+                .extent(opts.width, opts.height)
                 .noProfile()
                 .write(path.join(options.files.dest, opts.name), function (error) {
                     print('Created ' + opts.name);
                     return callback(error);
                 });
-
-            // WIP for Apple Startup Images
-            /*gm(opts.width, opts.height, options.settings.background)
-                .noProfile()
-                .write(path.join(options.files.dest, opts.name), function (error) {
-                    print('Created ' + opts.name);
-                    return callback(error);
-                });*/
         }
 
         // Make Apple Startup Images
