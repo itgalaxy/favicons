@@ -20,7 +20,7 @@
                 src: null,
                 dest: null,
                 html: null,
-                icons_path: null,
+                iconsPath: null,
                 androidManifest: null,
                 browserConfig: null,
                 firefoxManifest: null,
@@ -103,7 +103,7 @@
                     });
                 });
             async.each(appleStartups, function (opts, callback) {
-                var iconsFilePath = options.files.icons_path || filePath(opts.name);
+                var iconsFilePath = options.files.iconsPath || filePath(opts.name);
                 resize(opts, function (error) {
                     tags.add.push('\n<link href="' + iconsFilePath + '" media="' + opts.media + opts.orientation + opts.ratio + ')" rel="apple-touch-startup-image" />');
                     callback(error);
@@ -136,7 +136,7 @@
             rfg({
                 src: options.files.src,
                 dest: options.files.dest,
-                icons_path: options.files.icons_path || path.relative(path.dirname(options.files.html), options.files.dest),
+                icons_path: options.files.iconsPath || path.relative(path.dirname(options.files.html), options.files.dest),
                 html: options.files.html,
                 design: design,
                 tags: {
