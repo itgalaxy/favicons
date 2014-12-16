@@ -5,7 +5,7 @@ favicons({
         src: 'test/source/logo.png',
         dest: 'test/images',
         html: 'test/favicons.html',
-        iconsPath: 'test/subfolder/'
+        iconsPath: 'images'
     },
     settings: {
         appName: 'Favicons',
