@@ -1,33 +1,37 @@
 {
-  "name": "favicons",
-  "version": "2.0.0",
-  "description": "Favicon generator for Node.js",
+  "name": "gulp-favicons",
+  "version": "1.0.0",
+  "description": "Favicons generator for Gulp",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/haydenbleasel/favicons.git"
   },
   "scripts": {
-    "test": "node test.js"
+    "test": "cd test && gulp"
   },
   "keywords": [
-    "favicon",
-    "ico",
+    "favicons",
     "generator",
-    "node",
-    "gulpfriendly"
+    "rfg",
+    "gulp",
+    "gulpplugin"
   ],
   "author": "Hayden Bleasel <haydenbleasel@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/haydenbleasel/favicons/issues"
+    "url": "https://github.com/haydenbleasel/favicons/tree/gulp/issues"
   },
-  "homepage": "https://github.com/haydenbleasel/favicons",
+  "homepage": "https://github.com/haydenbleasel/favicons/tree/gulp",
   "dependencies": {
-    "async": "^0.9.0",
-    "gm": "^1.17.0",
-    "mkdirp": "^0.5.0",
-    "real-favicon": "git://github.com/RealFaviconGenerator/real-favicon",
-    "underscore": "^1.7.0"
+    "cheerio": "*",
+    "favicons": "*",
+    "gulp-util": "*",
+    "mkdirp": "*",
+    "through2": "*",
+    "underscore": "*"
+  },
+  "devDependencies": {
+    "gulp": "*"
   }
 }

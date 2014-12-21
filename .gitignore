@@ -32,7 +32,5 @@ node_modules
 
 
 ### Custom ###
+test/css
 test/images
-test/favicons.html
-test/manifest.webapp
-test/images-rfg/
