@@ -9,6 +9,7 @@
         fs = require('fs'),
         cheerio = require('cheerio'),
         util = require('gulp-util'),
+        path = require('path'),
         favicons = require('favicons');
 
     module.exports = function (params) {
@@ -30,8 +31,8 @@
 
                 var options = _.defaults(params || {}, {
                     files: {
-                        src: image,
-                        dest: null,
+                        src: path.join(path.dirname(file.path), image),
+                        dest: params.dest,
                         html: file.path,
                         androidManifest: null,
                         browserConfig: null,
@@ -71,7 +72,9 @@
                     return;
                 }
 
-                favicons(options, function (err) {
+                //throw console.log(require('util').inspect(options));
+
+                favicons(options, function (err, html) {
                     file.contents = new Buffer(html);
                     return cb(error, file);
                 });
