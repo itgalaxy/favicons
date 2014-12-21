@@ -16,6 +16,7 @@ favicons({
         url: 'http://haydenbleasel.com',
         logging: true
     }
-}, function (err) {
+}, function (err, metadata) {
     if (err) throw err;
+    console.log(metadata, 'meta');
 });

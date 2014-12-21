@@ -130,7 +130,7 @@
         }
 
         // Execute RealFaviconGenerator
-        function realFaviconGenerator(design) {
+        function realFaviconGenerator(design, callback) {
             rfg({
                 src: options.files.src,
                 dest: options.files.dest,
@@ -143,6 +143,9 @@
                 },
                 settings: {
                     compression: "5"
+                },
+                callback: function (metadata) {
+                    return callback(metadata);
                 }
             });
         }
@@ -242,12 +245,13 @@
                 });
             },
             function (settings, callback) {
-                realFaviconGenerator(settings);
-                callback(null);
+                realFaviconGenerator(settings, function (metadata) {
+                    callback(null, metadata);
+                });
             }
-        ], function (error) {
+        ], function (error, metadata) {
             if (next) {
-                return next(error);
+                return next(error, metadata);
             }
         });
 
