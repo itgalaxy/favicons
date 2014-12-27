@@ -4,7 +4,8 @@ favicons({
     files: {
         src: 'test/source/logo.png',
         dest: 'test/images',
-        html: 'test/favicons.html'
+        html: 'test/favicons.html',
+        iconsPath: 'images'
     },
     settings: {
         appName: 'Favicons',
