@@ -27,6 +27,7 @@
     "cheerio": "*",
     "favicons": "*",
     "gulp-util": "*",
+    "merge-defaults": "*",
     "mkdirp": "*",
     "through2": "*",
     "underscore": "*"

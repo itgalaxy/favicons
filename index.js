@@ -5,6 +5,7 @@
     'use strict';
 
     var _ = require('underscore'),
+        mergeDefaults = require('merge-defaults'),
         through2 = require('through2'),
         fs = require('fs'),
         cheerio = require('cheerio'),
@@ -25,11 +26,13 @@
             });
         }
 
+        _.mixin({ 'mergeDefaults': mergeDefaults });
+
         return through2.obj(function (file, enc, cb) {
 
             findInfo(file.path, function (image) {
 
-                var options = _.defaults(params || {}, {
+                var options = _.mergeDefaults(params || {}, {
                     files: {
                         src: path.join(path.dirname(file.path), image),
                         dest: params.dest,
@@ -72,10 +75,10 @@
                     return;
                 }
 
-                //throw console.log(require('util').inspect(options));
+                options.files.dest = path.join(path.dirname(file.path), options.files.dest);
 
-                favicons(options, function (err, html) {
-                    file.contents = new Buffer(html);
+                favicons(options, function (error, html) {
+                    file.contents = new Buffer(_.flatten(html).join(' '));
                     return cb(error, file);
                 });
 
