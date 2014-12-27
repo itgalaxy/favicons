@@ -37,6 +37,7 @@
                         src: path.join(path.dirname(file.path), image),
                         dest: params.dest,
                         html: file.path,
+                        iconsPath: null,
                         androidManifest: null,
                         browserConfig: null,
                         firefoxManifest: null,
