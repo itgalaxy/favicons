@@ -49,7 +49,7 @@
         }),
             tags = {
                 add: [],
-                remove: []
+                remove: ['link[rel="favicons"]']
             };
 
         // Print to the console.
