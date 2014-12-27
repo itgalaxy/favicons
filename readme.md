@@ -18,3 +18,15 @@ gulp.task('default', function () {
         .pipe(gulp.dest('./'));
 });
 ```
+
+If you don't specify some options, gulp-humans checks your source HTML file for:
+
+```
+<title>...</title>
+<meta name="author" content="..." />
+<meta name="description" content="..." />
+<link rel="canonical" href="..." />
+<link rel="favicons" href="..." />
+```
+
+Note: `link[rel="favicons"]` is a custom tag designed for gulp-favicons. It will be removed upon processing.

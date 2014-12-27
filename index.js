@@ -17,12 +17,17 @@
 
         function findInfo(source, callback) {
             fs.readFile(source, function (error, data) {
-                var $;
+                var $, info = {};
                 if (error) {
                     throw error;
                 }
                 $ = cheerio.load(data);
-                return callback($('link[rel="favicons"]').attr('href'));
+                info.favicon = $('link[rel="favicons"]').attr('href');
+                info.url = $('link[rel="canonical"]').attr('href');
+                info.title = $('title').text();
+                info.description = $('meta[name="description"]').attr('content');
+                info.author = $('meta[name="author"]').attr('content');
+                return callback(info);
             });
         }
 
@@ -30,11 +35,11 @@
 
         return through2.obj(function (file, enc, cb) {
 
-            findInfo(file.path, function (image) {
+            findInfo(file.path, function (info) {
 
                 var options = _.mergeDefaults(params || {}, {
                     files: {
-                        src: path.join(path.dirname(file.path), image),
+                        src: info.favicon ? path.join(path.dirname(file.path), info.favicon) : null,
                         dest: params.dest,
                         html: file.path,
                         iconsPath: null,
@@ -55,13 +60,13 @@
                         yandex: true
                     },
                     settings: {
-                        appName: null,
-                        appDescription: null,
-                        developer: null,
-                        developerURL: null,
+                        appName: info.title,
+                        appDescription: info.description,
+                        developer: info.author,
+                        developerURL: info.url ? path.join(info.url, '/') : null,
                         background: null,
                         index: null,
-                        url: null,
+                        url: info.url ? path.join(info.url, '/') : null,
                         logging: false
                     }
                 });
