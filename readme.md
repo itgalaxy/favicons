@@ -11,7 +11,10 @@ Check out favicons for example options. Example usage:
 ```
 gulp.task('default', function () {
     gulp.src('index.html')
-        .pipe(favicons({ img: 'images/' }))
-        ...
+        .pipe(favicons({
+            files: { dest: 'images/' },
+            settings: { background: '#1d1d1d' }
+        }))
+        .pipe(gulp.dest('./'));
 });
 ```
