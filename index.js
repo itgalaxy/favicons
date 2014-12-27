@@ -39,7 +39,7 @@
 
                 var options = _.mergeDefaults(params || {}, {
                     files: {
-                        src: info.favicon ? path.join(path.dirname(file.path), info.favicon) : null,
+                        src: info ? (info.favicon ? path.join(path.dirname(file.path), info.favicon) : null) : null,
                         dest: params.dest,
                         html: file.path,
                         iconsPath: null,
@@ -63,10 +63,10 @@
                         appName: info.title,
                         appDescription: info.description,
                         developer: info.author,
-                        developerURL: info.url ? path.join(info.url, '/') : null,
+                        developerURL: info ? (info.url ? path.join(info.url, '/') : null) : null,
                         background: null,
                         index: null,
-                        url: info.url ? path.join(info.url, '/') : null,
+                        url: info ? (info.url ? path.join(info.url, '/') : null) : null,
                         logging: false
                     }
                 });
