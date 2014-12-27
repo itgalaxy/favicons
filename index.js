@@ -103,7 +103,7 @@
                     });
                 });
             async.each(appleStartups, function (opts, callback) {
-                var iconsFilePath = path.join(options.files.iconsPath, opts.name) || filePath(opts.name);
+                var iconsFilePath = options.files.iconsPath ? path.join(options.files.iconsPath, opts.name) : filePath(opts.name);
                 resize(opts, function (error) {
                     tags.add.push('\n<link href="' + iconsFilePath + '" media="' + opts.media + opts.orientation + opts.ratio + ')" rel="apple-touch-startup-image" />');
                     callback(error);
