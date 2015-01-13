@@ -97,7 +97,7 @@ Depending on which platforms you opt for, the output includes:
 - firefox: Firefox OS icons (60x60 -> 512x512) with manifest.webapp
 - opengraph: Facebook OpenGraph image (1500x1500).
 - windows: Windows tiles (70x70 -> 310x310) with browserconfig.xml
-- yandex: Yandex browser icoon (50x50) with Yandex manifest.json
+- yandex: Yandex browser icon (50x50) with Yandex manifest.json
 
 ## Credits
 
