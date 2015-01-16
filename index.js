@@ -208,6 +208,10 @@
                 };
             }
 
+            if (options.icons.favicons) {
+                settings.desktop_browser = {};
+            }
+
             if (options.icons.opengraph) {
                 settings.open_graph = {
                     picture_aspect: "background_and_margin",
