@@ -12,12 +12,11 @@ favicons({
         appDescription: 'Favicon generator for Node.js',
         developer: 'Hayden Bleasel',
         developerURL: 'http://haydenbleasel.com',
-        background: '#1d1d1d',
+        background: '#27353f',
         index: 'test/favicons.html',
         url: 'http://haydenbleasel.com',
         logging: true
     }
-}, function (err, metadata) {
-    if (err) throw err;
+}, function (metadata) {
     console.log(metadata, 'meta');
 });

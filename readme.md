@@ -6,10 +6,6 @@ Favicons generator for Node.js. Basically a simplicity wrapper around RealFavico
 
     npm install favicons --save-dev
 
-Requires ImageMagick which you can get through Brew with:
-
-    brew install imagemagick
-
 ## Usage
 
 Require the module and call it, optionally specifying configuration and callback objects i.e.
@@ -51,10 +47,12 @@ To keep things organised, configuration contains 3 objects: `files`, `icons` and
         appDescription: null,     // Your application's description. `string`
         developer: null,          // Your (or your developer's) name. `string`
         developerURL: null,       // Your (or your developer's) URL. `string`
+        version: 1.0,             // Your application's version number. `number`
         background: null,         // Background colour for flattened icons. `string`
         index: null,              // Path for the initial page on the site. `string`
         url: null,                // URL for your website. `string`
-        logging: false            // Print logs to console?
+        silhouette: false,        // Turn the logo into a white silhouette for Windows 8. `boolean`
+        logging: false            // Print logs to console? `boolean`
     }
 }
 ```
@@ -80,8 +78,8 @@ src: {
 The callback accepts one parameter:
 
 ```js
-function (err) {
-    // err: An error that may have occurred during the Favicons build. `object`
+function (metadata) {
+    console.log(metadata, 'Metadata produced during the build process');
 }
 ```
 
@@ -98,6 +96,42 @@ Depending on which platforms you opt for, the output includes:
 - opengraph: Facebook OpenGraph image (1500x1500).
 - windows: Windows tiles (70x70 -> 310x310) with browserconfig.xml
 - yandex: Yandex browser icon (50x50) with Yandex manifest.json
+
+It will also create the following HTML:
+
+```html
+<link rel="apple-touch-icon" sizes="57x57" href="apple-touch-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="72x72" href="apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="60x60" href="apple-touch-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="120x120" href="apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="76x76" href="apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180x180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link href="apple-touch-startup-image-1536x2008.png" media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
+<link href="apple-touch-startup-image-2048x1496.png" media="(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
+<link href="apple-touch-startup-image-768x1004.png" media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 1)" rel="apple-touch-startup-image">
+<link href="apple-touch-startup-image-1024x748.png" media="(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 1)" rel="apple-touch-startup-image">
+<link href="apple-touch-startup-image-640x1096.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
+<link href="apple-touch-startup-image-640x920.png" media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
+<link href="apple-touch-startup-image-320x460.png" media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 1)" rel="apple-touch-startup-image">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="icon" type="image/png" href="favicon-192x192.png" sizes="192x192">
+<link rel="icon" type="image/png" href="favicon-160x160.png" sizes="160x160">
+<link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
+<meta name="msapplication-TileColor" content="#1d1d1d">
+<meta name="msapplication-TileImage" content="mstile-144x144.png">
+<meta name="msapplication-config" content="browserconfig.xml">
+<link rel="manifest" href="android_chrome_manifest.json">
+<meta name="theme-color" content="#1d1d1d">
+<link rel="icon" type="image/png" href="coast-228x228.png" sizes="228x228">
+<meta property="og:image" content="open-graph.png">
+<link rel="yandex-tableau-widget" href="yandex-browser-manifest.json">
+```
 
 ## Credits
 

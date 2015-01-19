@@ -1,21 +1,17 @@
-/*jslint node:true, nomen:true*/
+/*jslint node:true*/
 
 (function () {
 
     'use strict';
 
     var path = require('path'),
-        async = require('async'),
-        _ = require('underscore'),
-        mkdirp = require('mkdirp'),
-        rfg = require('real-favicon'),
-        gm = require('gm'),
-        appleStartupImages = require('./appleStartup.json');
+        defaults = require('lodash.defaults'),
+        rfg = require('real-favicon');
 
-    module.exports = function (params, next) {
+    module.exports = function (params, callback) {
 
         // Default options
-        var options = _.defaults(params || {}, {
+        var options = defaults(params || {}, {
             files: {
                 src: null,
                 dest: null,
@@ -45,219 +41,115 @@
                 background: null,
                 index: null,
                 url: null,
+                silhouette: false,
+                version: 1.0,
                 logging: false
             }
         }),
             tags = {
                 add: [],
                 remove: ['link[rel="favicons"]']
+            },
+            design = {};
+
+        if (options.icons.appleTouch) {
+            design.ios = {
+                picture_aspect: 'background_and_margin',
+                margin: "0",
+                background_color: options.settings.background
             };
-
-        // Print to the console.
-        function print(message) {
-            if (message && options.settings.logging) {
-                console.log(message);
-            }
         }
 
-        // Determine whether HTML is to be produced
-        function writeHTML() {
-            return options.files.html && options.files.html !== '';
+        if (options.icons.appleStartup) {
+            design.ios = design.ios || {};
+            design.ios.startup_image = {
+                background_color: options.settings.background
+            };
         }
 
-        // Create a filepath.
-        function filePath(filename) {
-            var html = path.dirname(options.files.html),
-                filepath = path.join(options.files.dest, filename);
-            return writeHTML() ? path.relative(html, filepath) : filepath;
+
+        if (options.icons.windows) {
+            design.windows = {
+                picture_aspect: options.settings.silhouette ? 'white_silhouette' : 'no_change',
+                background_color: options.settings.background
+            };
         }
 
-        // Convert image with Imagemagick
-        function resize(opts, callback) {
-            gm(opts.source)
-                .background(options.settings.background)
-                .resize(opts.width * 0.88, opts.height * 0.88)
-                .gravity('Center')
-                .extent(opts.width, opts.height)
-                .noProfile()
-                .write(path.join(options.files.dest, opts.name), function (error) {
-                    print('Created ' + opts.name);
-                    return callback(error);
-                });
-        }
-
-        // Make Apple Startup Images
-        function makeAppleStartup(callback) {
-            var appleStartups = [];
-            _.chain(appleStartupImages)
-                .values(appleStartupImages)
-                .each(function (object) {
-                    appleStartups.push({
-                        source: options.files.src,
-                        height: object.height,
-                        width: object.width,
-                        name: 'apple-touch-startup-image-' + object.width + 'x' + object.height + '.png',
-                        media: '(device-width: ' + object.deviceWidth + 'px) and (device-height: ' + object.deviceHeight + 'px)',
-                        orientation: object.orientation ? ' and (orientation: ' + object.orientation + ')' : '',
-                        ratio: ' and (-webkit-device-pixel-ratio: ' + object.ratio
-                    });
-                });
-            async.each(appleStartups, function (opts, callback) {
-                var iconsFilePath = options.files.iconsPath ? path.join(options.files.iconsPath, opts.name) : filePath(opts.name);
-                resize(opts, function (error) {
-                    tags.add.push('\n<link href="' + iconsFilePath + '" media="' + opts.media + opts.orientation + opts.ratio + ')" rel="apple-touch-startup-image" />');
-                    callback(error);
-                });
-            }, function (error) {
-                tags.remove.push('link[rel="apple-touch-startup-image"]');
-                return callback(error);
-            });
-        }
-
-        // Create the appropriate icons
-        function makeIcons(callback) {
-            async.parallel([
-                function (callback) {
-                    if (options.icons.appleStartup) {
-                        makeAppleStartup(function (error) {
-                            callback(error);
-                        });
-                    } else {
-                        callback(null);
-                    }
+        if (options.icons.firefox) {
+            design.firefox_app = {
+                picture_aspect: "circle",
+                keep_picture_in_circle: "true",
+                circle_inner_margin: "5",
+                background_color: options.settings.background,
+                manifest: {
+                    app_name: options.settings.appName,
+                    app_description: options.settings.appDescription,
+                    developer_name: options.settings.developer,
+                    developer_url: options.settings.developerURL
                 }
-            ], function (error) {
-                return callback(error);
-            });
+            };
         }
 
-        // Execute RealFaviconGenerator
-        function realFaviconGenerator(design, callback) {
-            rfg({
-                src: options.files.src,
-                dest: options.files.dest,
-                icons_path: options.files.iconsPath || path.relative(path.dirname(options.files.html), options.files.dest),
-                html: options.files.html,
-                design: design,
-                tags: {
-                    add: tags.add,
-                    remove: tags.remove
+        if (options.icons.android) {
+            design.android_chrome = {
+                picture_aspect: "shadow",
+                manifest: {
+                    name: options.settings.appName,
+                    display: "standalone",
+                    orientation: "portrait",
+                    start_url: options.settings.index,
+                    existing_manifest: options.files.androidManifest
                 },
-                settings: {
-                    compression: "5"
-                },
-                callback: function (metadata) {
-                    return callback(metadata);
+                theme_color: options.settings.background
+            };
+        }
+
+        if (options.icons.coast) {
+            design.coast = {
+                picture_aspect: "background_and_margin",
+                background_color: options.settings.background,
+                margin: "12%"
+            };
+        }
+
+        if (options.icons.favicons) {
+            design.desktop_browser = {};
+        }
+
+        if (options.icons.opengraph) {
+            design.open_graph = {
+                picture_aspect: "background_and_margin",
+                background_color: options.settings.background,
+                margin: "12%",
+                ratio: "1.91:1"
+            };
+        }
+
+        if (options.icons.yandex) {
+            design.yandex_browser = {
+                background_color: options.settings.background,
+                manifest: {
+                    show_title: true,
+                    version: options.settings.version
                 }
-            });
+            };
         }
 
-        // Create design object for RFG
-        function design(callback) {
-            var settings = {};
-
-            if (options.icons.appleTouch) {
-                settings.ios = {
-                    picture_aspect: 'background_and_margin',
-                    margin: "0",
-                    background_color: options.settings.background
-                };
-            }
-
-            if (options.icons.windows) {
-                settings.windows = {
-                    picture_aspect: 'white_silhouette',
-                    background_color: options.settings.background
-                };
-            }
-
-            if (options.icons.firefox) {
-                settings.firefox_app = {
-                    picture_aspect: "circle",
-                    keep_picture_in_circle: "true",
-                    circle_inner_margin: "5",
-                    background_color: options.settings.background,
-                    manifest: {
-                        app_name: options.settings.appName,
-                        app_description: options.settings.appDescription,
-                        developer_name: options.settings.developer,
-                        developer_url: options.settings.developerURL
-                    }
-                };
-            }
-
-            if (options.icons.android) {
-                settings.android_chrome = {
-                    picture_aspect: "shadow",
-                    manifest: {
-                        name: options.settings.appName,
-                        display: "standalone",
-                        orientation: "portrait",
-                        start_url: options.settings.index,
-                        existing_manifest: options.files.androidManifest
-                    },
-                    theme_color: options.settings.background
-                };
-            }
-
-            if (options.icons.coast) {
-                settings.coast = {
-                    picture_aspect: "background_and_margin",
-                    background_color: options.settings.background,
-                    margin: "12%"
-                };
-            }
-
-            if (options.icons.favicons) {
-                settings.desktop_browser = {};
-            }
-
-            if (options.icons.opengraph) {
-                settings.open_graph = {
-                    picture_aspect: "background_and_margin",
-                    background_color: options.settings.background,
-                    margin: "12%",
-                    ratio: "1.91:1"
-                };
-            }
-
-            if (options.icons.yandex) {
-                settings.yandex_browser = {
-                    background_color: options.settings.background,
-                    manifest: {
-                        show_title: true,
-                        version: "1.0"
-                    }
-                };
-            }
-
-            return callback(settings);
-        }
-
-        async.waterfall([
-            function (callback) {
-                mkdirp(options.files.dest, function (error) {
-                    callback(error);
-                });
+        rfg({
+            src: options.files.src,
+            dest: options.files.dest,
+            icons_path: options.files.iconsPath || path.relative(path.dirname(options.files.html), options.files.dest),
+            html: options.files.html,
+            design: design,
+            tags: {
+                add: tags.add,
+                remove: tags.remove
             },
-            function (callback) {
-                makeIcons(function (error) {
-                    callback(error);
-                });
+            settings: {
+                compression: "5"
             },
-            function (callback) {
-                design(function (settings) {
-                    callback(null, settings);
-                });
-            },
-            function (settings, callback) {
-                realFaviconGenerator(settings, function (metadata) {
-                    callback(null, metadata);
-                });
-            }
-        ], function (error, metadata) {
-            if (next) {
-                return next(error, metadata);
+            callback: function (metadata) {
+                return callback(metadata);
             }
         });
 
