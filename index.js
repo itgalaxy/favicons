@@ -149,7 +149,7 @@
                 compression: "5"
             },
             callback: function (metadata) {
-                return callback(metadata);
+                return callback ? callback(metadata) : null;
             }
         });
 
