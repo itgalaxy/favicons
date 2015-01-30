@@ -52,7 +52,7 @@
             },
             design = {};
 
-        if (options.icons.appleTouch) {
+        if (options.icons.appleIcon) {
             design.ios = {
                 picture_aspect: 'background_and_margin',
                 margin: "0",
