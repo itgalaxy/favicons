@@ -57,22 +57,6 @@ To keep things organised, configuration contains 3 objects: `files`, `icons` and
 }
 ```
 
-You can either specify a string for the source e.g. `logo.png` or a series of images e.g.
-
-```js
-src: {
-    android: 'logo-android.png',
-    appleIcon: 'logo-appleIcon.png',
-    appleStartup: 'logo-appleStartup.png',
-    coast: 'logo-coast.png',
-    favicons: 'logo-favicons.png',
-    firefox: 'logo-firefox.png',
-    opengraph: 'logo-opengraph.png',
-    windows: 'logo-windows.png',
-    yandex: 'logo-yandex.png'
-}
-```
-
 ### Callback
 
 The callback accepts one parameter:
