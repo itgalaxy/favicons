@@ -22,7 +22,7 @@ To keep things organised, configuration contains 3 objects: `files`, `icons` and
 ```js
 {
     files: {
-        src: null,                // Path for file to produce the favicons. `string` or `object`
+        src: null,                // Path for file to produce the favicons. `string`
         dest: null,               // Path for writing the favicons to. `string`
         html: null,               // Path for HTML file to write metadata. `string`
         iconsPath: null,          // Path for overriding default icons path. `string`
