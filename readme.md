@@ -22,7 +22,7 @@ To keep things organised, configuration contains 3 objects: `files`, `icons` and
 ```js
 {
     files: {
-        src: null,                // Path for file to produce the favicons. `string` or `object`
+        src: null,                // Path for file to produce the favicons. `string`
         dest: null,               // Path for writing the favicons to. `string`
         html: null,               // Path for HTML file to write metadata. `string`
         iconsPath: null,          // Path for overriding default icons path. `string`
@@ -54,22 +54,6 @@ To keep things organised, configuration contains 3 objects: `files`, `icons` and
         silhouette: false,        // Turn the logo into a white silhouette for Windows 8. `boolean`
         logging: false            // Print logs to console? `boolean`
     }
-}
-```
-
-You can either specify a string for the source e.g. `logo.png` or a series of images e.g.
-
-```js
-src: {
-    android: 'logo-android.png',
-    appleIcon: 'logo-appleIcon.png',
-    appleStartup: 'logo-appleStartup.png',
-    coast: 'logo-coast.png',
-    favicons: 'logo-favicons.png',
-    firefox: 'logo-firefox.png',
-    opengraph: 'logo-opengraph.png',
-    windows: 'logo-windows.png',
-    yandex: 'logo-yandex.png'
 }
 ```
 
