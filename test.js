@@ -2,10 +2,10 @@ var favicons = require('./index.js');
 
 favicons({
     files: {
-        src: 'test/source/logo.png',
-        dest: 'test/images',
+        src: 'test/logo.png',
+        dest: 'test/favicons',
         html: 'test/favicons.html',
-        iconsPath: 'images'
+        iconsPath: 'favicons'
     },
     settings: {
         appName: 'Favicons',

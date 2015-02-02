@@ -24,7 +24,12 @@
   },
   "homepage": "https://github.com/haydenbleasel/favicons",
   "dependencies": {
-    "lodash.defaults": "^2.4.1",
-    "real-favicon": "git://github.com/RealFaviconGenerator/real-favicon"
+    "async": "^0.9.0",
+    "fstream": "^1.0.2",
+    "lodash.defaults": "^3.0.0",
+    "metaparser": "^1.0.5",
+    "mkdirp": "^0.5.0",
+    "node-rest-client": "^1.4.4",
+    "unzip": "^0.1.11"
   }
 }
