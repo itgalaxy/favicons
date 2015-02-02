@@ -1,4 +1,4 @@
-/*jslint node:true*/
+/*jslint node:true, nomen:true*/
 module.exports = function (params, callback) {
 
     'use strict';
@@ -11,14 +11,15 @@ module.exports = function (params, callback) {
 
         // Other modules
         async = require('async'),
-        defaults = require('lodash.defaults'),
         Client = require('node-rest-client').Client,
         unzip = require('unzip'),
         metaparser = require('metaparser'),
         mkdirp = require('mkdirp'),
+        _ = require('lodash'),
+        mergeDefaults = require('merge-defaults'),
 
         // Default options
-        options = defaults(params || {}, {
+        options = _.mergeDefaults(params || {}, {
             files: {
                 src: null,
                 dest: null,
@@ -55,9 +56,25 @@ module.exports = function (params, callback) {
         }),
         tags = {
             add: [],
-            remove: ['link[rel="favicons"]']
+            remove: []
         },
-        design = {};
+        design = {},
+        defaultRemove = [
+            'link[rel="shortcut icon"]',
+            'link[rel="icon"]',
+            'link[rel^="apple-touch-icon"]',
+            'link[rel="manifest"]',
+            'link[rel="yandex-tableau-widget"]',
+            'link[rel="apple-touch-startup-image"]',
+            'meta[name^="msapplication"]',
+            'meta[name="mobile-web-app-capable"]',
+            'meta[name="theme-color"]',
+            'meta[name="apple-mobile-web-app-capable"]',
+            'meta[property="og:image"]',
+            'link[rel="favicons"]'
+        ];
+
+    _.mixin({ 'mergeDefaults': mergeDefaults });
 
     function file_to_base64(file, callback) {
         fs.readFile(file, { encoding: null }, function (error, file) {
@@ -96,20 +113,7 @@ module.exports = function (params, callback) {
     }
 
     function generate_favicon_markups(file, html_code, opts, callback) {
-        var defaultRemove = [
-            'link[rel="shortcut icon"]',
-            'link[rel="icon"]',
-            'link[rel^="apple-touch-icon"]',
-            'link[rel="manifest"]',
-            'link[rel="yandex-tableau-widget"]',
-            'link[rel="apple-touch-startup-image"]',
-            'meta[name^="msapplication"]',
-            'meta[name="mobile-web-app-capable"]',
-            'meta[name="theme-color"]',
-            'meta[name="apple-mobile-web-app-capable"]',
-            'meta[property="og:image"]'
-        ],
-            add = typeof html_code === 'string' ? [html_code] : html_code,
+        var add = typeof html_code === 'string' ? [html_code] : html_code,
             remove = defaultRemove;
 
         if (opts) {
