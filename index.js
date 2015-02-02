@@ -3,16 +3,61 @@ module.exports = function (params, callback) {
 
     'use strict';
 
+        // Node modules
     var fs = require('fs'),
-        async = require('async'),
         path = require('path'),
+        http = require('http'),
+        fstream = require('fstream'),
+
+        // Other modules
+        async = require('async'),
         defaults = require('lodash.defaults'),
         Client = require('node-rest-client').Client,
-        http = require('http'),
         unzip = require('unzip'),
         metaparser = require('metaparser'),
-        fstream = require('fstream'),
-        mkdirp = require('mkdirp');
+        mkdirp = require('mkdirp'),
+
+        // Default options
+        options = defaults(params || {}, {
+            files: {
+                src: null,
+                dest: null,
+                html: null,
+                iconsPath: null,
+                androidManifest: null,
+                browserConfig: null,
+                firefoxManifest: null,
+                yandexManifest: null
+            },
+            icons: {
+                android: true,
+                appleIcon: true,
+                appleStartup: true,
+                coast: true,
+                favicons: true,
+                firefox: true,
+                opengraph: true,
+                windows: true,
+                yandex: true
+            },
+            settings: {
+                appName: null,
+                appDescription: null,
+                developer: null,
+                developerURL: null,
+                background: null,
+                index: null,
+                url: null,
+                silhouette: false,
+                version: 1.0,
+                logging: false
+            }
+        }),
+        tags = {
+            add: [],
+            remove: ['link[rel="favicons"]']
+        },
+        design = {};
 
     function file_to_base64(file, callback) {
         fs.readFile(file, { encoding: null }, function (error, file) {
@@ -120,6 +165,7 @@ module.exports = function (params, callback) {
     }
 
     function real_favicon(favicons_params) {
+
         var html_files = typeof favicons_params.html === 'string' ? [favicons_params.html] : favicons_params.html,
             request = {
                 api_key: 'f26d432783a1856427f32ed8793e1d457cc120f1',
@@ -204,48 +250,6 @@ module.exports = function (params, callback) {
     }
 
     function favicons() {
-
-        // Default options
-        var options = defaults(params || {}, {
-            files: {
-                src: null,
-                dest: null,
-                html: null,
-                iconsPath: null,
-                androidManifest: null,
-                browserConfig: null,
-                firefoxManifest: null,
-                yandexManifest: null
-            },
-            icons: {
-                android: true,
-                appleIcon: true,
-                appleStartup: true,
-                coast: true,
-                favicons: true,
-                firefox: true,
-                opengraph: true,
-                windows: true,
-                yandex: true
-            },
-            settings: {
-                appName: null,
-                appDescription: null,
-                developer: null,
-                developerURL: null,
-                background: null,
-                index: null,
-                url: null,
-                silhouette: false,
-                version: 1.0,
-                logging: false
-            }
-        }),
-            tags = {
-                add: [],
-                remove: ['link[rel="favicons"]']
-            },
-            design = {};
 
         if (options.icons.appleIcon) {
             design.ios = {
@@ -347,6 +351,7 @@ module.exports = function (params, callback) {
                 return callback ? callback(metadata) : null;
             }
         });
+
     }
 
     favicons();
