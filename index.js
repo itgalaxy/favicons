@@ -19,7 +19,7 @@ module.exports = function (params, callback) {
         mergeDefaults = require('merge-defaults'),
 
         // Default options
-        options = _.mergeDefaults(params || {}, {
+        options = mergeDefaults(params || {}, {
             files: {
                 src: null,
                 dest: null,
@@ -56,65 +56,69 @@ module.exports = function (params, callback) {
         }),
         tags = {
             add: [],
-            remove: []
+            remove: [
+                'link[rel="shortcut icon"]',
+                'link[rel="icon"]',
+                'link[rel^="apple-touch-icon"]',
+                'link[rel="manifest"]',
+                'link[rel="yandex-tableau-widget"]',
+                'link[rel="apple-touch-startup-image"]',
+                'meta[name^="msapplication"]',
+                'meta[name="mobile-web-app-capable"]',
+                'meta[name="theme-color"]',
+                'meta[name="apple-mobile-web-app-capable"]',
+                'meta[property="og:image"]',
+                'link[rel="favicons"]'
+            ]
         },
         design = {},
-        defaultRemove = [
-            'link[rel="shortcut icon"]',
-            'link[rel="icon"]',
-            'link[rel^="apple-touch-icon"]',
-            'link[rel="manifest"]',
-            'link[rel="yandex-tableau-widget"]',
-            'link[rel="apple-touch-startup-image"]',
-            'meta[name^="msapplication"]',
-            'meta[name="mobile-web-app-capable"]',
-            'meta[name="theme-color"]',
-            'meta[name="apple-mobile-web-app-capable"]',
-            'meta[property="og:image"]',
-            'link[rel="favicons"]'
-        ];
+        config = {
+            data: {
+                favicon_generation: {
+                    api_key: 'f26d432783a1856427f32ed8793e1d457cc120f1',
+                    master_picture: {},
+                    files_location: {}
+                }
+            },
+            headers: {
+                "Content-Type": "application/json"
+            }
+        };
 
-    _.mixin({ 'mergeDefaults': mergeDefaults });
-
-    function file_to_base64(file, callback) {
+    // Return base64 encoded file
+    function encodeBase64(file, callback) {
         fs.readFile(file, { encoding: null }, function (error, file) {
             if (error) {
-                throw error;
+                throw console.log('Could not read file for base64 encoding: ', error);
             }
             return callback(file.toString('base64'));
         });
     }
 
-    function generate_favicon(favicon_generation_request, dest, callback) {
-        var client = new Client(),
-            args = {
-                data: {
-                    "favicon_generation": favicon_generation_request
-                },
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            };
+    // Publish request to the RealFaviconGenerator API, unzip response
+    function generateFavicons(req, dest, callback) {
+        var client = new Client();
+        config.data.favicon_generation = req;
         mkdirp(dest, function () {
-            client.post("http://realfavicongenerator.net/api/favicon", args, function (data, response) {
+            client.post("http://realfavicongenerator.net/api/favicon", config, function (data, response) {
                 if (response.statusCode !== 200) {
-                    throw console.log(data);
+                    throw console.log('Could not publish request to the RealFaviconGenerator API: ', data);
                 }
-                var writeStream = fstream.Writer(dest),
-                    parserStream = unzip.Parse(),
-                    request = http.get(data.favicon_generation_result.favicon.package_url, function (response) {
-                        response.pipe(parserStream).pipe(writeStream);
+                var parserStream = unzip.Parse(),
+                    writeStream = fstream.Writer(dest).on('close', function () {
+                        callback(data.favicon_generation_result);
                     });
-                writeStream.on('close', function () {
-                    callback(data.favicon_generation_result);
+                http.get(data.favicon_generation_result.favicon.package_url, function (response) {
+                    response.pipe(parserStream).pipe(writeStream);
                 });
             });
         });
     }
 
-    function generate_favicon_markups(file, html_code, opts, callback) {
+    // Generate Favicon markup
+    function generateMarkup(file, html_code, opts, callback) {
         var add = typeof html_code === 'string' ? [html_code] : html_code,
-            remove = defaultRemove;
+            remove = tags.remove;
 
         if (opts) {
             if (opts.add) {
@@ -149,7 +153,7 @@ module.exports = function (params, callback) {
     function make_favicons(file, favicon, callback) {
         fs.exists(file, function (exists) {
             if (exists) {
-                generate_favicon_markups(file, favicon.favicon.html_code, params.tags, function (html, add) {
+                generateMarkup(file, favicon.favicon.html_code, params.tags, function (html, add) {
                     fs.writeFile(file, html, function (err) {
                         if (err) {
                             throw err;
@@ -169,42 +173,35 @@ module.exports = function (params, callback) {
     }
 
     function real_favicon(favicons_params) {
-
-        var html_files = typeof favicons_params.html === 'string' ? [favicons_params.html] : favicons_params.html,
-            request = {
-                api_key: 'f26d432783a1856427f32ed8793e1d457cc120f1',
-                master_picture: {},
-                files_location: {},
-                favicon_design: favicons_params.design,
-                settings: favicons_params.settings
-            };
-
+        var html_files = typeof favicons_params.html === 'string' ? [favicons_params.html] : favicons_params.html;
+        config.data.favicon_generation.favicon_design = favicons_params.design;
+        config.data.favicon_generation.settings = favicons_params.settings;
         if (favicons_params.icons_path === undefined) {
-            request.files_location.type = 'root';
+            config.data.favicon_generation.files_location.type = 'root';
         } else {
-            request.files_location.type = 'path';
-            request.files_location.path = favicons_params.icons_path;
+            config.data.favicon_generation.files_location.type = 'path';
+            config.data.favicon_generation.files_location.path = favicons_params.icons_path;
         }
 
         async.waterfall([
             function (callback) {
                 if (is_url(favicons_params.src)) {
-                    request.master_picture.type = 'url';
-                    request.master_picture.url = favicons_params.src;
+                    config.data.favicon_generation.master_picture.type = 'url';
+                    config.data.favicon_generation.master_picture.url = favicons_params.src;
                     callback(null);
                 } else {
-                    request.master_picture.type = 'inline';
-                    file_to_base64(favicons_params.src, function (file) {
-                        request.master_picture.content = file;
+                    config.data.favicon_generation.master_picture.type = 'inline';
+                    encodeBase64(favicons_params.src, function (file) {
+                        config.data.favicon_generation.master_picture.content = file;
                         callback(null);
                     });
                 }
             },
             function (callback) {
-                if (request.favicon_design !== undefined) {
-                    if ((request.favicon_design.windows !== undefined) && (request.favicon_design.windows.picture_aspect === 'dedicated_picture')) {
-                        file_to_base64(request.favicon_design.windows.dedicated_picture, function (file) {
-                            request.favicon_design.windows.dedicated_picture = file;
+                if (config.data.favicon_generation.favicon_design !== undefined) {
+                    if ((config.data.favicon_generation.favicon_design.windows !== undefined) && (config.data.favicon_generation.favicon_design.windows.picture_aspect === 'dedicated_picture')) {
+                        encodeBase64(config.data.favicon_generation.favicon_design.windows.dedicated_picture, function (file) {
+                            config.data.favicon_generation.favicon_design.windows.dedicated_picture = file;
                             callback(null);
                         });
                     } else {
@@ -215,10 +212,10 @@ module.exports = function (params, callback) {
                 }
             },
             function (callback) {
-                if (request.favicon_design !== undefined) {
-                    if ((request.favicon_design.ios !== undefined) && (request.favicon_design.ios.picture_aspect === 'dedicated_picture')) {
-                        file_to_base64(request.favicon_design.ios.dedicated_picture, function (file) {
-                            request.favicon_design.ios.dedicated_picture = file;
+                if (config.data.favicon_generation.favicon_design !== undefined) {
+                    if ((config.data.favicon_generation.favicon_design.ios !== undefined) && (config.data.favicon_generation.favicon_design.ios.picture_aspect === 'dedicated_picture')) {
+                        encodeBase64(config.data.favicon_generation.favicon_design.ios.dedicated_picture, function (file) {
+                            config.data.favicon_generation.favicon_design.ios.dedicated_picture = file;
                             callback(null);
                         });
                     } else {
@@ -229,7 +226,7 @@ module.exports = function (params, callback) {
                 }
             },
             function (callback) {
-                generate_favicon(request, favicons_params.dest, function (favicon) {
+                generateFavicons(config.data.favicon_generation, favicons_params.dest, function (favicon) {
                     return callback(null, favicon);
                 });
             },
