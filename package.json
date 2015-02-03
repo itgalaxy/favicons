@@ -26,7 +26,6 @@
   "dependencies": {
     "async": "^0.9.0",
     "fstream": "^1.0.2",
-    "lodash": "^3.0.1",
     "merge-defaults": "^0.2.1",
     "metaparser": "^1.0.5",
     "mkdirp": "^0.5.0",

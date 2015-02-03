@@ -15,7 +15,6 @@ module.exports = function (params, callback) {
         unzip = require('unzip'),
         metaparser = require('metaparser'),
         mkdirp = require('mkdirp'),
-        _ = require('lodash'),
         mergeDefaults = require('merge-defaults'),
 
         // Default options
@@ -71,13 +70,13 @@ module.exports = function (params, callback) {
                 'link[rel="favicons"]'
             ]
         },
-        design = {},
         config = {
             data: {
                 favicon_generation: {
                     api_key: 'f26d432783a1856427f32ed8793e1d457cc120f1',
                     master_picture: {},
-                    files_location: {}
+                    files_location: {},
+                    favicon_design: {}
                 }
             },
             headers: {
@@ -115,8 +114,8 @@ module.exports = function (params, callback) {
         });
     }
 
-    // Generate Favicon markup
-    function generateMarkup(file, html_code, opts, callback) {
+    // Write HTML
+    function writeHTML(file, html_code, opts, callback) {
         var add = typeof html_code === 'string' ? [html_code] : html_code,
             remove = tags.remove;
 
@@ -142,10 +141,12 @@ module.exports = function (params, callback) {
         });
     }
 
+    // Return if string has prefix
     function starts_with(str, prefix) {
         return str.lastIndexOf(prefix, 0) === 0;
     }
 
+    // Return if string is URL
     function is_url(str) {
         return starts_with(str, 'http://') || starts_with(str, 'https://') || starts_with(str, '//');
     }
@@ -153,7 +154,8 @@ module.exports = function (params, callback) {
     function make_favicons(file, favicon, callback) {
         fs.exists(file, function (exists) {
             if (exists) {
-                generateMarkup(file, favicon.favicon.html_code, params.tags, function (html, add) {
+                writeHTML(file, favicon.favicon.html_code, params.tags, function (html, add) {
+                    console.log(html, add, 'html and add');
                     fs.writeFile(file, html, function (err) {
                         if (err) {
                             throw err;
@@ -172,8 +174,115 @@ module.exports = function (params, callback) {
         });
     }
 
-    function real_favicon(favicons_params) {
-        var html_files = typeof favicons_params.html === 'string' ? [favicons_params.html] : favicons_params.html;
+    function setConfig() {
+
+        if (options.icons.appleIcon) {
+            config.data.favicon_generation.favicon_design.ios = {
+                picture_aspect: 'background_and_margin',
+                margin: "0",
+                background_color: options.settings.background
+            };
+        }
+
+        if (options.icons.appleStartup) {
+            config.data.favicon_generation.favicon_design.ios = config.data.favicon_generation.favicon_design.ios || {};
+            config.data.favicon_generation.favicon_design.ios.startup_image = {
+                background_color: options.settings.background
+            };
+        }
+
+
+        if (options.icons.windows) {
+            config.data.favicon_generation.favicon_design.windows = {
+                picture_aspect: options.settings.silhouette ? 'white_silhouette' : 'no_change',
+                background_color: options.settings.background
+            };
+        }
+
+        if (options.icons.firefox) {
+            config.data.favicon_generation.favicon_design.firefox_app = {
+                picture_aspect: "circle",
+                keep_picture_in_circle: "true",
+                circle_inner_margin: "5",
+                background_color: options.settings.background,
+                manifest: {
+                    app_name: options.settings.appName,
+                    app_description: options.settings.appDescription,
+                    developer_name: options.settings.developer,
+                    developer_url: options.settings.developerURL
+                }
+            };
+        }
+
+        if (options.icons.android) {
+            config.data.favicon_generation.favicon_design.android_chrome = {
+                picture_aspect: "shadow",
+                manifest: {
+                    name: options.settings.appName,
+                    display: "standalone",
+                    orientation: "portrait",
+                    start_url: options.settings.index,
+                    existing_manifest: options.files.androidManifest
+                },
+                theme_color: options.settings.background
+            };
+        }
+
+        if (options.icons.coast) {
+            config.data.favicon_generation.favicon_design.coast = {
+                picture_aspect: "background_and_margin",
+                background_color: options.settings.background,
+                margin: "12%"
+            };
+        }
+
+        if (options.icons.favicons) {
+            config.data.favicon_generation.favicon_design.desktop_browser = {};
+        }
+
+        if (options.icons.opengraph) {
+            config.data.favicon_generation.favicon_design.open_graph = {
+                picture_aspect: "background_and_margin",
+                background_color: options.settings.background,
+                margin: "12%",
+                ratio: "1.91:1"
+            };
+        }
+
+        if (options.icons.yandex) {
+            config.data.favicon_generation.favicon_design.yandex_browser = {
+                background_color: options.settings.background,
+                manifest: {
+                    show_title: true,
+                    version: options.settings.version
+                }
+            };
+        }
+
+    }
+
+    function real_favicon() {
+
+        setConfig();
+
+        var favicons_params = {
+            src: options.files.src,
+            dest: options.files.dest,
+            icons_path: options.files.iconsPath || path.relative(path.dirname(options.files.html), options.files.dest),
+            html: options.files.html,
+            design: config.data.favicon_generation.favicon_design,
+            tags: {
+                add: tags.add,
+                remove: tags.remove
+            },
+            settings: {
+                compression: "5"
+            },
+            callback: function (metadata) {
+                return callback ? callback(metadata) : null;
+            }
+        },
+            html_files = typeof favicons_params.html === 'string' ? [favicons_params.html] : favicons_params.html;
         config.data.favicon_generation.favicon_design = favicons_params.design;
         config.data.favicon_generation.settings = favicons_params.settings;
         if (favicons_params.icons_path === undefined) {
@@ -238,6 +347,7 @@ module.exports = function (params, callback) {
                         callback(null, code);
                     });
                 }, function (err, files) {
+                    console.log(files, codes, 'files and codes');
                     return callback(err, codes);
                 });
             }
@@ -250,111 +360,6 @@ module.exports = function (params, callback) {
 
     }
 
-    function favicons() {
-
-        if (options.icons.appleIcon) {
-            design.ios = {
-                picture_aspect: 'background_and_margin',
-                margin: "0",
-                background_color: options.settings.background
-            };
-        }
-
-        if (options.icons.appleStartup) {
-            design.ios = design.ios || {};
-            design.ios.startup_image = {
-                background_color: options.settings.background
-            };
-        }
-
-
-        if (options.icons.windows) {
-            design.windows = {
-                picture_aspect: options.settings.silhouette ? 'white_silhouette' : 'no_change',
-                background_color: options.settings.background
-            };
-        }
-
-        if (options.icons.firefox) {
-            design.firefox_app = {
-                picture_aspect: "circle",
-                keep_picture_in_circle: "true",
-                circle_inner_margin: "5",
-                background_color: options.settings.background,
-                manifest: {
-                    app_name: options.settings.appName,
-                    app_description: options.settings.appDescription,
-                    developer_name: options.settings.developer,
-                    developer_url: options.settings.developerURL
-                }
-            };
-        }
-
-        if (options.icons.android) {
-            design.android_chrome = {
-                picture_aspect: "shadow",
-                manifest: {
-                    name: options.settings.appName,
-                    display: "standalone",
-                    orientation: "portrait",
-                    start_url: options.settings.index,
-                    existing_manifest: options.files.androidManifest
-                },
-                theme_color: options.settings.background
-            };
-        }
-
-        if (options.icons.coast) {
-            design.coast = {
-                picture_aspect: "background_and_margin",
-                background_color: options.settings.background,
-                margin: "12%"
-            };
-        }
-
-        if (options.icons.favicons) {
-            design.desktop_browser = {};
-        }
-
-        if (options.icons.opengraph) {
-            design.open_graph = {
-                picture_aspect: "background_and_margin",
-                background_color: options.settings.background,
-                margin: "12%",
-                ratio: "1.91:1"
-            };
-        }
-
-        if (options.icons.yandex) {
-            design.yandex_browser = {
-                background_color: options.settings.background,
-                manifest: {
-                    show_title: true,
-                    version: options.settings.version
-                }
-            };
-        }
-
-        real_favicon({
-            src: options.files.src,
-            dest: options.files.dest,
-            icons_path: options.files.iconsPath || path.relative(path.dirname(options.files.html), options.files.dest),
-            html: options.files.html,
-            design: design,
-            tags: {
-                add: tags.add,
-                remove: tags.remove
-            },
-            settings: {
-                compression: "5"
-            },
-            callback: function (metadata) {
-                return callback ? callback(metadata) : null;
-            }
-        });
-
-    }
-
-    favicons();
+    real_favicon();
 
 };
