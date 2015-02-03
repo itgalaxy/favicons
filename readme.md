@@ -24,7 +24,7 @@ To keep things organised, configuration contains 4 objects: `files`, `icons` and
     files: {
         src: null,                // Path for file to produce the favicons. `string`
         dest: null,               // Path for writing the favicons to. `string`
-        html: null,               // Path for HTML file to write metadata. `string`
+        html: null,               // Path(s) for HTML file to write or append metadata. `string` or `array`
         iconsPath: null,          // Path for overriding default icons path. `string`
         androidManifest: null,    // Path for an existing android_chrome_manifest.json. `string`
         browserConfig: null,      // Path for an existing browserconfig.xml. `string`

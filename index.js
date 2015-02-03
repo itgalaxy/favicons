@@ -23,10 +23,7 @@ module.exports = function (params, callback) {
     // Return base64 encoded file
     function encodeBase64(file, callback) {
         fs.readFile(file, { encoding: null }, function (error, file) {
-            if (error) {
-                throw console.log('Could not read file for base64 encoding: ', error);
-            }
-            return callback(file.toString('base64'));
+            return callback(error, file.toString('base64'));
         });
     }
 
@@ -65,38 +62,21 @@ module.exports = function (params, callback) {
     function writeHTML(file, html, callback) {
         var add = typeof html === 'string' ? [html] : html,
             remove = tags.remove;
-
         fs.exists(file, function (exists) {
             if (exists) {
-
-                if (params.tags) {
-                    if (params.tags.add) {
-                        add = add.concat(typeof params.tags.add === 'string' ? [params.tags.add] : params.tags.add);
-                    }
-                    if (params.tags.remove) {
-                        remove = remove.concat(typeof params.tags.remove === 'string' ? [params.tags.remove] : params.tags.remove);
-                    }
-                }
-
+                add = add.concat(typeof params.tags.add === 'string' ? [params.tags.add] : params.tags.add);
+                remove = remove.concat(typeof params.tags.remove === 'string' ? [params.tags.remove] : params.tags.remove);
                 metaparser({
                     source: file,
                     add: add,
                     remove: remove,
                     callback: function (error, html) {
-                        if (error) {
-                            throw error;
-                        }
-                        console.log(html, add, 'html and add');
-                        return callback(html, add);
+                        return callback(error, html, add);
                     }
                 });
-
             } else {
-                fs.writeFile(file, html, function (err) {
-                    if (err) {
-                        throw err;
-                    }
-                    callback(html);
+                fs.writeFile(file, html, function (error) {
+                    callback(error, html);
                 });
             }
         });
@@ -227,18 +207,18 @@ module.exports = function (params, callback) {
                     callback(null);
                 } else {
                     config.data.favicon_generation.master_picture.type = 'inline';
-                    encodeBase64(favicons_params.src, function (file) {
+                    encodeBase64(favicons_params.src, function (error, file) {
                         config.data.favicon_generation.master_picture.content = file;
-                        callback(null);
+                        callback(error);
                     });
                 }
             },
             function (callback) {
                 if (config.data.favicon_generation.favicon_design !== undefined) {
                     if ((config.data.favicon_generation.favicon_design.windows !== undefined) && (config.data.favicon_generation.favicon_design.windows.picture_aspect === 'dedicated_picture')) {
-                        encodeBase64(config.data.favicon_generation.favicon_design.windows.dedicated_picture, function (file) {
+                        encodeBase64(config.data.favicon_generation.favicon_design.windows.dedicated_picture, function (error, file) {
                             config.data.favicon_generation.favicon_design.windows.dedicated_picture = file;
-                            callback(null);
+                            callback(error);
                         });
                     } else {
                         callback(null);
@@ -250,9 +230,9 @@ module.exports = function (params, callback) {
             function (callback) {
                 if (config.data.favicon_generation.favicon_design !== undefined) {
                     if ((config.data.favicon_generation.favicon_design.ios !== undefined) && (config.data.favicon_generation.favicon_design.ios.picture_aspect === 'dedicated_picture')) {
-                        encodeBase64(config.data.favicon_generation.favicon_design.ios.dedicated_picture, function (file) {
+                        encodeBase64(config.data.favicon_generation.favicon_design.ios.dedicated_picture, function (error, file) {
                             config.data.favicon_generation.favicon_design.ios.dedicated_picture = file;
-                            callback(null);
+                            callback(error);
                         });
                     } else {
                         callback(null);
@@ -269,9 +249,9 @@ module.exports = function (params, callback) {
             function (favicon, callback) {
                 var codes = [];
                 async.each(favicons_params.html, function (html, callback) {
-                    writeHTML(html, favicon.favicon.html_code, function (code) {
+                    writeHTML(html, favicon.favicon.html_code, function (error, code) {
                         codes.push(code);
-                        callback(null, code);
+                        callback(error, code);
                     });
                 }, function (err, files) {
                     console.log(files, codes, 'files and codes');
