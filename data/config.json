@@ -4,7 +4,12 @@
       "api_key": "f26d432783a1856427f32ed8793e1d457cc120f1",
       "master_picture": {},
       "files_location": {},
-      "favicon_design": {}
+      "favicon_design": {},
+      "settings": {
+        "compression": "3",
+        "scaling_algorithm": "Mitchell",
+        "error_on_image_too_small": true
+      }
     }
   },
   "headers": {

@@ -4,7 +4,7 @@ favicons({
     files: {
         src: 'test/logo.png',
         dest: 'test/favicons',
-        html: 'test/favicons.html',
+        html: 'test/test.html',
         iconsPath: 'favicons'
     },
     settings: {

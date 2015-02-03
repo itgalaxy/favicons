@@ -3,7 +3,7 @@ module.exports = function (params, callback) {
 
     'use strict';
 
-        // Node modules
+    // Node modules
     var fs = require('fs'),
         path = require('path'),
         http = require('http'),
@@ -35,13 +35,13 @@ module.exports = function (params, callback) {
         mkdirp(dest, function () {
             client.post("http://realfavicongenerator.net/api/favicon", config, function (data, response) {
                 if (response.statusCode !== 200) {
-                    throw console.log('Could not publish request to the RealFaviconGenerator API: ', data);
+                    return callback('Could not publish request to the RealFaviconGenerator API: ' + data, null);
                 }
                 var parserStream = unzip.Parse(),
                     writeStream = fstream.Writer(dest).on('close', function () {
-                        callback(data.favicon_generation_result);
+                        callback(null, data.favicon_generation_result);
                     });
-                http.get(data.favicon_generation_result.favicon.package_url, function (response) {
+                return http.get(data.favicon_generation_result.favicon.package_url, function (response) {
                     response.pipe(parserStream).pipe(writeStream);
                 });
             });
@@ -64,8 +64,8 @@ module.exports = function (params, callback) {
             remove = tags.remove;
         fs.exists(file, function (exists) {
             if (exists) {
-                add = add.concat(typeof params.tags.add === 'string' ? [params.tags.add] : params.tags.add);
-                remove = remove.concat(typeof params.tags.remove === 'string' ? [params.tags.remove] : params.tags.remove);
+                add = add.concat(typeof tags.add === 'string' ? [tags.add] : tags.add);
+                remove = remove.concat(typeof tags.remove === 'string' ? [tags.remove] : tags.remove);
                 metaparser({
                     source: file,
                     add: add,
@@ -82,8 +82,8 @@ module.exports = function (params, callback) {
         });
     }
 
+    // Set global icon options for request
     function setConfig() {
-
         if (options.icons.appleIcon) {
             config.data.favicon_generation.favicon_design.ios = {
                 picture_aspect: 'background_and_margin',
@@ -91,22 +91,18 @@ module.exports = function (params, callback) {
                 background_color: options.settings.background
             };
         }
-
         if (options.icons.appleStartup) {
             config.data.favicon_generation.favicon_design.ios = config.data.favicon_generation.favicon_design.ios || {};
             config.data.favicon_generation.favicon_design.ios.startup_image = {
                 background_color: options.settings.background
             };
         }
-
-
         if (options.icons.windows) {
             config.data.favicon_generation.favicon_design.windows = {
                 picture_aspect: options.settings.silhouette ? 'white_silhouette' : 'no_change',
                 background_color: options.settings.background
             };
         }
-
         if (options.icons.firefox) {
             config.data.favicon_generation.favicon_design.firefox_app = {
                 picture_aspect: "circle",
@@ -121,7 +117,6 @@ module.exports = function (params, callback) {
                 }
             };
         }
-
         if (options.icons.android) {
             config.data.favicon_generation.favicon_design.android_chrome = {
                 picture_aspect: "shadow",
@@ -135,7 +130,6 @@ module.exports = function (params, callback) {
                 theme_color: options.settings.background
             };
         }
-
         if (options.icons.coast) {
             config.data.favicon_generation.favicon_design.coast = {
                 picture_aspect: "background_and_margin",
@@ -143,11 +137,9 @@ module.exports = function (params, callback) {
                 margin: "12%"
             };
         }
-
         if (options.icons.favicons) {
             config.data.favicon_generation.favicon_design.desktop_browser = {};
         }
-
         if (options.icons.opengraph) {
             config.data.favicon_generation.favicon_design.open_graph = {
                 picture_aspect: "background_and_margin",
@@ -156,7 +148,6 @@ module.exports = function (params, callback) {
                 ratio: "1.91:1"
             };
         }
-
         if (options.icons.yandex) {
             config.data.favicon_generation.favicon_design.yandex_browser = {
                 background_color: options.settings.background,
@@ -166,107 +157,82 @@ module.exports = function (params, callback) {
                 }
             };
         }
-
     }
 
-    function real_favicon() {
+    // Kick everything off
+    function favicons() {
+        var source = options.files.src,
+            icons_path = options.files.iconsPath || path.relative(path.dirname(options.files.html), options.files.dest),
+            html = typeof options.files.html === 'string' ? [options.files.html] : options.files.html;
 
         setConfig();
 
-        var favicons_params = {
-            src: options.files.src,
-            dest: options.files.dest,
-            icons_path: options.files.iconsPath || path.relative(path.dirname(options.files.html), options.files.dest),
-            html: typeof options.files.html === 'string' ? [options.files.html] : options.files.html,
-            design: config.data.favicon_generation.favicon_design,
-            tags: {
-                add: tags.add,
-                remove: tags.remove
-            },
-            settings: {
-                compression: "5"
-            },
-            callback: function (metadata) {
-                return callback ? callback(metadata) : null;
-            }
-        };
-        config.data.favicon_generation.favicon_design = favicons_params.design;
-        config.data.favicon_generation.settings = favicons_params.settings;
-        if (favicons_params.icons_path === undefined) {
-            config.data.favicon_generation.files_location.type = 'root';
-        } else {
+        if (icons_path) {
             config.data.favicon_generation.files_location.type = 'path';
-            config.data.favicon_generation.files_location.path = favicons_params.icons_path;
+            config.data.favicon_generation.files_location.path = icons_path;
+        } else {
+            config.data.favicon_generation.files_location.type = 'root';
         }
 
         async.waterfall([
             function (callback) {
-                if (is_url(favicons_params.src)) {
+                if (is_url(source)) {
                     config.data.favicon_generation.master_picture.type = 'url';
-                    config.data.favicon_generation.master_picture.url = favicons_params.src;
+                    config.data.favicon_generation.master_picture.url = source;
                     callback(null);
                 } else {
                     config.data.favicon_generation.master_picture.type = 'inline';
-                    encodeBase64(favicons_params.src, function (error, file) {
+                    encodeBase64(source, function (error, file) {
                         config.data.favicon_generation.master_picture.content = file;
                         callback(error);
                     });
                 }
             },
             function (callback) {
-                if (config.data.favicon_generation.favicon_design !== undefined) {
-                    if ((config.data.favicon_generation.favicon_design.windows !== undefined) && (config.data.favicon_generation.favicon_design.windows.picture_aspect === 'dedicated_picture')) {
-                        encodeBase64(config.data.favicon_generation.favicon_design.windows.dedicated_picture, function (error, file) {
-                            config.data.favicon_generation.favicon_design.windows.dedicated_picture = file;
-                            callback(error);
-                        });
-                    } else {
-                        callback(null);
-                    }
+                if ((config.data.favicon_generation.favicon_design.windows !== undefined) && (config.data.favicon_generation.favicon_design.windows.picture_aspect === 'dedicated_picture')) {
+                    encodeBase64(config.data.favicon_generation.favicon_design.windows.dedicated_picture, function (error, file) {
+                        config.data.favicon_generation.favicon_design.windows.dedicated_picture = file;
+                        callback(error);
+                    });
                 } else {
                     callback(null);
                 }
             },
             function (callback) {
-                if (config.data.favicon_generation.favicon_design !== undefined) {
-                    if ((config.data.favicon_generation.favicon_design.ios !== undefined) && (config.data.favicon_generation.favicon_design.ios.picture_aspect === 'dedicated_picture')) {
-                        encodeBase64(config.data.favicon_generation.favicon_design.ios.dedicated_picture, function (error, file) {
-                            config.data.favicon_generation.favicon_design.ios.dedicated_picture = file;
-                            callback(error);
-                        });
-                    } else {
-                        callback(null);
-                    }
+                if ((config.data.favicon_generation.favicon_design.ios !== undefined) && (config.data.favicon_generation.favicon_design.ios.picture_aspect === 'dedicated_picture')) {
+                    encodeBase64(config.data.favicon_generation.favicon_design.ios.dedicated_picture, function (error, file) {
+                        config.data.favicon_generation.favicon_design.ios.dedicated_picture = file;
+                        callback(error);
+                    });
                 } else {
                     callback(null);
                 }
             },
             function (callback) {
-                generateFavicons(config.data.favicon_generation, favicons_params.dest, function (favicon) {
-                    return callback(null, favicon);
+                generateFavicons(config.data.favicon_generation, options.files.dest, function (error, favicon) {
+                    return callback(error, favicon);
                 });
             },
             function (favicon, callback) {
                 var codes = [];
-                async.each(favicons_params.html, function (html, callback) {
+                async.each(html, function (html, callback) {
                     writeHTML(html, favicon.favicon.html_code, function (error, code) {
                         codes.push(code);
-                        callback(error, code);
+                        callback(error);
                     });
-                }, function (err, files) {
-                    console.log(files, codes, 'files and codes');
-                    return callback(err, codes);
+                }, function (error) {
+                    return callback(error, codes);
                 });
             }
-        ], function (err, codes) {
-            if (err) {
-                throw err;
+        ], function (error, codes) {
+            if (error) {
+                throw error;
             }
-            return (params && favicons_params.callback) ? favicons_params.callback(codes) : null;
+            return callback ? callback(codes) : null;
         });
 
     }
 
-    real_favicon();
+    favicons();
 
 };
