@@ -16,73 +16,9 @@ module.exports = function (params, callback) {
         metaparser = require('metaparser'),
         mkdirp = require('mkdirp'),
         mergeDefaults = require('merge-defaults'),
-
-        // Default options
-        options = mergeDefaults(params || {}, {
-            files: {
-                src: null,
-                dest: null,
-                html: null,
-                iconsPath: null,
-                androidManifest: null,
-                browserConfig: null,
-                firefoxManifest: null,
-                yandexManifest: null
-            },
-            icons: {
-                android: true,
-                appleIcon: true,
-                appleStartup: true,
-                coast: true,
-                favicons: true,
-                firefox: true,
-                opengraph: true,
-                windows: true,
-                yandex: true
-            },
-            settings: {
-                appName: null,
-                appDescription: null,
-                developer: null,
-                developerURL: null,
-                background: null,
-                index: null,
-                url: null,
-                silhouette: false,
-                version: 1.0,
-                logging: false
-            }
-        }),
-        tags = {
-            add: [],
-            remove: [
-                'link[rel="shortcut icon"]',
-                'link[rel="icon"]',
-                'link[rel^="apple-touch-icon"]',
-                'link[rel="manifest"]',
-                'link[rel="yandex-tableau-widget"]',
-                'link[rel="apple-touch-startup-image"]',
-                'meta[name^="msapplication"]',
-                'meta[name="mobile-web-app-capable"]',
-                'meta[name="theme-color"]',
-                'meta[name="apple-mobile-web-app-capable"]',
-                'meta[property="og:image"]',
-                'link[rel="favicons"]'
-            ]
-        },
-        config = {
-            data: {
-                favicon_generation: {
-                    api_key: 'f26d432783a1856427f32ed8793e1d457cc120f1',
-                    master_picture: {},
-                    files_location: {},
-                    favicon_design: {}
-                }
-            },
-            headers: {
-                "Content-Type": "application/json"
-            }
-        };
+        tags = require('./data/tags.json'),
+        config = require('./data/config.json'),
+        options = mergeDefaults(params || {}, require('./data/defaults.json'));
 
     // Return base64 encoded file
     function encodeBase64(file, callback) {
@@ -114,33 +50,6 @@ module.exports = function (params, callback) {
         });
     }
 
-    // Write HTML
-    function writeHTML(file, html_code, opts, callback) {
-        var add = typeof html_code === 'string' ? [html_code] : html_code,
-            remove = tags.remove;
-
-        if (opts) {
-            if (opts.add) {
-                add = add.concat(typeof opts.add === 'string' ? [opts.add] : opts.add);
-            }
-            if (opts.remove) {
-                remove = remove.concat(typeof opts.remove === 'string' ? [opts.remove] : opts.remove);
-            }
-        }
-
-        metaparser({
-            source: file,
-            add: add,
-            remove: remove,
-            callback: function (error, html) {
-                if (error) {
-                    throw error;
-                }
-                return callback(html, add);
-            }
-        });
-    }
-
     // Return if string has prefix
     function starts_with(str, prefix) {
         return str.lastIndexOf(prefix, 0) === 0;
@@ -151,24 +60,42 @@ module.exports = function (params, callback) {
         return starts_with(str, 'http://') || starts_with(str, 'https://') || starts_with(str, '//');
     }
 
-    function make_favicons(file, favicon, callback) {
+    // Write metadata to HTML
+    function writeHTML(file, html, callback) {
+        var add = typeof html === 'string' ? [html] : html,
+            remove = tags.remove;
+
         fs.exists(file, function (exists) {
             if (exists) {
-                writeHTML(file, favicon.favicon.html_code, params.tags, function (html, add) {
-                    console.log(html, add, 'html and add');
-                    fs.writeFile(file, html, function (err) {
-                        if (err) {
-                            throw err;
+
+                if (params.tags) {
+                    if (params.tags.add) {
+                        add = add.concat(typeof params.tags.add === 'string' ? [params.tags.add] : params.tags.add);
+                    }
+                    if (params.tags.remove) {
+                        remove = remove.concat(typeof params.tags.remove === 'string' ? [params.tags.remove] : params.tags.remove);
+                    }
+                }
+
+                metaparser({
+                    source: file,
+                    add: add,
+                    remove: remove,
+                    callback: function (error, html) {
+                        if (error) {
+                            throw error;
                         }
-                        callback(html);
-                    });
+                        console.log(html, add, 'html and add');
+                        return callback(html, add);
+                    }
                 });
+
             } else {
-                fs.writeFile(file, favicon.favicon.html_code, function (err) {
+                fs.writeFile(file, html, function (err) {
                     if (err) {
                         throw err;
                     }
-                    callback(favicon.favicon.html_code);
+                    callback(html);
                 });
             }
         });
@@ -342,7 +269,7 @@ module.exports = function (params, callback) {
             function (favicon, callback) {
                 var codes = [];
                 async.each(html_files, function (html, callback) {
-                    make_favicons(html, favicon, function (code) {
+                    writeHTML(html, favicon.favicon.html_code, function (code) {
                         codes.push(code);
                         callback(null, code);
                     });

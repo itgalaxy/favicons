@@ -1,0 +1,35 @@
+{
+  "files": {
+    "src": null,
+    "dest": null,
+    "html": null,
+    "iconsPath": null,
+    "androidManifest": null,
+    "browserConfig": null,
+    "firefoxManifest": null,
+    "yandexManifest": null
+  },
+  "icons": {
+    "android": true,
+    "appleIcon": true,
+    "appleStartup": true,
+    "coast": true,
+    "favicons": true,
+    "firefox": true,
+    "opengraph": true,
+    "windows": true,
+    "yandex": true
+  },
+  "settings": {
+    "appName": null,
+    "appDescription": null,
+    "developer": null,
+    "developerURL": null,
+    "background": null,
+    "index": null,
+    "url": null,
+    "silhouette": false,
+    "version": 1.0,
+    "logging": false
+  }
+}

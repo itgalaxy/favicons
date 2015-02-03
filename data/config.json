@@ -1,0 +1,13 @@
+{
+  "data": {
+    "favicon_generation": {
+      "api_key": "f26d432783a1856427f32ed8793e1d457cc120f1",
+      "master_picture": {},
+      "files_location": {},
+      "favicon_design": {}
+    }
+  },
+  "headers": {
+    "Content-Type": "application/json"
+  }
+}
