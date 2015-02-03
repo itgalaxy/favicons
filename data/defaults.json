@@ -30,6 +30,7 @@
     "url": null,
     "silhouette": false,
     "version": 1.0,
+    "config": null,
     "logging": false
-  }
+  },
 }

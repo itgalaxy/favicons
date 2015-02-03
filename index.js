@@ -34,6 +34,7 @@ module.exports = function (params, callback) {
     function generateFavicons(req, dest, callback) {
         var client = new Client();
         config.data.favicon_generation = req;
+        mergeDefaults(params.favicon_generation || {}, config.data.favicon_generation);
         mkdirp(dest, function () {
             client.post("http://realfavicongenerator.net/api/favicon", config, function (data, response) {
                 if (response.statusCode !== 200) {
@@ -196,7 +197,7 @@ module.exports = function (params, callback) {
             src: options.files.src,
             dest: options.files.dest,
             icons_path: options.files.iconsPath || path.relative(path.dirname(options.files.html), options.files.dest),
-            html: options.files.html,
+            html: typeof options.files.html === 'string' ? [options.files.html] : options.files.html,
             design: config.data.favicon_generation.favicon_design,
             tags: {
                 add: tags.add,
@@ -208,8 +209,7 @@ module.exports = function (params, callback) {
             callback: function (metadata) {
                 return callback ? callback(metadata) : null;
             }
-        },
-            html_files = typeof favicons_params.html === 'string' ? [favicons_params.html] : favicons_params.html;
+        };
         config.data.favicon_generation.favicon_design = favicons_params.design;
         config.data.favicon_generation.settings = favicons_params.settings;
         if (favicons_params.icons_path === undefined) {
@@ -268,7 +268,7 @@ module.exports = function (params, callback) {
             },
             function (favicon, callback) {
                 var codes = [];
-                async.each(html_files, function (html, callback) {
+                async.each(favicons_params.html, function (html, callback) {
                     writeHTML(html, favicon.favicon.html_code, function (code) {
                         codes.push(code);
                         callback(null, code);

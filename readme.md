@@ -17,7 +17,7 @@ favicons(config, callback);
 
 ### Configuration
 
-To keep things organised, configuration contains 3 objects: `files`, `icons` and `settings`. An example of usage with the default values is shown below:
+To keep things organised, configuration contains 4 objects: `files`, `icons` and `settings` and `config`. An example of usage with the default values is shown below:
 
 ```js
 {
@@ -53,7 +53,8 @@ To keep things organised, configuration contains 3 objects: `files`, `icons` and
         url: null,                // URL for your website. `string`
         silhouette: false,        // Turn the logo into a white silhouette for Windows 8. `boolean`
         logging: false            // Print logs to console? `boolean`
-    }
+    },
+    favicon_generation: null,     // Complete JSON overwrite for the favicon_generation object. `object`
 }
 ```
 
