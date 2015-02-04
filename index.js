@@ -20,10 +20,18 @@ module.exports = function (params, callback) {
         config = require('./data/config.json'),
         options = mergeDefaults(params || {}, require('./data/defaults.json'));
 
+    // Print development log
+    function print(message) {
+        if (options.settings.logging && message) {
+            console.log(message + '...');
+        }
+    }
+
     // Return base64 encoded file
     function encodeBase64(file, callback) {
-        fs.readFile(file, { encoding: null }, function (error, file) {
-            return callback(error, file.toString('base64'));
+        fs.readFile(file, { encoding: null }, function (error, data) {
+            print('Encoded to base64: ' + file);
+            return callback(error, data.toString('base64'));
         });
     }
 
@@ -33,15 +41,19 @@ module.exports = function (params, callback) {
             dest = options.files.dest;
         mergeDefaults(params.favicon_generation || {}, config.data.favicon_generation);
         mkdirp(dest, function () {
+            print('Created folder: ' + dest);
             client.post("http://realfavicongenerator.net/api/favicon", config, function (data, response) {
+                print('Posted request to RealFaviconGenerator');
                 if (response.statusCode !== 200) {
                     return callback(response.statusCode + ': could not publish request to the RealFaviconGenerator API.', null);
                 }
                 var parserStream = unzip.Parse(),
                     writeStream = fstream.Writer(dest).on('close', function () {
+                        print('Closing the write stream');
                         return callback(null, data.favicon_generation_result);
                     });
                 return http.get(data.favicon_generation_result.favicon.package_url, function (response) {
+                    print('Successfully fetched the favicons file');
                     response.pipe(parserStream).pipe(writeStream);
                 });
             });
@@ -64,6 +76,7 @@ module.exports = function (params, callback) {
             remove = tags.remove;
         fs.exists(file, function (exists) {
             if (exists) {
+                print('HTML file exists: ' + file);
                 add = add.concat(typeof tags.add === 'string' ? [tags.add] : tags.add);
                 remove = remove.concat(typeof tags.remove === 'string' ? [tags.remove] : tags.remove);
                 metaparser({
@@ -72,12 +85,14 @@ module.exports = function (params, callback) {
                     remove: remove,
                     out: file,
                     callback: function (error, html) {
-                        console.log(html);
+                        print('Successfully injected HTML into ' + file);
                         return callback(error, html, add);
                     }
                 });
             } else {
+                print('HTML file does not exist: ' + file);
                 fs.writeFile(file, html, function (error) {
+                    print('Successfully created HTML file: ' + file);
                     return callback(error, html);
                 });
             }
@@ -144,15 +159,18 @@ module.exports = function (params, callback) {
     function setIcons(source, callback) {
         if (typeof source === 'string') {
             if (is_url(source)) {
+                print('Favicons source is a URL');
                 config.data.favicon_generation.master_picture.type = 'url';
                 config.data.favicon_generation.master_picture.url = source;
                 return callback(null);
             }
+            print('Favicons source is an inline string');
             encodeBase64(source, function (error, file) {
                 config.data.favicon_generation.master_picture.content = file;
                 return callback(error);
             });
         } else {
+            print('Favicons source is an object');
             async.parallel([
                 function (callback) {
                     encodeBase64(source.android, function (error, file) {
@@ -229,25 +247,33 @@ module.exports = function (params, callback) {
         }
         async.waterfall([
             function (callback) {
+                print('\nSetting icons');
                 setIcons(options.files.src, function (error) {
                     return callback(error);
                 });
             },
             function (callback) {
+                print('\nGenerating favicons');
                 generateFavicons(function (error, favicon) {
                     return callback(error, favicon);
                 });
             },
             function (favicon, callback) {
                 var codes = [];
-                async.each(html, function (html, callback) {
-                    writeHTML(html, favicon.favicon.html_code, function (error, code) {
-                        codes.push(code);
-                        return callback(error);
+                if (options.files.html) {
+                    print('\nWriting metadata to HTML file(s)');
+                    async.each(html, function (html, callback) {
+                        writeHTML(html, favicon.favicon.html_code, function (error, code) {
+                            codes.push(code);
+                            return callback(error);
+                        });
+                    }, function (error) {
+                        return callback(error, codes);
                     });
-                }, function (error) {
-                    return callback(error, codes);
-                });
+                } else {
+                    print('\nNot writing HTML, just returning metadata');
+                    return callback(favicon.favicon.html_code);
+                }
             }
         ], function (error, codes) {
             return callback ? callback(error, codes) : null;
