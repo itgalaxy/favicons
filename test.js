@@ -13,10 +13,7 @@ require('./index.js')({
             "windows": 'test/logo.png',
             "yandex": 'test/logo.png'
         },
-        dest: [
-            'test/favicons',
-            'test/images/favicons'
-        ],
+        dest: 'test/favicons',
         html: 'test/test.html',
         iconsPath: 'favicons'
     },

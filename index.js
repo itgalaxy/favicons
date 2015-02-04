@@ -38,7 +38,7 @@ module.exports = function (params, callback) {
     // Publish request to the RealFaviconGenerator API, unzip response
     function generateFavicons(callback) {
         var client = new Client(),
-            dest = options.files.dest;
+            dest = path.normalize(options.files.dest);
         mergeDefaults(params.favicon_generation || {}, config.data.favicon_generation);
         mkdirp(dest, function () {
             print('Created folder: ' + dest);
