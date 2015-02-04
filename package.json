@@ -1,6 +1,6 @@
 {
   "name": "favicons",
-  "version": "2.1.2",
+  "version": "3.0.0",
   "description": "Favicon generator for Node.js",
   "main": "index.js",
   "repository": {
@@ -15,6 +15,7 @@
     "ico",
     "generator",
     "node",
+    "realfavicongenerator",
     "gulpfriendly"
   ],
   "author": "Hayden Bleasel <haydenbleasel@gmail.com>",

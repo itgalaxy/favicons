@@ -86,7 +86,7 @@ module.exports = function (params, callback) {
                     out: file,
                     callback: function (error, html) {
                         print('Successfully injected HTML into ' + file);
-                        return callback(error, html, add);
+                        return callback(error, html);
                     }
                 });
             } else {
