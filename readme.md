@@ -24,7 +24,7 @@ To keep things organised, the configuration object contains 4 sub-objects: `file
 ```js
 {
     files: {
-        src: null,                // Path for file to produce the favicons. `string`
+        src: null,                // Path(s) for file to produce the favicons. `string` or `object`
         dest: null,               // Path for writing the favicons to. `string`
         html: null,               // Path(s) for HTML file to write or append metadata. `string` or `array`
         iconsPath: null,          // Path for overriding default icons path. `string`

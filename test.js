@@ -1,6 +1,5 @@
-var favicons = require('./index.js');
-
-favicons({
+/*jslint node:true*/
+require('./index.js')({
     files: {
         //src: 'test/logo.png',
         src: {
@@ -14,7 +13,10 @@ favicons({
             "windows": 'test/logo.png',
             "yandex": 'test/logo.png'
         },
-        dest: 'test/favicons',
+        dest: [
+            'test/favicons',
+            'test/images/favicons'
+        ],
         html: 'test/test.html',
         iconsPath: 'favicons'
     },
@@ -29,5 +31,6 @@ favicons({
         logging: true
     }
 }, function (error, metadata) {
+    'use strict';
     console.log(error, metadata);
 });
