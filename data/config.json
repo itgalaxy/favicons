@@ -15,9 +15,7 @@
           "margin": "4",
           "background_color": "#ddd",
           "startup_image": {
-            "master_picture": {
-              "type": "inline"
-            },
+            "master_picture": {},
             "background_color": "#ddd"
           }
         },
