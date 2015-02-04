@@ -25,7 +25,7 @@
     "appDescription": null,
     "developer": null,
     "developerURL": null,
-    "background": null,
+    "background": "#ddd",
     "index": null,
     "url": null,
     "silhouette": false,

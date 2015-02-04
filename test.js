@@ -2,7 +2,18 @@ var favicons = require('./index.js');
 
 favicons({
     files: {
-        src: 'test/logo.png',
+        //src: 'test/logo.png',
+        src: {
+            "android": 'test/logo.png',
+            "appleIcon": 'test/logo.png',
+            "appleStartup": 'test/logo.png',
+            "coast": 'test/logo.png',
+            "favicons": 'test/logo.png',
+            "firefox": 'test/logo.png',
+            "opengraph": 'test/logo.png',
+            "windows": 'test/logo.png',
+            "yandex": 'test/logo.png'
+        },
         dest: 'test/favicons',
         html: 'test/test.html',
         iconsPath: 'favicons'
@@ -17,6 +28,6 @@ favicons({
         url: 'http://haydenbleasel.com',
         logging: true
     }
-}, function (metadata) {
-    console.log(metadata, 'meta');
+}, function (error, metadata) {
+    console.log(error, metadata);
 });
