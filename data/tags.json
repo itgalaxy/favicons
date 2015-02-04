@@ -1,0 +1,17 @@
+{
+  "add": [],
+  "remove": [
+    "link[rel='shortcut icon']",
+    "link[rel='icon']",
+    "link[rel^='apple-touch-icon']",
+    "link[rel='manifest']",
+    "link[rel='yandex-tableau-widget']",
+    "link[rel='apple-touch-startup-image']",
+    "meta[name^='msapplication']",
+    "meta[name='mobile-web-app-capable']",
+    "meta[name='theme-color']",
+    "meta[name='apple-mobile-web-app-capable']",
+    "meta[property='og:image']",
+    "link[rel='favicons']"
+  ]
+}
