@@ -1,5 +1,8 @@
 /*jslint node:true*/
-var fav = require('./index.js'),
+var fs = require('fs'),
+    fav = require('./index.js'),
+    through = require('through2'),
+    File = require('vinyl'),
   config = {
     files: {
         //src: 'test/logo.png',
@@ -33,4 +36,19 @@ var fav = require('./index.js'),
 fav(config, function (error, metadata) {
     'use strict';
     console.log(error, metadata);
+});
+
+fs.readFile('test/logo.png', function (err, data) {
+    config = fav.getConfig(config);
+    config.data.favicon_generation.master_picture = { type: 'inline', content: data.toString('base64') };
+    fav.generateFaviconStream(config, function(error, result) {
+        console.log('stream callback: ', result.favicon_generation_result.result);
+    }).on('entry', function(entry) {
+        passThrough.write(new File({path: entry.path, contents: entry}));
+    });
+});
+
+var passThrough = through.obj({ highWaterMark: 50 }, function(obj, enc, cb) {
+    console.log(obj);
+    cb(null, obj);
 });

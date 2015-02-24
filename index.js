@@ -1,5 +1,4 @@
 /*jslint node:true, nomen:true*/
-
 (function() {
 
     'use strict';
@@ -18,49 +17,31 @@
         mkdirp = require('mkdirp'),
         mergeDefaults = require('merge-defaults'),
         tags = require('./data/tags.json'),
-        config = require('./data/config.json'),
 
         // placeholder
         print;
 
     module.exports = function (params, callback) {
-
-        var options = mergeDefaults(params || {}, require('./data/defaults.json')),
-            icons_path = options.files.iconsPath || path.relative(path.dirname(options.files.html), options.files.dest),
-            html = typeof options.files.html === 'string' ? [options.files.html] : options.files.html;
-        if (icons_path) {
-            config.data.favicon_generation.files_location.type = 'path';
-            config.data.favicon_generation.files_location.path = icons_path;
-        }
-
-        // Print development log
-        print = function (message) {
-            if (options.settings.logging && message) {
-                console.log(message + '...');
-            }
-        };
-
-        module.exports.setConfig(options);
-
+        var config = module.exports.getConfig(params);
         async.waterfall([
             function (callback) {
                 print('\nSetting icons');
-                setIcons(options.files.src, function (error) {
+                setIcons(config, config.files.src, function (error) {
                     return callback(error);
                 });
             },
             function (callback) {
                 print('\nGenerating favicons');
-                var dest = path.normalize(options.files.dest);
-                module.exports.generateFavicons(dest, function (error, favicon) {
+                var dest = path.normalize(config.files.dest);
+                module.exports.generateFavicons(config, dest, function (error, favicon) {
                     return callback(error, favicon);
                 });
             },
             function (favicon, callback) {
                 var codes = [];
-                if (options.files.html) {
+                if (config.html) {
                     print('\nWriting metadata to HTML file(s)');
-                    async.each(html, function (html, callback) {
+                    async.each(config.html, function (html, callback) {
                         writeHTML(html, favicon.favicon.html_code, function (error, code) {
                             codes.push(code);
                             return callback(error);
@@ -74,10 +55,8 @@
                 }
             }
         ], function (error, codes) {
-            /* the only unprotected "callback" */
             return callback ? callback(error, codes) : null;
         });
-
     }
 
     // Return base64 encoded file
@@ -88,26 +67,43 @@
         });
     }
 
-    // Publish request to the RealFaviconGenerator API, unzip response
-    module.exports.generateFavicons = function (dest, callback) {
-        var client = new Client();
+    // Publish request to the RealFaviconGenerator API, stream unzipped response
+    module.exports.generateFaviconStream = function (config, callback) {
+        var client = new Client(),
+            parserStream = unzip.Parse();
+        client.post("http://realfavicongenerator.net/api/favicon", config, function (data, response) {
+            if (print) {
+                print('Posted request to RealFaviconGenerator');
+            }
+            if (response.statusCode !== 200) {
+                return callback(response.statusCode + ': could not publish request to the RealFaviconGenerator API.', null);
+            }
+            callback(null, data);
+            return http.get(data.favicon_generation_result.favicon.package_url, function (response) {
+                if (print) {
+                    print('Successfully fetched the favicons file');
+                }
+                response.pipe(parserStream);
+            });
+        });
+        return parserStream;
+    }
+
+    // handle disk ops for streamed icons
+    module.exports.generateFavicons = function (config, dest, callback) {
         mkdirp(dest, function () {
             print('Created folder: ' + dest);
-            client.post("http://realfavicongenerator.net/api/favicon", config, function (data, response) {
-                print('Posted request to RealFaviconGenerator');
-                if (response.statusCode !== 200) {
-                    return callback(response.statusCode + ': could not publish request to the RealFaviconGenerator API.', null);
+            var writeStream = fstream.Writer(dest);
+
+            module.exports.generateFaviconStream(config, function (error, data) {
+                if (error) {
+                    return callback(error, null);
                 }
-                var parserStream = unzip.Parse(),
-                    writeStream = fstream.Writer(dest).on('close', function () {
-                        print('Closing the write stream');
-                        return callback(null, data.favicon_generation_result);
-                    });
-                return http.get(data.favicon_generation_result.favicon.package_url, function (response) {
-                    print('Successfully fetched the favicons file');
-                    response.pipe(parserStream).pipe(writeStream);
+                writeStream.on('close', function () {
+                    print('Closing the write stream');
+                    return callback(null, data.favicon_generation_result);
                 });
-            });
+            }).pipe(writeStream);
         });
     }
 
@@ -151,7 +147,22 @@
     }
 
     // Set global icon options for request
-    module.exports.setConfig = function (options) {
+    module.exports.getConfig = function (params) {
+        var options = mergeDefaults(params || {}, require('./data/defaults.json')),
+            config = require('./data/config.json'),
+            icons_path = options.files.iconsPath || path.relative(path.dirname(options.files.html), options.files.dest);
+        // Print development log
+        print = function (message) {
+            if (options.settings.logging && message) {
+                console.log(message + '...');
+            }
+        };
+        config.files = options.files;
+        config.html = typeof options.files.html === 'string' ? [options.files.html] : options.files.html;
+        if (icons_path) {
+            config.data.favicon_generation.files_location.type = 'path';
+            config.data.favicon_generation.files_location.path = icons_path;
+        }
         if (options.icons.appleStartup) {
             config.data.favicon_generation.favicon_design.ios.startup_image.background_color = options.settings.background;
         } else {
@@ -204,10 +215,11 @@
         } else {
             delete config.data.favicon_generation.favicon_design.yandex_browser;
         }
+        return config;
     }
 
     // Set custom icon sources if necessary
-    function setIcons(source, callback) {
+    function setIcons(config, source, callback) {
         if (typeof source === 'string') {
             if (is_url(source)) {
                 print('Favicons source is a URL');
@@ -287,4 +299,4 @@
         }
     }
 
-}).call(this);
+})();
