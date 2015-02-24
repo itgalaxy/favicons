@@ -1,5 +1,6 @@
 /*jslint node:true*/
-require('./index.js')({
+var fav = require('./index.js'),
+  config = {
     files: {
         //src: 'test/logo.png',
         src: {
@@ -27,7 +28,9 @@ require('./index.js')({
         url: 'http://haydenbleasel.com',
         logging: true
     }
-}, function (error, metadata) {
+  };
+
+fav(config, function (error, metadata) {
     'use strict';
     console.log(error, metadata);
 });

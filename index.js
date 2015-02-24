@@ -1,5 +1,6 @@
 /*jslint node:true, nomen:true*/
-module.exports = function (params, callback) {
+
+(function() {
 
     'use strict';
 
@@ -18,13 +19,65 @@ module.exports = function (params, callback) {
         mergeDefaults = require('merge-defaults'),
         tags = require('./data/tags.json'),
         config = require('./data/config.json'),
-        options = mergeDefaults(params || {}, require('./data/defaults.json'));
 
-    // Print development log
-    function print(message) {
-        if (options.settings.logging && message) {
-            console.log(message + '...');
+        // placeholder
+        print;
+
+    module.exports = function (params, callback) {
+
+        var options = mergeDefaults(params || {}, require('./data/defaults.json')),
+            icons_path = options.files.iconsPath || path.relative(path.dirname(options.files.html), options.files.dest),
+            html = typeof options.files.html === 'string' ? [options.files.html] : options.files.html;
+        if (icons_path) {
+            config.data.favicon_generation.files_location.type = 'path';
+            config.data.favicon_generation.files_location.path = icons_path;
         }
+
+        // Print development log
+        print = function (message) {
+            if (options.settings.logging && message) {
+                console.log(message + '...');
+            }
+        };
+
+        module.exports.setConfig(options);
+
+        async.waterfall([
+            function (callback) {
+                print('\nSetting icons');
+                setIcons(options.files.src, function (error) {
+                    return callback(error);
+                });
+            },
+            function (callback) {
+                print('\nGenerating favicons');
+                var dest = path.normalize(options.files.dest);
+                module.exports.generateFavicons(dest, function (error, favicon) {
+                    return callback(error, favicon);
+                });
+            },
+            function (favicon, callback) {
+                var codes = [];
+                if (options.files.html) {
+                    print('\nWriting metadata to HTML file(s)');
+                    async.each(html, function (html, callback) {
+                        writeHTML(html, favicon.favicon.html_code, function (error, code) {
+                            codes.push(code);
+                            return callback(error);
+                        });
+                    }, function (error) {
+                        return callback(error, codes);
+                    });
+                } else {
+                    print('\nNot writing HTML, just returning metadata');
+                    return callback(favicon.favicon.html_code);
+                }
+            }
+        ], function (error, codes) {
+            /* the only unprotected "callback" */
+            return callback ? callback(error, codes) : null;
+        });
+
     }
 
     // Return base64 encoded file
@@ -36,10 +89,8 @@ module.exports = function (params, callback) {
     }
 
     // Publish request to the RealFaviconGenerator API, unzip response
-    function generateFavicons(callback) {
-        var client = new Client(),
-            dest = path.normalize(options.files.dest);
-        mergeDefaults(params.favicon_generation || {}, config.data.favicon_generation);
+    module.exports.generateFavicons = function (dest, callback) {
+        var client = new Client();
         mkdirp(dest, function () {
             print('Created folder: ' + dest);
             client.post("http://realfavicongenerator.net/api/favicon", config, function (data, response) {
@@ -100,7 +151,7 @@ module.exports = function (params, callback) {
     }
 
     // Set global icon options for request
-    function setConfig() {
+    module.exports.setConfig = function (options) {
         if (options.icons.appleStartup) {
             config.data.favicon_generation.favicon_design.ios.startup_image.background_color = options.settings.background;
         } else {
@@ -236,51 +287,4 @@ module.exports = function (params, callback) {
         }
     }
 
-    // Kick everything off
-    function favicons() {
-        var icons_path = options.files.iconsPath || path.relative(path.dirname(options.files.html), options.files.dest),
-            html = typeof options.files.html === 'string' ? [options.files.html] : options.files.html;
-        setConfig();
-        if (icons_path) {
-            config.data.favicon_generation.files_location.type = 'path';
-            config.data.favicon_generation.files_location.path = icons_path;
-        }
-        async.waterfall([
-            function (callback) {
-                print('\nSetting icons');
-                setIcons(options.files.src, function (error) {
-                    return callback(error);
-                });
-            },
-            function (callback) {
-                print('\nGenerating favicons');
-                generateFavicons(function (error, favicon) {
-                    return callback(error, favicon);
-                });
-            },
-            function (favicon, callback) {
-                var codes = [];
-                if (options.files.html) {
-                    print('\nWriting metadata to HTML file(s)');
-                    async.each(html, function (html, callback) {
-                        writeHTML(html, favicon.favicon.html_code, function (error, code) {
-                            codes.push(code);
-                            return callback(error);
-                        });
-                    }, function (error) {
-                        return callback(error, codes);
-                    });
-                } else {
-                    print('\nNot writing HTML, just returning metadata');
-                    return callback(favicon.favicon.html_code);
-                }
-            }
-        ], function (error, codes) {
-            return callback ? callback(error, codes) : null;
-        });
-
-    }
-
-    favicons();
-
-};
+}).call(this);
