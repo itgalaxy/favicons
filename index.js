@@ -150,7 +150,7 @@
     module.exports.getConfig = function (params) {
         var options = mergeDefaults(params || {}, require('./data/defaults.json')),
             config = require('./data/config.json'),
-            icons_path = options.files.iconsPath || path.relative(path.dirname(options.files.html), options.files.dest);
+            icons_path;
         // Print development log
         print = function (message) {
             if (options.settings.logging && message) {
@@ -159,9 +159,15 @@
         };
         config.files = options.files;
         config.html = typeof options.files.html === 'string' ? [options.files.html] : options.files.html;
-        if (icons_path) {
-            config.data.favicon_generation.files_location.type = 'path';
-            config.data.favicon_generation.files_location.path = icons_path;
+        if (options.files) {
+          icons_path = options.files.iconsPath;
+          if (options.files.html && options.files.dest) {
+              icons_path = icons_path || path.relative(path.dirname(options.files.html), options.files.dest);
+          }
+          if (icons_path) {
+              config.data.favicon_generation.files_location.type = 'path';
+              config.data.favicon_generation.files_location.path = icons_path;
+          }
         }
         if (options.icons.appleStartup) {
             config.data.favicon_generation.favicon_design.ios.startup_image.background_color = options.settings.background;
