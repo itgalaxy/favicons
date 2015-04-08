@@ -55,7 +55,8 @@ To keep things organised, the configuration object contains 4 sub-objects: `file
         url: null,                // URL for your website. `string`
         silhouette: false,        // Turn the logo into a white silhouette for Windows 8. `boolean`
         logging: false,           // Print logs to console? `boolean`
-        androidOrientation: null  // Sets the orientation in manifest.json for Android Chrome `string`
+        androidOrientation: null, // Sets the orientation in manifest.json for Android Chrome `string`
+        androidDisplay: null      // Sets the display value in manifest.json for Android Chrome `string`
     },
     favicon_generation: null,     // Complete JSON overwrite for the favicon_generation object. `object`
 }

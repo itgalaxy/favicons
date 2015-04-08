@@ -199,6 +199,7 @@
             config.data.favicon_generation.favicon_design.android_chrome.manifest.name = options.settings.appName;
             config.data.favicon_generation.favicon_design.android_chrome.manifest.start_url = options.settings.index;
             config.data.favicon_generation.favicon_design.android_chrome.manifest.orientation = options.settings.androidOrientation;
+            config.data.favicon_generation.favicon_design.android_chrome.manifest.display = options.settings.androidDisplay;
             config.data.favicon_generation.favicon_design.android_chrome.manifest.existing_manifest = options.files.androidManifest;
         } else {
             delete config.data.favicon_generation.favicon_design.android_chrome;

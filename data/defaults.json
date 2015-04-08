@@ -32,7 +32,8 @@
     "version": 1.0,
     "config": null,
     "logging": false,
-    "androidOrientation": null
+    "androidOrientation": null,
+    "androidDisplay": null
   },
   "favicon_generation": null
 }
