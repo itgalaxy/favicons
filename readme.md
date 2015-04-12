@@ -107,6 +107,14 @@ function (error, metadata) {
 }
 ```
 
+### Command Line
+
+You can use favicons from the terminal accessing the nested config options via this dot syntax.
+
+```sh
+favicons --files.src='images/image.png' --files.dest='favicons/' --settings.logging
+```
+
 ## Output
 
 Depending on which platforms you opt for, the output includes:
