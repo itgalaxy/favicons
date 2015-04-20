@@ -70,7 +70,20 @@
     // Publish request to the RealFaviconGenerator API, stream unzipped response
     module.exports.generateFaviconStream = function (config, callback) {
         var client = new Client(),
-            parserStream = unzip.Parse();
+            parserStream = unzip.Parse(),
+            ended = false,
+            // monkeypatch
+            old_emit = parserStream.emit;
+        parserStream.emit = function() {
+          if (arguments[0] == 'close' || arguments[0] == 'end') {
+              if (!ended) {
+                  ended = true;
+                  old_emit.apply(parserStream, ['end']);
+              }
+          } else {
+              old_emit.apply(parserStream, arguments);
+          }
+        }
         client.post("http://realfavicongenerator.net/api/favicon", config, function (data, response) {
             if (print) {
                 print('Posted request to RealFaviconGenerator');
