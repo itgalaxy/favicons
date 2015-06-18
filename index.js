@@ -88,7 +88,7 @@
             if (print) {
                 print('Posted request to RealFaviconGenerator');
             }
-            if (response['statusCode'] >= 200 && response['statusCode'] < 300) {
+            if (response.statusCode < 200 || response.statusCode >= 300) {
                 return callback(data, null);
             }
             callback(null, data);
