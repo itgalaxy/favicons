@@ -88,8 +88,8 @@
             if (print) {
                 print('Posted request to RealFaviconGenerator');
             }
-            if (response.statusCode !== 200) {
-                return callback(response.statusCode + ': could not publish request to the RealFaviconGenerator API.', null);
+            if (response['statusCode'] >= 200 && response['statusCode'] < 300) {
+                return callback(data, null);
             }
             callback(null, data);
             return http.get(data.favicon_generation_result.favicon.package_url, function (response) {
