@@ -304,9 +304,9 @@
                     });
                 },
                 function (callback) {
-                    if(!config.data.favicon_generation.favicon_design.coast) return callback();
+                    if(!config.data.favicon_generation.favicon_design.windows) return callback();
                     encodeBase64(source.windows, function (error, file) {
-                        config.data.favicon_generation.favicon_design.coast.master_picture = { type: 'inline', content: file };
+                        config.data.favicon_generation.favicon_design.windows.master_picture = { type: 'inline', content: file };
                         return callback(error, file);
                     });
                 },
