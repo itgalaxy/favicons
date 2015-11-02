@@ -31,7 +31,9 @@
     "silhouette": false,
     "version": 1.0,
     "config": null,
-    "logging": false
+    "logging": false,
+    "androidOrientation": null,
+    "androidDisplay": null
   },
   "favicon_generation": null
 }
