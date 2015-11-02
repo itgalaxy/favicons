@@ -28,6 +28,13 @@
 
         }
 
+        /*
+            async.each(icons, function (platform) {
+                // Platform: Apple, Android, Coast, etc.
+
+            });
+        */
+
         // 4. Generate code for each favicon
 
         // 5. Return code and images into a buffer? Promise? Whatever. { code: '', images: { ... } }
