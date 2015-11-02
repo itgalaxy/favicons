@@ -7,6 +7,9 @@
     "type": "git",
     "url": "https://github.com/haydenbleasel/favicons.git"
   },
+  "bin": {
+    "favicons": "./bin/favicons.js"
+  },
   "scripts": {
     "test": "node test.js"
   },
@@ -29,6 +32,7 @@
     "fstream": "^1.0.2",
     "merge-defaults": "^0.2.1",
     "metaparser": "^1.0.5",
+    "minimist": "^1.1.1",
     "mkdirp": "^0.5.0",
     "node-rest-client": "^1.4.4",
     "unzip": "^0.1.11"
