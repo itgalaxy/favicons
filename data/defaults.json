@@ -1,14 +1,4 @@
 {
-  "files": {
-    "src": null,
-    "dest": null,
-    "html": null,
-    "iconsPath": null,
-    "androidManifest": null,
-    "browserConfig": null,
-    "firefoxManifest": null,
-    "yandexManifest": null
-  },
   "icons": {
     "android": true,
     "appleIcon": true,
@@ -30,8 +20,6 @@
     "url": null,
     "silhouette": false,
     "version": 1.0,
-    "config": null,
     "logging": false
-  },
-  "favicon_generation": null
+  }
 }
