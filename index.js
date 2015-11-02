@@ -255,54 +255,63 @@
             print('Favicons source is an object');
             async.parallel([
                 function (callback) {
+                    if(!config.data.favicon_generation.favicon_design.android_chrome) return callback();
                     encodeBase64(source.android, function (error, file) {
                         config.data.favicon_generation.favicon_design.android_chrome.master_picture = { type: 'inline', content: file };
                         return callback(error, file);
                     });
                 },
                 function (callback) {
+                    if(!config.data.favicon_generation.favicon_design.ios) return callback();
                     encodeBase64(source.appleIcon, function (error, file) {
                         config.data.favicon_generation.favicon_design.ios.master_picture = { type: 'inline', content: file };
                         return callback(error, file);
                     });
                 },
                 function (callback) {
+                    if(!config.data.favicon_generation.favicon_design.ios.startup_image) return callback();
                     encodeBase64(source.appleStartup, function (error, file) {
                         config.data.favicon_generation.favicon_design.ios.startup_image.master_picture = { type: 'inline', content: file };
                         return callback(error, file);
                     });
                 },
                 function (callback) {
+                    if(!config.data.favicon_generation.favicon_design.coast) return callback();
                     encodeBase64(source.coast, function (error, file) {
                         config.data.favicon_generation.favicon_design.coast.master_picture = { type: 'inline', content: file };
                         return callback(error, file);
                     });
                 },
                 function (callback) {
+                    if(!config.data.favicon_generation.favicon_design.desktop_browser) return callback();
                     encodeBase64(source.favicons, function (error, file) {
                         config.data.favicon_generation.favicon_design.desktop_browser.master_picture = { type: 'inline', content: file };
                         return callback(error, file);
                     });
                 },
                 function (callback) {
+                    if(!config.data.favicon_generation.favicon_design.firefox_app) return callback();
                     encodeBase64(source.firefox, function (error, file) {
                         config.data.favicon_generation.favicon_design.firefox_app.master_picture = { type: 'inline', content: file };
                         return callback(error, file);
                     });
                 },
                 function (callback) {
+                    if(!config.data.favicon_generation.favicon_design.open_graph) return callback();
                     encodeBase64(source.opengraph, function (error, file) {
                         config.data.favicon_generation.favicon_design.open_graph.master_picture = { type: 'inline', content: file };
                         return callback(error, file);
                     });
                 },
                 function (callback) {
+                    if(!config.data.favicon_generation.favicon_design.windows) return callback();
                     encodeBase64(source.windows, function (error, file) {
-                        config.data.favicon_generation.favicon_design.coast.master_picture = { type: 'inline', content: file };
+                        config.data.favicon_generation.favicon_design.windows.master_picture = { type: 'inline', content: file };
                         return callback(error, file);
                     });
                 },
                 function (callback) {
+                    if(!config.data.favicon_generation.favicon_design.yandex_browser) return callback();
                     encodeBase64(source.yandex, function (error, file) {
                         config.data.favicon_generation.favicon_design.yandex_browser.master_picture = { type: 'inline', content: file };
                         return callback(error, file);
