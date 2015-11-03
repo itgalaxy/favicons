@@ -8,6 +8,7 @@
         async = require('async'),
         Jimp = require('jimp'),
         color = require('tinycolor2'),
+        cheerio = require('cheerio'),
 
         // Configuration files
         icons = require('./data/icons.json'),
