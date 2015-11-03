@@ -91,15 +91,10 @@
       "height": 76,
       "html": "<link rel='apple-touch-icon' sizes='76x76' href=''>"
     },
-    "apple-touch-icon-precomposed.png": {
-      "type": "image",
-      "width": ?,
-      "height": ?
-    },
     "apple-touch-icon.png": {
       "type": "image",
-      "width": ?,
-      "height": ?,
+      "width": 60,
+      "height": 60,
       "html": "<meta name='apple-mobile-web-app-capable' content='yes'>"
     }
   },
@@ -182,8 +177,8 @@
     },
     "favicon.ico": {
       "type": "image",
-      "width": ?,
-      "height": ?,
+      "width": 16,
+      "height": 16,
       "html": "<link rel='shortcut icon' href=''>"
     }
   },
@@ -219,8 +214,8 @@
     "browserconfig.xml": {
       "type": "file",
       "html": [
-        "<meta name='msapplication-TileColor' content=''>"
-        "<meta name='msapplication-config' content=''>"
+        "<meta name='msapplication-TileColor' content=''>",
+        "<meta name='msapplication-config' content=''>",
         "<meta name='theme-color' content=''>"
       ]
     },

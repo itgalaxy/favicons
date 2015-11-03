@@ -33,6 +33,4 @@ node_modules
 
 ### Custom ###
 test/test.html
-test/manifest.webapp
-test/images-rfg/
-test/favicons/
+test/files/
