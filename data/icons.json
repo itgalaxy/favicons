@@ -227,23 +227,23 @@
     },
     "mstile-150x150.png": {
       "type": "image",
-      "width": 150,
-      "height": 150
+      "width": 270,
+      "height": 270
     },
     "mstile-310x150.png": {
       "type": "image",
-      "width": 310,
-      "height": 150
+      "width": 558,
+      "height": 270
     },
     "mstile-310x310.png": {
       "type": "image",
-      "width": 310,
-      "height": 310
+      "width": 558,
+      "height": 558
     },
     "mstile-70x70.png": {
       "type": "image",
-      "width": 70,
-      "height": 70
+      "width": 128,
+      "height": 128
     }
   },
   "yandex": {
