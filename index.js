@@ -4,7 +4,7 @@
     'use strict';
 
     // Node modules
-    var _ = require('underscore'),
+    var merge = require('merge-defaults'),
         async = require('async'),
         Jimp = require('jimp'),
         color = require('tinycolor2'),
@@ -17,9 +17,20 @@
     module.exports = function (source, configuration, callback) {
 
         // 1. Take a set of icon parameters (default all to true)
-        var options = _.defaults(configuration || {}, defaults),
+        var options = merge(configuration || {}, defaults),
             rgba = color(options.background).toRgb(),
             background = Jimp.rgbaToInt(rgba.r, rgba.g, rgba.b, rgba.a * 255);
+
+        // 2. Take a single image or an object of images { size: image }
+        print('Favicons source is ' + (typeof source === 'object' ? 'an object' : 'a string') + '.');
+
+        function error(status, name, message) {
+            return {
+                status: status,
+                error: name || 'Error',
+                message: message || 'An unknown error has occured'
+            };
+        }
 
         function print(message) {
             if (options.logging && message) {
@@ -34,6 +45,10 @@
 
         function createImage(config, name, callback) {
             var minimum = Math.min(config.width, config.height),
+                original = typeof source === 'string' ? [{ 1500: source }] : source,
+                icon = _.min(original, function (value, key, list) {
+                    return key >= minimum;
+                }),
                 offset = {
                     height: (config.height - minimum > 0 ? (config.height - minimum) / 2 : 0),
                     width: (config.width - minimum > 0 ? (config.width - minimum) / 2 : 0)
@@ -42,7 +57,8 @@
                     if (error) {
                         return callback(error);
                     }
-                    Jimp.read(source).then(function (image) {
+                    console.log(icon, 'icon');
+                    Jimp.read(icon).then(function (image) {
                         image.resize(minimum, Jimp.AUTO);
                         canvas.composite(image, offset.width, offset.height);
                         image.getBuffer(Jimp.MIME_PNG, function (image, error, buffer) {
@@ -54,23 +70,35 @@
                 });
         }
 
+        function generateHTML(html) {
+            var response = null;
+            if (html) {
+                html = (typeof html === 'string' ? html : html.join(' '));
+                $ = cheerio.load(config.html);
+                $('link').attr('href', path.join(options.path, name));
+                $('meta').attr('content', path.join(options.path, name));
+                response = $.html();
+            }
+            return callback(null, response);
+        }
+
         function generateFavicons(files, callback) {
-            var html = [];
             async.forEachOf(files, function (config, name, callback) {
-                html.push(config.html || null);
                 if (config.type === 'file') {
                     createFile(config, name, function () {
                         return callback(null);
                     });
                 } else if (config.type === 'image') {
                     createImage(config, name, function () {
-                        return callback(null);
+                        generateHTML(config.html, function (html) {
+                            return callback(null, html);
+                        }
                     });
                 } else {
                     return callback('Something went wrong with icon configuration.');
                 }
             }, function (error) {
-                return callback(error, _.compact(html));
+                return callback(error, html);
             });
         }
 
@@ -88,9 +116,6 @@
                 return callback(error);
             });
         }
-
-        // 2. Take a single image or an object of images { size: image }
-        print('Favicons source is ' + (typeof source === 'object' ? 'an object' : 'a string') + '.');
 
         // 3. Resize each image and generate code (solve object->resize logic)
         createFavicons(options.icons, function (error) {
