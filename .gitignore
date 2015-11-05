@@ -33,4 +33,5 @@ node_modules
 
 ### Custom ###
 test/test.html
+test/images/
 test/files/
