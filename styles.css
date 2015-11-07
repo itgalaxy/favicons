@@ -54,6 +54,8 @@ pre, code {
     padding: 20px;
     display: block;
     margin-bottom: 20px;
+    overflow: scroll;
+    white-space: nowrap;
 }
 
 pre {
@@ -68,4 +70,60 @@ footer {
     font-size: 14px;
     color: #859BA6;
     line-height: 16px;
+}
+
+@media (max-width: 1020px) {
+    .container, footer {
+        max-width: 768px;
+    }
+    p {
+        font-size: 15px;
+    }
+    .column:first-of-type {
+        padding-right: 40px;
+    }
+    footer {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 828px) {
+    body {
+        padding-bottom: 60px;
+    }
+    .container, footer {
+        max-width: 480px;
+    }
+    .container {
+        padding: 90px 0;
+    }
+    footer {
+        padding: 45px 0;
+    }
+    .column {
+        width: 100%;
+        float: none;
+    }
+    .column:first-of-type {
+        padding-right: 0;
+        margin-bottom: 60px;
+    }
+    #demo {
+        display: none;
+    }
+}
+
+@media (max-width: 540px) {
+    .container, footer {
+        max-width: 260px;
+    }
+    .container {
+        padding: 60px 0;
+    }
+    .column:first-of-type {
+        margin-bottom: 30px;
+    }
+    footer {
+        padding: 0;
+    }
 }
