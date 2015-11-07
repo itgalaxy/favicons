@@ -55,11 +55,14 @@ pre, code {
     display: block;
     margin-bottom: 20px;
     overflow: scroll;
-    white-space: nowrap;
 }
 
 pre {
     line-height: 21px;
+}
+
+code {
+    white-space: nowrap;
 }
 
 code:before {
