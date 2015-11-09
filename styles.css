@@ -4,6 +4,32 @@ body {
     padding-bottom: 90px;
 }
 
+#forkongithub a {
+    background: #FFF;
+    color: #617D8A;
+    text-decoration: none;
+    font-family: arial, sans-serif;
+    text-align: center;
+    font-weight: bold;
+    padding: 5px 40px;
+    font-size: 1rem;
+    line-height: 2rem;
+    position: relative;
+    transition: 0.5s;
+    box-sizing: content-box;
+    white-space: nowrap;
+}
+
+#forkongithub a:hover {
+    background: #FF8C8C;
+    color: #fff;
+}
+
+#forkongithub a:after {
+    bottom: 1px;
+    top: auto;
+}
+
 .container, footer {
     max-width: 960px;
     margin: 0 auto;
@@ -128,5 +154,26 @@ footer {
     }
     footer {
         padding: 0;
+    }
+}
+
+@media screen and (min-width: 829px) {
+    #forkongithub {
+        position: fixed;
+        display: block;
+        top: 0;
+        right: 0;
+        width: 200px;
+        overflow: hidden;
+        height: 200px;
+        z-index: 9999;
+    }
+    #forkongithub a {
+        width: 200px;
+        position: absolute;
+        top: 60px;
+        right: -60px;
+        transform: rotate(45deg);
+        box-shadow: 4px 4px 10px rgba(0,0,0,0.2);
     }
 }
