@@ -5,9 +5,9 @@
   "developerURL": null,
   "background": "#fff",
   "path": "/",
-  "url": null,
-  "silhouette": false,
-  "version": 1.0,
+  "display": "standalone",
+  "orientation": "portrait",
+  "version": "1.0",
   "logging": false,
   "online": false,
   "icons": {

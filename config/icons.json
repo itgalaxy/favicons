@@ -6,11 +6,7 @@
     },
     "android-chrome-192x192.png": {
       "width": 192,
-      "height": 192,
-      "html": [
-        "<link rel='icon' type='image/png' sizes='192x192' href=''>",
-        "<link rel='manifest' href=''>"
-      ]
+      "height": 192
     },
     "android-chrome-36x36.png": {
       "width": 36,
@@ -32,124 +28,101 @@
   "appleIcon": {
     "apple-touch-icon-114x114.png": {
       "width": 114,
-      "height": 114,
-      "html": "<link rel='apple-touch-icon' sizes='114x114' href=''>"
+      "height": 114
     },
     "apple-touch-icon-120x120.png": {
       "width": 120,
-      "height": 120,
-      "html": "<link rel='apple-touch-icon' sizes='120x120' href=''>"
+      "height": 120
     },
     "apple-touch-icon-144x144.png": {
       "width": 144,
-      "height": 144,
-      "html": "<link rel='apple-touch-icon' sizes='144x144' href=''>"
+      "height": 144
     },
     "apple-touch-icon-152x152.png": {
       "width": 152,
-      "height": 152,
-      "html": "<link rel='apple-touch-icon' sizes='152x152' href=''>"
+      "height": 152
     },
     "apple-touch-icon-180x180.png": {
       "width": 180,
-      "height": 180,
-      "html": "<link rel='apple-touch-icon' sizes='180x180' href=''>"
+      "height": 180
     },
     "apple-touch-icon-57x57.png": {
       "width": 57,
-      "height": 57,
-      "html": "<link rel='apple-touch-icon' sizes='57x57' href=''>"
+      "height": 57
     },
     "apple-touch-icon-60x60.png": {
       "width": 60,
-      "height": 60,
-      "html": "<link rel='apple-touch-icon' sizes='60x60' href=''>"
+      "height": 60
     },
     "apple-touch-icon-72x72.png": {
       "width": 72,
-      "height": 72,
-      "html": "<link rel='apple-touch-icon' sizes='72x72' href=''>"
+      "height": 72
     },
     "apple-touch-icon-76x76.png": {
       "width": 76,
-      "height": 76,
-      "html": "<link rel='apple-touch-icon' sizes='76x76' href=''>"
+      "height": 76
     },
     "apple-touch-icon.png": {
       "width": 180,
-      "height": 180,
-      "html": "<meta name='apple-mobile-web-app-capable' content='yes'>"
+      "height": 180
     }
   },
   "appleStartup": {
     "apple-touch-startup-image-1024x748.png": {
       "width": 1024,
-      "height": 768,
-      "html": "<link rel='apple-touch-startup-image' media='(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 1)' href=''>"
+      "height": 768
     },
     "apple-touch-startup-image-1536x2008.png": {
       "width": 1536,
-      "height": 2008,
-      "html": "<link rel='apple-touch-startup-image' media='(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)' href=''>"
+      "height": 2008
     },
     "apple-touch-startup-image-2048x1496.png": {
       "width": 2048,
-      "height": 1496,
-      "html": "<link rel='apple-touch-startup-image' media='(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)' href=''>"
+      "height": 1496
     },
     "apple-touch-startup-image-320x460.png": {
       "width": 320,
-      "height": 460,
-      "html": "<link rel='apple-touch-startup-image' media='(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 1)' href=''>"
+      "height": 460
     },
     "apple-touch-startup-image-640x1096.png": {
       "width": 640,
-      "height": 1096,
-      "html": "<link rel='apple-touch-startup-image' media='(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)' href=''>"
+      "height": 1096
     },
     "apple-touch-startup-image-640x920.png": {
       "width": 640,
-      "height": 920,
-      "html": "<link rel='apple-touch-startup-image' media='(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)' href=''>"
+      "height": 920
     },
     "apple-touch-startup-image-768x1004.png": {
       "width": 768,
-      "height": 1004,
-      "html": "<link rel='apple-touch-startup-image' media='(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 1)' href=''>"
+      "height": 1004
     }
   },
   "coast": {
     "coast-228x228.png": {
       "width": 228,
-      "height": 228,
-      "html": "<link rel='icon' type='image/png' sizes='228x228' href=''>"
+      "height": 228
     }
   },
   "favicons": {
     "favicon-16x16.png": {
       "width": 16,
-      "height": 16,
-      "html": "<link rel='icon' type='image/png' sizes='16x16' href=''>"
+      "height": 16
     },
     "favicon-230x230.png": {
       "width": 230,
-      "height": 230,
-      "html": "<link rel='icon' type='image/png' sizes='230x230' href=''>"
+      "height": 230
     },
     "favicon-32x32.png": {
       "width": 32,
-      "height": 32,
-      "html": "<link rel='icon' type='image/png' sizes='32x32' href=''>"
+      "height": 32
     },
     "favicon-96x96.png": {
       "width": 96,
-      "height": 96,
-      "html": "<link rel='icon' type='image/png' sizes='96x96' href=''>"
+      "height": 96
     },
     "favicon.ico": {
       "width": 16,
-      "height": 16,
-      "html": "<link rel='shortcut icon' href=''>"
+      "height": 16
     }
   },
   "firefox": {
@@ -169,15 +142,13 @@
   "opengraph": {
     "open-graph.png": {
       "width": 1500,
-      "height": 1500,
-      "html": "<meta property='og:image' content=''>"
+      "height": 1500
     }
   },
   "windows": {
     "mstile-144x144.png": {
       "width": 144,
-      "height": 144,
-      "html": "<meta name='msapplication-TileImage' content=''>"
+      "height": 144
     },
     "mstile-150x150.png": {
       "width": 270,
@@ -199,8 +170,7 @@
   "yandex": {
     "yandex-browser-50x50.png": {
       "width": 50,
-      "height": 50,
-      "html": "<link rel='yandex-tableau-widget' href=''>"
+      "height": 50
     }
   }
 }

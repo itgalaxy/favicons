@@ -1,115 +1,86 @@
-/*jslint node:true, nomen:true*/
-(function () {
-
+(() => {
     'use strict';
 
-    var _ = require('underscore'),
+    const _ = require('underscore'),
         async = require('async'),
         config = require('loadobjects').sync('config');
 
     module.exports = function (source, parameters, next) {
 
-        var options = _.defaults(parameters || {}, config.defaults),
-            Helpers = require('./helpers.js')(options),
-            background = Helpers.General.background(options.background);
+        const options = _.defaults(parameters || {}, config.defaults),
+            µ = require('./helpers.js')(options),
+            background = µ.General.background(options.background);
 
         function createFavicon(sourceset, properties, name, callback) {
-            var minimum = Math.min(properties.width, properties.height),
-                icon = _.min(sourceset, function (image) {
-                    return image.size >= minimum;
-                });
+            const minimum = Math.min(properties.width, properties.height),
+                icon = _.min(sourceset, image => image.size >= minimum);
             async.waterfall([
-                function (callback) {
-                    Helpers.Images.read(icon.file, function (error, image) {
-                        return callback(error, image);
-                    });
-                },
-                function (image, callback) {
-                    Helpers.Images.resize(image, minimum, function (error, image) {
-                        return callback(error, image);
-                    });
-                },
-                function (image, callback) {
-                    Helpers.Images.create(properties.width, properties.height, background, function (error, canvas) {
-                        return callback(error, image, canvas);
-                    });
-                },
-                function (image, canvas, callback) {
-                    Helpers.Images.composite(canvas, image, properties.height, properties.width, minimum, function (error, canvas) {
-                        return callback(error, canvas);
-                    });
-                },
-                function (canvas, callback) {
-                    Helpers.Images.getBuffer(canvas, function (error, buffer) {
-                        return callback(error, buffer);
-                    });
-                },
-            ], function (error, buffer) {
-                return callback(error, { name: name, contents: buffer });
-            });
+                (callback) =>
+                    µ.Images.read(icon.file, (error, image) =>
+                        callback(error, image)),
+                (image, callback) =>
+                    µ.Images.resize(image, minimum, (error, image) =>
+                        callback(error, image)),
+                (image, callback) =>
+                    µ.Images.create(properties.width, properties.height, background, (error, canvas) =>
+                        callback(error, image, canvas)),
+                (image, canvas, callback) =>
+                    µ.Images.composite(canvas, image, properties.height, properties.width, minimum, (error, canvas) =>
+                        callback(error, canvas)),
+                (canvas, callback) =>
+                    µ.Images.getBuffer(canvas, (error, buffer) =>
+                        callback(error, buffer))
+            ], (error, buffer) =>
+                callback(error, { name: name, contents: buffer }));
         }
 
         function createHTML(platform, callback) {
-            var html = [];
-            async.forEachOf(config.html[platform], function (code, name, callback) {
-                Helpers.HTML.parse(name, code, function (error, html) {
-                    return callback(html.push(html) && error);
-                });
-            }, function (error) {
-                return callback(error, _.compact(html));
-            });
-
+            let html = [];
+            async.each(config.html[platform], (code, callback) =>
+                µ.HTML.parse(code, (error, metadata) =>
+                    callback(html.push(metadata) && error)),
+            (error) =>
+                callback(error, _.compact(html)));
         }
 
         function createFiles(platform, callback) {
-            var files = [];
-            async.forEachOf(config.files[platform], function (properties, name, callback) {
-                Helpers.Files.create(properties, name, function (file) {
-                    return callback(files.push(file) && null);
-                });
-            }, function (error) {
-                return callback(error, _.compact(files));
-            });
+            let files = [];
+            async.forEachOf(config.files[platform], (properties, name, callback) =>
+                µ.Files.create(properties, name, (error, file) =>
+                    callback(files.push(file) && error)),
+            (error) =>
+                callback(error, _.compact(files)));
         }
 
         function createFavicons(sourceset, platform, callback) {
-            var images = [];
-            async.forEachOf(config.icons[platform], function (properties, name, callback) {
-                createFavicon(sourceset, properties, name, function (error, image) {
-                    return callback(images.push(image) && error);
-                });
-            }, function (error) {
-                return callback(error, _.compact(images));
-            });
+            let images = [];
+            async.forEachOf(config.icons[platform], (properties, name, callback) =>
+                createFavicon(sourceset, properties, name, (error, image) =>
+                    callback(images.push(image) && error)),
+            (error) =>
+                callback(error, _.compact(images)));
         }
 
         function createPlatform(sourceset, platform, callback) {
             async.parallel([
-                function (callback) {
-                    createFavicons(sourceset, platform, function (error, images) {
-                        return callback(error, images);
-                    });
-                },
-                function (callback) {
-                    createFiles(platform, function (error, files) {
-                        return callback(error, files);
-                    });
-                },
-                function (callback) {
-                    createHTML(platform, function (error, code) {
-                        return callback(error, code);
-                    });
-                }
-            ], function (error, results) {
-                return callback(error, results[0], results[1], results[2]);
-            });
+                (callback) =>
+                    createFavicons(sourceset, platform, (error, images) =>
+                        callback(error, images)),
+                (callback) =>
+                    createFiles(platform, (error, files) =>
+                        callback(error, files)),
+                (callback) =>
+                    createHTML(platform, (error, code) =>
+                        callback(error, code))
+            ], (error, results) =>
+                callback(error, results[0], results[1], results[2]));
         }
 
         function create(sourceset, platforms, callback) {
-            var response = { images: [], files: [], html: [] };
-            async.forEachOf(platforms, function (enabled, platform, callback) {
+            const response = { images: [], files: [], html: [] };
+            async.forEachOf(platforms, (enabled, platform, callback) => {
                 if (enabled) {
-                    createPlatform(sourceset, platform, function (error, images, files, html) {
+                    createPlatform(sourceset, platform, (error, images, files, html) => {
                         response.images = response.images.concat(images);
                         response.files = response.files.concat(files);
                         response.html = response.html.concat(html);
@@ -118,26 +89,18 @@
                 } else {
                     return callback(null);
                 }
-            }, function (error) {
-                return callback(error, response);
-            });
+            }, error =>
+                callback(error, response));
         }
 
         async.waterfall([
-            function (callback) {
-                Helpers.General.source(source, function (error, sourceset) {
-                    return callback(error, sourceset);
-                });
-            },
-            function (sourceset, callback) {
-                create(sourceset, options.icons, function (error, response) {
-                    return callback(error, response);
-                });
-            }
-        ], function (error, response) {
-            return Helpers.General.finale(error, response, next);
-        });
-
+            (callback) =>
+                µ.General.source(source, (error, sourceset) =>
+                    callback(error, sourceset)),
+            (sourceset, callback) =>
+                create(sourceset, options.icons, (error, response) =>
+                    callback(error, response))
+        ], (error, response) =>
+            µ.General.finale(error, response, next));
     };
-
-}());
+})();

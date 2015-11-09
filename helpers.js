@@ -64,13 +64,15 @@
             },
 
             HTML: {
-                parse: function (name, html, callback) {
-                    print('HTML:parse', 'HTML found, parsing and injecting source');
-                    var $ = cheerio.load(html);
-
-                    // Better logic here
-                    $('link').attr('href', relative(name));
-                    $('meta').attr('content', relative(name));
+                parse: function (html, callback) {
+                    print('HTML:parse', 'HTML found, parsing and modifying source');
+                    var $ = cheerio.load(html),
+                        link = $('*').is('link'),
+                        attribute = (link ? 'href' : 'content'),
+                        value = $('*').first().attr(attribute);
+                    if (path.extname(value)) {
+                        $('*').first().attr(attribute, relative(value));
+                    }
                     return callback(null, $.html());
                 }
             },
