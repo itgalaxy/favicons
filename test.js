@@ -10,27 +10,27 @@
         logging: true,
         path: 'test/images/',
         background: '#26353F'
-    }, function (error, images, files, html) {
+    }, function (error, response) {
 
         // error: any error that occurred in the process (string)
         if (error) {
             throw error;
         }
 
-        console.log('Images: ' + images);
-        console.log('Files: ' + files);
-        console.log('HTML: ' + html);
+        console.log('Images: ' + response.images);
+        console.log('Files: ' + response.files);
+        console.log('HTML: ' + response.html);
 
-        if (images) {
+        if (response.images) {
             mkdirp.sync('./test/images/');
-            images.forEach(function (image) {
+            response.images.forEach(function (image) {
                 fs.writeFileSync('./test/images/' + image.name, image.contents);
             });
         }
 
-        if (files) {
+        if (response.files) {
             mkdirp.sync('./test/files/');
-            files.forEach(function (file) {
+            response.files.forEach(function (file) {
                 fs.writeFileSync('./test/files/' + file.name, file.contents);
             });
         }
