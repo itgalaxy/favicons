@@ -99,7 +99,11 @@
                         properties = JSON.stringify(properties, null, 2);
                     } else if (name === 'browserconfig.xml') {
                         _.map(properties[0].children[0].children[0].children, function (property) {
-                            property.attrs.src = relative(property.attrs.src);
+                            if (property.name === 'TileColor') {
+                                property.text = options.background;
+                            } else {
+                                property.attrs.src = relative(property.attrs.src);
+                            }
                         });
                         properties = jsonxml(properties, xmlconfig);
                     } else if (name === 'yandex-browser-manifest.json') {
