@@ -5,7 +5,7 @@
 The Node.js RealFaviconGenerator implementation for generating Favicons, originally built for [Google's Web Starter Kit](https://github.com/google/web-starter-kit) and [Catalyst](https://github.com/haydenbleasel/catalyst). Installed through NPM with:
 
 ```
-npm install favicons --save-dev
+npm install favicons
 ```
 
 ## Usage

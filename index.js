@@ -11,6 +11,7 @@
         color = require('tinycolor2'),
         cheerio = require('cheerio'),
         colors = require('colors'),
+        jsonxml = require('jsontoxml'),
         config = require('loadobjects').sync('config');
 
     module.exports = function (source, parameters, next) {
@@ -30,9 +31,41 @@
             }
         }
 
+        function relative(name) {
+            return path.join(options.path, name);
+        }
+
         function createFile(properties, name, callback) {
-            print(name, 'Creating new file' + properties);
-            return callback(null);
+            if (name === 'android-chrome-manifest.json') {
+                properties.name = options.appName;
+                _.each(properties.icons, function (icon) {
+                    icon.src = relative('android-chrome-' + icon.sizes + '.png');
+                });
+            } else if (name === 'manifest.webapp') {
+                properties.version = options.version;
+                properties.name = options.appName;
+                properties.description = options.appDescription;
+                properties.icons[60] = relative('firefox_app_60x60.png');
+                properties.icons[128] = relative('firefox_app_128x128.png');
+                properties.icons[512] = relative('firefox_app_512x512.png');
+                properties.developer.name = options.developerName;
+                properties.developer.url = options.developerURL;
+            } else if (name === 'browserconfig.xml') {
+                properties.square70x70logo['-src'] = relative('mstile-70x70.png');
+                properties.square150x150logo['-src'] = relative('mstile-150x150.png');
+                properties.wide310x150logo['-src'] = relative('mstile-310x150.png');
+                properties.square310x310logo['-src'] = relative('mstile-310x310.png');
+                properties = jsonxml(properties);
+            } else if (name === 'yandex-browser-manifest.json') {
+                properties.version = options.version;
+                properties.api_version = 1;
+                properties.layout.logo = relative("yandex-browser-50x50.png");
+                properties.layout.color = options.background;
+            }
+            return callback(null, {
+                name: name,
+                contents: properties
+            });
         }
 
         function createImage(sourceset, properties, name, callback) {
@@ -58,7 +91,7 @@
                             print(name, 'Collected image PNG buffer from ' + jimp);
                             return callback(error, {
                                 name: name,
-                                buffer: buffer
+                                contents: buffer
                             });
                         });
                     }).catch(function (error) {
@@ -70,8 +103,8 @@
         function generateHTML(html, name, callback) {
             print(name, 'HTML found, parsing and injecting source');
             var $ = cheerio.load(typeof html === 'string' ? html : html.join(' '));
-            $('link').attr('href', path.join(options.path, name));
-            $('meta').attr('content', path.join(options.path, name));
+            $('link').attr('href', relative(name));
+            $('meta').attr('content', relative(name));
             print(name, 'HTML modified, image path injected');
             return callback(null, $.html());
         }
@@ -137,8 +170,8 @@
                     });
                 }
             ], function (error, results) {
-                console.log(results, 'resu;ts');
-                return callback(error, results[0], results[1]);
+                console.log(results, 'results');
+                return callback(error, results[0][0], results[0][1], results[1]);
             });
         }
 

@@ -177,12 +177,7 @@
     "mstile-144x144.png": {
       "width": 144,
       "height": 144,
-      "html": [
-        "<meta name='msapplication-TileImage' content=''>",
-        "<meta name='msapplication-TileColor' content=''>",
-        "<meta name='msapplication-config' content=''>",
-        "<meta name='theme-color' content=''>"
-      ]
+      "html": "<meta name='msapplication-TileImage' content=''>"
     },
     "mstile-150x150.png": {
       "width": 270,

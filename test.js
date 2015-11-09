@@ -24,14 +24,14 @@
         if (images) {
             mkdirp.sync('./test/images/');
             images.forEach(function (image) {
-                fs.writeFileSync('./test/images/' + image.name, image.buffer);
+                fs.writeFileSync('./test/images/' + image.name, image.contents);
             });
         }
 
         if (files) {
             mkdirp.sync('./test/files/');
             files.forEach(function (file) {
-                fs.writeFileSync('./test/files/' + file.name, file.buffer);
+                fs.writeFileSync('./test/files/' + file.name, file.contents);
             });
         }
 
