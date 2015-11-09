@@ -1,0 +1,12 @@
+{
+    "ecmaFeatures": {
+        "arrowFunctions": true,
+        "blockBindings": true
+    },
+    "env": {
+        "node": true
+    },
+    "rules": {
+        "no-undef": 2
+    }
+}
