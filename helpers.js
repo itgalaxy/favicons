@@ -11,7 +11,8 @@
         colors = require('colors'),
         jsonxml = require('jsontoxml'),
         sizeOf = require('image-size'),
-        Jimp = require('jimp');
+        Jimp = require('jimp'),
+        xmlconfig = { prettyPrint: true, xmlHeader: true, indent: '  ' };
 
     module.exports = function (options) {
 
@@ -97,10 +98,10 @@
                         });
                         properties = JSON.stringify(properties, null, 2);
                     } else if (name === 'browserconfig.xml') {
-                        _.map(properties, function (property) {
+                        _.map(properties[0].children[0].children[0].children, function (property) {
                             property.attrs.src = relative(property.attrs.src);
                         });
-                        properties = jsonxml(properties, { prettyPrint: true });
+                        properties = jsonxml(properties, xmlconfig);
                     } else if (name === 'yandex-browser-manifest.json') {
                         properties.version = options.version;
                         properties.api_version = 1;

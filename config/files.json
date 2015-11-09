@@ -62,30 +62,16 @@
   },
   "windows": {
     "browserconfig.xml": [
-      {
-        "name": "square70x70logo",
-        "attrs": {
-          "src": "mstile-70x70.png"
-        }
-      },
-      {
-        "name": "square150x150logo",
-        "attrs": {
-          "src": "mstile-150x150.png"
-        }
-      },
-      {
-        "name": "wide310x150logo",
-        "attrs": {
-          "src": "mstile-310x150.png"
-        }
-      },
-      {
-        "name": "square310x310logo",
-        "attrs": {
-          "src": "mstile-310x310.png"
-        }
-      }
+      { "name": "browserconfig", "children": [
+        { "name": "msapplication", "children": [
+          { "name": "tile", "children": [
+            { "name": "square70x70logo", "attrs": { "src": "mstile-70x70.png" } },
+            { "name": "square150x150logo", "attrs": { "src": "mstile-150x150.png" } },
+            { "name": "wide310x150logo", "attrs": { "src": "mstile-310x150.png" } },
+            { "name": "square310x310logo", "attrs": { "src": "mstile-310x310.png" } }
+          ]}
+        ]}
+      ]}
     ]
   },
   "yandex": {
