@@ -5,7 +5,6 @@
 
     var _ = require('underscore'),
         async = require('async'),
-        Jimp = require('jimp'),
         config = require('loadobjects').sync('config');
 
     module.exports = function (source, parameters, next) {
@@ -26,7 +25,7 @@
                     });
                 },
                 function (image, callback) {
-                    Helpers.Images.Resize(image, minimum, Jimp.AUTO, function (error, image) {
+                    Helpers.Images.resize(image, minimum, function (error, image) {
                         return callback(error, image);
                     });
                 },
@@ -41,7 +40,7 @@
                     });
                 },
                 function (canvas, callback) {
-                    Helpers.Images.getBuffer(canvas, Jimp.MIME_PNG, function (error, buffer) {
+                    Helpers.Images.getBuffer(canvas, function (error, buffer) {
                         return callback(error, buffer);
                     });
                 },
@@ -110,7 +109,6 @@
             var response = { images: [], files: [], html: [] };
             async.forEachOf(platforms, function (enabled, platform, callback) {
                 if (enabled) {
-                    Helpers.General.print(platform, 'Creating favicons for platform');
                     createPlatform(sourceset, platform, function (error, images, files, html) {
                         response.images = response.images.concat(images);
                         response.files = response.files.concat(files);
