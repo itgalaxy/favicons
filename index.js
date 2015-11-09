@@ -1,4 +1,5 @@
 (() => {
+
     'use strict';
 
     const _ = require('underscore'),
@@ -9,6 +10,7 @@
 
         const options = _.defaults(parameters || {}, config.defaults),
             µ = require('./helpers.js')(options),
+            rfg = require('./rfg.js').init(),
             background = µ.General.background(options.background);
 
         function createFavicon(sourceset, properties, name, callback) {
@@ -76,9 +78,9 @@
                 callback(error, results[0], results[1], results[2]));
         }
 
-        function create(sourceset, platforms, callback) {
+        function createOffline(sourceset, callback) {
             const response = { images: [], files: [], html: [] };
-            async.forEachOf(platforms, (enabled, platform, callback) => {
+            async.forEachOf(options.icons, (enabled, platform, callback) => {
                 if (enabled) {
                     createPlatform(sourceset, platform, (error, images, files, html) => {
                         response.images = response.images.concat(images);
@@ -93,12 +95,34 @@
                 callback(error, response));
         }
 
+        function createOnline(sourceset, callback) {
+            //config.rfg.master_picture.content = base64 sourceset[0]
+            // platform -> options.icons
+            console.log('create online pls');
+            return callback(null, null);
+            /*async.parallel([
+                (callback) =>
+                    rfg.createRequest(config.rfg, (error, response) =>
+                        callback(error, response))
+            ], (error, results) =>
+                callback(error, results[0], results[1], results[2]));*/
+        }
+
+        function create(sourceset, callback) {
+            options.online ?
+                createOnline(sourceset, (error, response) =>
+                    callback(error, response))
+                :
+                createOffline(sourceset, (error, response) =>
+                    callback(error, response));
+        }
+
         async.waterfall([
             (callback) =>
                 µ.General.source(source, (error, sourceset) =>
                     callback(error, sourceset)),
             (sourceset, callback) =>
-                create(sourceset, options.icons, (error, response) =>
+                create(sourceset, (error, response) =>
                     callback(error, response))
         ], (error, response) =>
             µ.General.finale(error, response, next));

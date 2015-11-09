@@ -1,0 +1,87 @@
+{
+	"favicon_generation": {
+		"api_key": "586975d64501c4a6cafabfdfd146f799f028a046",
+		"master_picture": {
+			"type": "inline",
+			"content": ""
+		},
+		"files_location": {
+			"type": "path",
+			"path": "/path/to/icons"
+		},
+		"favicon_design": {
+			"desktop_browser": {},
+			"ios": {
+				"picture_aspect": "background_and_margin",
+				"margin": "4",
+				"background_color": "#123456",
+				"startup_image": {
+					"master_picture": {
+						"type": "url",
+						"url": "http://example.com/pic_for_ios_startup.png"
+					},
+					"background_color": "#654321"
+				}
+			},
+			"windows": {
+				"picture_aspect": "white_silhouette",
+				"background_color": "#654321"
+			},
+			"firefox_app": {
+				"picture_aspect": "circle",
+				"keep_picture_in_circle": "true",
+				"circle_inner_margin": "5",
+				"background_color": "#456789",
+				"manifest": {
+					"app_name": "My sample app",
+					"app_description": "Yet another sample application",
+					"developer_name": "Philippe Bernard",
+					"developer_url": "http://stackoverflow.com/users/499917/philippe-b"
+				}
+			},
+			"android_chrome": {
+				"picture_aspect": "shadow",
+				"manifest": {
+					"name": "My sample app",
+					"display": "standalone",
+					"orientation": "portrait",
+					"start_url": "/homepage.html",
+					"existing_manifest": "{\"name\": \"Yet another app\"}"
+				},
+				"theme_color": "#4972ab"
+			},
+			"safari_pinned_tab": {
+				"picture_aspect": "black_and_white",
+				"threshold": 60,
+				"theme_color": "#136497"
+			},
+			"coast": {
+				"picture_aspect": "background_and_margin",
+				"background_color": "#136497",
+				"margin": "12%"
+			},
+			"open_graph": {
+				"picture_aspect": "background_and_margin",
+				"background_color": "#136497",
+				"margin": "12%",
+				"ratio": "1.91:1"
+			},
+			"yandex_browser": {
+				"background_color": "background_color",
+				"manifest": {
+					"show_title": true,
+					"version": "1.0"
+				}
+			}
+		},
+		"settings": {
+			"compression": "3",
+			"scaling_algorithm": "Mitchell",
+			"error_on_image_too_small": true
+		},
+		"versioning": {
+			"param_name": "ver",
+			"param_value": "15Zd8"
+		}
+	}
+}
