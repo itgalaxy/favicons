@@ -9,7 +9,7 @@
     favicons('./test/logo.png', {
         appName: "Favicons 4.0",
         appDescription: "Testing suite for Favicons",
-        developer: "Hayden Bleasel",
+        developerName: "Hayden Bleasel",
         developerURL: "http://haydenbleasel.com/",
         background: "#26353F",
         path: "test/images/",
@@ -38,6 +38,10 @@
             response.files.forEach(function (file) {
                 fs.writeFileSync('./test/files/' + file.name, file.contents);
             });
+        }
+
+        if (response.html) {
+            fs.writeFileSync('./test/test.html', response.html.join('\n'));
         }
 
     });
