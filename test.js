@@ -7,9 +7,14 @@
         fs = require('fs'),
         mkdirp = require('mkdirp');
     favicons('./test/logo.png', {
-        logging: true,
-        path: 'test/images/',
-        background: '#26353F'
+        appName: "Favicons 4.0",
+        appDescription: "Testing suite for Favicons",
+        developer: "Hayden Bleasel",
+        developerURL: "http://haydenbleasel.com/",
+        background: "#26353F",
+        path: "test/images/",
+        version: "1.0",
+        logging: true
     }, function (error, response) {
 
         // error: any error that occurred in the process (string)

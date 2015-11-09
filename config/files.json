@@ -61,20 +61,32 @@
     }
   },
   "windows": {
-    "browserconfig.xml": {
-      "square70x70logo": {
-        "-src": "mstile-70x70.png"
+    "browserconfig.xml": [
+      {
+        "name": "square70x70logo",
+        "attrs": {
+          "src": "mstile-70x70.png"
+        }
       },
-      "square150x150logo": {
-        "-src": "mstile-150x150.png"
+      {
+        "name": "square150x150logo",
+        "attrs": {
+          "src": "mstile-150x150.png"
+        }
       },
-      "wide310x150logo": {
-        "-src": "mstile-310x150.png"
+      {
+        "name": "wide310x150logo",
+        "attrs": {
+          "src": "mstile-310x150.png"
+        }
       },
-      "square310x310logo": {
-        "-src": "mstile-310x310.png"
+      {
+        "name": "square310x310logo",
+        "attrs": {
+          "src": "mstile-310x310.png"
+        }
       }
-    }
+    ]
   },
   "yandex": {
     "yandex-browser-manifest.json": {

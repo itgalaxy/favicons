@@ -82,29 +82,31 @@
                     print('Files:create', 'Creating file: ' + name);
                     if (name === 'android-chrome-manifest.json') {
                         properties.name = options.appName;
-                        _.each(properties.icons, function (icon) {
-                            icon.src = relative('android-chrome-' + icon.sizes + '.png');
+                        _.map(properties.icons, function (icon) {
+                            icon.src = relative(icon.src);
                         });
+                        properties = JSON.stringify(properties, null, 2);
                     } else if (name === 'manifest.webapp') {
                         properties.version = options.version;
                         properties.name = options.appName;
                         properties.description = options.appDescription;
-                        properties.icons[60] = relative('firefox_app_60x60.png');
-                        properties.icons[128] = relative('firefox_app_128x128.png');
-                        properties.icons[512] = relative('firefox_app_512x512.png');
                         properties.developer.name = options.developerName;
                         properties.developer.url = options.developerURL;
+                        _.map(properties.icons, function (property) {
+                            property = relative(property);
+                        });
+                        properties = JSON.stringify(properties, null, 2);
                     } else if (name === 'browserconfig.xml') {
-                        properties.square70x70logo['-src'] = relative('mstile-70x70.png');
-                        properties.square150x150logo['-src'] = relative('mstile-150x150.png');
-                        properties.wide310x150logo['-src'] = relative('mstile-310x150.png');
-                        properties.square310x310logo['-src'] = relative('mstile-310x310.png');
-                        properties = jsonxml(properties);
+                        _.map(properties, function (property) {
+                            property.attrs.src = relative(property.attrs.src);
+                        });
+                        properties = jsonxml(properties, { prettyPrint: true });
                     } else if (name === 'yandex-browser-manifest.json') {
                         properties.version = options.version;
                         properties.api_version = 1;
-                        properties.layout.logo = relative("yandex-browser-50x50.png");
+                        properties.layout.logo = relative(properties.layout.logo);
                         properties.layout.color = options.background;
+                        properties = JSON.stringify(properties, null, 2);
                     }
                     return callback(null, { name: name, contents: properties });
                 }
