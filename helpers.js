@@ -5,6 +5,7 @@
     'use strict';
 
     var path = require('path'),
+        fs = require('fs'),
         _ = require('underscore'),
         color = require('tinycolor2'),
         cheerio = require('cheerio'),
@@ -12,6 +13,7 @@
         jsonxml = require('jsontoxml'),
         sizeOf = require('image-size'),
         Jimp = require('jimp'),
+        NRC = require('node-rest-client').Client,
         xmlconfig = { prettyPrint: true, xmlHeader: true, indent: '  ' };
 
     module.exports = function (options) {
@@ -49,18 +51,6 @@
                         sourceset = [{ size: sizeOf(source), file: source }];
                     }
                     return callback((sourceset.length ? null : 'Favicons source is invalid'), sourceset);
-                },
-                finale: function (error, response, callback) {
-                    print('General:finale', 'Returning response');
-                    return callback((error ? {
-                        status: error.status,
-                        error: error.name || 'Error',
-                        message: error.message || 'An unknown error has occured'
-                    } : null), {
-                        images: response.images,
-                        files: response.files,
-                        html: response.html
-                    });
                 }
             },
 
@@ -147,6 +137,103 @@
                     canvas.getBuffer(Jimp.MIME_PNG, function (error, buffer) {
                         return callback(error, buffer);
                     });
+                }
+            },
+
+            RFG: {
+                configure: function (sourceset, request, callback) {
+                    var source = _.max(sourceset, image => image.size.width).file;
+                    fs.readFile(source, function (error, file) {
+                        if (error) {
+                            callback(error);
+                        } else {
+
+                            request.master_picture.content = file.toString('base64');
+                            request.files_location.path = options.path;
+
+                            if (options.icons.android) {
+                                request.favicon_design.android_chrome.manifest.name = options.appName;
+                                request.favicon_design.android_chrome.manifest.display = options.display;
+                                request.favicon_design.android_chrome.manifest.orientation = options.orientation;
+                                request.favicon_design.android_chrome.manifest.theme_color = options.background;
+                            } else {
+                                delete request.favicon_design.android_chrome;
+                            }
+
+                            if (options.icons.appleIcon) {
+                                request.favicon_design.ios.background_color = options.background;
+                            } else {
+                                delete request.favicon_design.ios;
+                            }
+
+                            if (options.icons.appleStartup) {
+                                request.favicon_design.ios.startup_image.background_color = options.background;
+                            } else {
+                                delete request.favicon_design.ios.startup_image;
+                            }
+
+                            if (options.icons.coast) {
+                                request.favicon_design.coast.background_color = options.background;
+                            } else {
+                                delete request.favicon_design.coast;
+                            }
+
+                            if (!options.icons.favicons) {
+                                delete request.favicon_design.desktop_browser;
+                            }
+
+                            if (options.icons.firefox) {
+                                request.favicon_design.firefox_app.background_color = options.background;
+                                request.favicon_design.firefox_app.manifest.app_name = options.appName;
+                                request.favicon_design.firefox_app.manifest.app_description = options.appDescription;
+                                request.favicon_design.firefox_app.manifest.developer_name = options.developerName;
+                                request.favicon_design.firefox_app.manifest.developer_url = options.developerURL;
+                            } else {
+                                delete request.favicon_design.firefox_app;
+                            }
+
+                            if (options.icons.opengraph) {
+                                request.favicon_design.open_graph.background_color = options.background;
+                            } else {
+                                delete request.favicon_design.open_graph;
+                            }
+
+                            if (options.icons.windows) {
+                                request.favicon_design.windows.background_color = options.background;
+                            } else {
+                                delete request.favicon_design.windows;
+                            }
+
+                            if (options.icons.yandex) {
+                                request.favicon_design.yandex_browser.background_color = options.background;
+                                request.favicon_design.yandex_browser.manifest.version = options.version;
+                            } else {
+                                delete request.favicon_design.yandex_browser;
+                            }
+
+                            return callback(null, request);
+                        }
+                    });
+                },
+                request: function (request, callback) {
+                    var client = new NRC();
+                    client.post("http://realfavicongenerator.net/api/favicon", {
+                        data: { "favicon_generation": request },
+                        headers: { "Content-Type": "application/json" }
+                    }, function(data, response) {
+                        if (data.favicon_generation_result && response.statusCode === 200) {
+                            return callback(null, {
+                                files: data.favicon_generation_result.favicon.files_urls,
+                                html: data.favicon_generation_result.favicon.html_code
+                            });
+                        } else {
+                            return callback(data.favicon_generation_result.result.error_message);
+                        }
+                    });
+                },
+                unpack: function (pack, callback) {
+                    console.log(pack, 'package');
+                    return callback(null);
                 }
             }
 

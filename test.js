@@ -14,7 +14,8 @@
         background: "#26353F",
         path: "test/images/",
         version: "1.0",
-        logging: true
+        logging: true,
+        online: true
     }, function (error, response) {
 
         // error: any error that occurred in the process (string)

@@ -96,23 +96,25 @@
         }
 
         function createOnline(sourceset, callback) {
-            //config.rfg.master_picture.content = base64 sourceset[0]
-            // platform -> options.icons
-            console.log('create online pls');
-            return callback(null, null);
-            /*async.parallel([
+            async.waterfall([
                 (callback) =>
-                    rfg.createRequest(config.rfg, (error, response) =>
+                    µ.RFG.configure(sourceset, config.rfg, (error, request) =>
+                        callback(error, request)),
+                (request, callback) =>
+                    µ.RFG.request(request, (error, pack) =>
+                        callback(error, pack)),
+                (pack, callback) =>
+                    µ.RFG.unpack(pack, (error, response) =>
                         callback(error, response))
-            ], (error, results) =>
-                callback(error, results[0], results[1], results[2]));*/
+            ], (error, results) => {
+                console.log(results, 'results:createonline');
+                callback(error, results) } );
         }
 
         function create(sourceset, callback) {
             options.online ?
                 createOnline(sourceset, (error, response) =>
-                    callback(error, response))
-                :
+                    callback(error, response)) :
                 createOffline(sourceset, (error, response) =>
                     callback(error, response));
         }
@@ -125,6 +127,14 @@
                 create(sourceset, (error, response) =>
                     callback(error, response))
         ], (error, response) =>
-            µ.General.finale(error, response, next));
+            next((error ? {
+                status: error.status,
+                error: error.name || 'Error',
+                message: error.message || 'An unknown error has occured'
+            } : null), {
+                images: response.images,
+                files: response.files,
+                html: response.html
+            }));
     };
 })();
