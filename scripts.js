@@ -50,9 +50,9 @@ jQuery(function ($) {
             code.text(node);
         } else if (id === 'gulp') {
             code.text(gulp);
-        } /*else if (id === 'shell') {
-            code.text(shell);
-        }*/
+        } else if (id === 'shell') {
+            code.text('Coming soon:\n\nhttps://github.com/haydenbleasel/favicons/issues/54');
+        }
 
         $(this).addClass('active').siblings().removeClass('active');
 
