@@ -1,54 +1,50 @@
-/*jslint node:true*/
-var fs = require('fs'),
-    fav = require('./index.js'),
-    through = require('through2'),
-    File = require('vinyl'),
-  config = {
-    files: {
-        //src: 'test/logo.png',
-        src: {
-            "android": 'test/logo.png',
-            "appleIcon": 'test/logo.png',
-            "appleStartup": 'test/logo.png',
-            "coast": 'test/logo.png',
-            "favicons": 'test/logo.png',
-            "firefox": 'test/logo.png',
-            "opengraph": 'test/logo.png',
-            "windows": 'test/logo.png',
-            "yandex": 'test/logo.png'
-        },
-        dest: 'test/favicons',
-        html: 'test/test.html',
-        iconsPath: 'favicons'
-    },
-    settings: {
-        appName: 'Favicons',
-        appDescription: 'Favicon generator for Node.js',
-        developer: 'Hayden Bleasel',
-        developerURL: 'http://haydenbleasel.com',
-        background: '#27353f',
-        index: 'test/favicons.html',
-        url: 'http://haydenbleasel.com',
-        logging: true
-    }
-  };
+/*jslint node:true, nomen:true, stupid:true*/
+(function () {
 
-fav(config, function (error, metadata) {
     'use strict';
-    console.log(error, metadata);
-});
 
-fs.readFile('test/logo.png', function (err, data) {
-    config = fav.getConfig(config);
-    config.data.favicon_generation.master_picture = { type: 'inline', content: data.toString('base64') };
-    fav.generateFaviconStream(config, function(error, result) {
-        console.log('stream callback: ', result.favicon_generation_result.result);
-    }).on('entry', function(entry) {
-        passThrough.write(new File({path: entry.path, contents: entry}));
+    var favicons = require('./index'),
+        fs = require('fs'),
+        mkdirp = require('mkdirp');
+    favicons('./test/logo.png', {
+        appName: "Favicons 4.0",
+        appDescription: "Testing suite for Favicons",
+        developerName: "Hayden Bleasel",
+        developerURL: "http://haydenbleasel.com/",
+        background: "#26353F",
+        path: "test/images/",
+        version: "1.0",
+        logging: true,
+        online: true
+    }, function (error, response) {
+
+        // error: any error that occurred in the process (string)
+        if (error) {
+            throw error;
+        }
+
+        console.log('Images: ' + response.images);
+        console.log('Files: ' + response.files);
+        console.log('HTML: ' + response.html);
+
+        if (response.images) {
+            mkdirp.sync('./test/images/');
+            response.images.forEach(function (image) {
+                fs.writeFileSync('./test/images/' + image.name, image.contents);
+            });
+        }
+
+        if (response.files) {
+            mkdirp.sync('./test/files/');
+            response.files.forEach(function (file) {
+                fs.writeFileSync('./test/files/' + file.name, file.contents);
+            });
+        }
+
+        if (response.html) {
+            fs.writeFileSync('./test/test.html', response.html.join('\n'));
+        }
+
     });
-});
 
-var passThrough = through.obj({ highWaterMark: 50 }, function(obj, enc, cb) {
-    console.log(obj);
-    cb(null, obj);
-});
+}());

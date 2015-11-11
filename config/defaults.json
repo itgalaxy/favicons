@@ -1,0 +1,24 @@
+{
+  "appName": null,
+  "appDescription": null,
+  "developerName": null,
+  "developerURL": null,
+  "background": "#fff",
+  "path": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "version": "1.0",
+  "logging": false,
+  "online": false,
+  "icons": {
+    "android": true,
+    "appleIcon": true,
+    "appleStartup": true,
+    "coast": true,
+    "favicons": true,
+    "firefox": true,
+    "opengraph": true,
+    "windows": true,
+    "yandex": true
+  }
+}
