@@ -1,14 +1,11 @@
 {
   "name": "favicons",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Favicon generator for Node.js",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/haydenbleasel/favicons.git"
-  },
-  "bin": {
-    "favicons": "./bin/favicons.js"
   },
   "scripts": {
     "test": "node test.js"
