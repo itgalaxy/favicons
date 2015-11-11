@@ -1,23 +1,33 @@
 body {
     font-family: 'Helvetica Neue', 'HelveticaNeue', 'Helvetica', sans-serif;
-    margin: 0;
     padding-bottom: 90px;
+}
+
+#forkongithub {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 200px;
+    overflow: hidden;
+    height: 200px;
+    z-index: 9999;
 }
 
 #forkongithub a {
     background: #FFF;
     color: #617D8A;
     text-decoration: none;
-    font-family: arial, sans-serif;
     text-align: center;
     font-weight: bold;
-    padding: 5px 40px;
-    font-size: 1rem;
-    line-height: 2rem;
-    position: relative;
-    transition: 0.5s;
+    padding: 10px 40px;
     box-sizing: content-box;
     white-space: nowrap;
+    width: 200px;
+    position: absolute;
+    top: 60px;
+    right: -60px;
+    transform: rotate(45deg);
+    border: 1px solid #ddd;
 }
 
 #forkongithub a:hover {
@@ -25,9 +35,33 @@ body {
     color: #fff;
 }
 
-#forkongithub a:after {
-    bottom: 1px;
-    top: auto;
+#platform-switcher {
+    position: absolute;
+    left: -89px;
+    top: 90px;
+    transform: rotate(270deg);
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+#platform-switcher > div {
+    background: #F7F8F9;
+    border: 1px solid #ddd;
+    border-radius: 3px 3px 0 0;
+    font-size: 12px;
+    color: #859BA6;
+    line-height: 33px;
+    text-align: center;
+    float: right;
+    width: 72px;
+    margin-right: -1px;
+    cursor: pointer;
+    opacity: 0.5;
+}
+
+#platform-switcher > div.active {
+    opacity: 1;
 }
 
 .container, footer {
@@ -42,6 +76,7 @@ body {
 .column {
     width: 50%;
     float: left;
+    position: relative;
 }
 
 .column:first-of-type {
@@ -70,9 +105,9 @@ h1 {
     line-height: 40px;
 }
 
-pre, code {
+#code, code {
     background: #F7F8F9;
-    border: 1px solid rgba(0,0,0,0.10);
+    border: 1px solid #ddd;
     border-radius: 3px;
     font-family: 'Consolas', monospace;
     font-size: 14px;
@@ -83,8 +118,12 @@ pre, code {
     overflow: scroll;
 }
 
-pre {
+#code {
+    margin-top: 0;
     line-height: 21px;
+    margin-left: 34px;
+    border-top-left-radius: 0;
+    min-height: 250px;
 }
 
 code {
@@ -137,7 +176,7 @@ footer {
         padding-right: 0;
         margin-bottom: 60px;
     }
-    #demo {
+    #demo, #forkongithub {
         display: none;
     }
 }
@@ -154,26 +193,5 @@ footer {
     }
     footer {
         padding: 0;
-    }
-}
-
-@media screen and (min-width: 829px) {
-    #forkongithub {
-        position: fixed;
-        display: block;
-        top: 0;
-        right: 0;
-        width: 200px;
-        overflow: hidden;
-        height: 200px;
-        z-index: 9999;
-    }
-    #forkongithub a {
-        width: 200px;
-        position: absolute;
-        top: 60px;
-        right: -60px;
-        transform: rotate(45deg);
-        box-shadow: 4px 4px 10px rgba(0,0,0,0.2);
     }
 }

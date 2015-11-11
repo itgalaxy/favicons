@@ -1,8 +1,41 @@
 <!doctype html>
-<html>
+<html lang="en">
     <head>
-        <link rel="stylesheet" href="basics.css" />
+        <title>Favicons for Node.js</title>
+        <meta charset="utf-8" />
+        <meta name="description" content="A Node.js module for generating favicons and their associated files. Originally built for Google's Web Starter Kit and Catalyst." />
+        <meta name="author" content="Hayden Bleasel" />
+        <meta name="designer" content="Hayden Bleasel" />
+        <meta name="rating" content="general" />
+        <meta name="keywords" content="favicon, ico, generator, node, realfavicongenerator, gulp, terminal" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <meta name="format-detection" content="telephone=yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="robots" content="index, follow" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Favicons for Node.js" />
+        <meta property="og:url" content="http://favicons.io" />
+        <meta property="og:description" content="A Node.js module for generating favicons and their associated files. Originally built for Google's Web Starter Kit and Catalyst." />
+        <meta property="og:image" content="http://favicons.io/demo.png" />
+        <meta property="og:locale" content="en_US" />
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:site" content="@haydenbleasel" />
+        <meta property="twitter:title" content="Favicons for Node.js" />
+        <meta property="twitter:description" content="A Node.js module for generating favicons and their associated files. Originally built for Google's Web Starter Kit and Catalyst." />
+        <meta property="twitter:image" content="http://favicons.io/demo.png" />
+        <meta property="twitter:url" content="http://favicons.io/demo.png" />
+        <link rel="icon" href="favicon.ico" />
+        <link rel="author" href="humans.txt" />
+        <link rel="canonical" href="http://favicons.io" />
+        <link rel="sitemap" href="sitemap.xml" />
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/basics/1.2.2/basics.css" />
         <link rel="stylesheet" href="styles.css" />
+
+        <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.js"></script>
     </head>
     <body>
         <span id="forkongithub">
@@ -25,28 +58,35 @@
         <div class="container clearfix">
             <div class="column">
                 <p>To use Favicons, require the appropriate module and call it, optionally specifying configuration and callback objects. A sample is shown on the right. The full list of options can be found on GitHub.</p>
-                <p>The Gulp / Grunt wrapper modules have a few extra properties. You can also configure and use Favicons from the terminal with dot syntax.</p>
+                <p>The Gulp wrapper modules has a few extra properties. You can also configure and use Favicons from the terminal with dot syntax.</p>
                 <p>Favicons generates it’s icons locally using pure Javascript with no external dependencies. However, due to extensive collaboration with RealFaviconGenerator, you can opt to have your favicons generated using their online API.</p>
             </div>
             <div class="column">
-<!--         --><pre>
-<!--             -->var favicons = require("favicons");
-<!--             -->
-<!--             -->favicons({
-<!--             -->    appName: "My App",
-<!--             -->    appDescription: "This is my application",
-<!--             -->    developer: "Hayden Bleasel",
-<!--             -->    developerURL: "haydenbleasel.com",
-<!--             -->    background: "#020307",
-<!--             -->    path: "favicons/",
-<!--             -->    online: false,
-<!--             -->    version: 1.0,
-<!--             -->}, function (error, images, files, html) {
-<!--             -->    // Handle favicons
-<!--             -->});
-<!--         --></pre>
+                <div id="platform-switcher" class="clearfix">
+                    <div id="node" class="active">Node</div>
+                    <div id="gulp">Gulp</div>
+                    <div id="shell">Shell</div>
+                </div>
+<pre id="code">
+var favicons = require("favicons");
+
+favicons({
+    appName: "My App",
+    appDescription: "This is my application",
+    developer: "Hayden Bleasel",
+    developerURL: "haydenbleasel.com",
+    background: "#020307",
+    path: "favicons/",
+    online: false,
+    version: 1.0,
+}, function (error, images, files, html) {
+    // Handle favicons
+});
+</pre>
             </div>
         </div>
         <footer>Favicons is a Node.js module by <a href="http://haydenbleasel.com/">Hayden Bleasel</a>. View on <a href="https://github.com/haydenbleasel/favicons">GitHub</a> or <a href="https://www.npmjs.com/package/favicons">NPM</a>.</footer>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.min.js"></script>
+        <script src="scripts.js"></script>
     </body>
 </html>
