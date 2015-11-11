@@ -4,7 +4,8 @@
 
     const _ = require('underscore'),
         async = require('async'),
-        config = require('loadobjects').sync('config');
+        path = require('path'),
+        config = require('loadobjects').sync(path.join(__dirname, 'config'));
 
     module.exports = function (source, parameters, next) {
 

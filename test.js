@@ -15,7 +15,7 @@
         path: "test/images/",
         version: "1.0",
         logging: true,
-        online: true
+        online: false
     }, function (error, response) {
 
         // error: any error that occurred in the process (string)
