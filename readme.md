@@ -57,7 +57,7 @@ favicons(source, configuration, callback);
 You can also configure and use Favicons from the terminal with dot syntax:
 
 ```sh
-favicons --files.src='images/image.png' --files.dest='favicons/' --settings.logging
+Coming soon: https://github.com/haydenbleasel/favicons/issues/54
 ```
 
 ## Output
