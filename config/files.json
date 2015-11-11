@@ -1,6 +1,6 @@
 {
   "android": {
-    "android-chrome-manifest.json": {
+    "manifest.json": {
     	"name": "Favicons",
       "display": "standalone",
     	"orientation": "portrait",

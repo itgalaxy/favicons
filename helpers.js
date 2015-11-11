@@ -98,7 +98,7 @@
             Files: {
                 create: function (properties, name, callback) {
                     print('Files:create', 'Creating file: ' + name);
-                    if (name === 'android-chrome-manifest.json') {
+                    if (name === 'manifest.json') {
                         properties.name = options.appName;
                         _.map(properties.icons, function (icon) {
                             icon.src = relative(icon.src);

@@ -33,5 +33,7 @@ node_modules
 
 ### Custom ###
 test/test.html
-test/images/
-test/files/
+test/images-online/
+test/files-online/
+test/images-offline/
+test/files-offline/
