@@ -34,13 +34,13 @@ jQuery(function ($) {
             '        html: "index.html"',
             '    })).pipe(gulp.dest("./"));',
             '});'
-        ].join('\n'),
-        shell = [
+        ].join('\n');
+        /*shell = [
             'favicons \\',
             '  --files.src="images/image.png" \\',
             '  --files.dest="favicons/" \\',
             '  --settings.logging'
-        ].join('\n');
+        ].join('\n');*/
 
     $('#platform-switcher > div').click(function () {
 
@@ -50,9 +50,9 @@ jQuery(function ($) {
             code.text(node);
         } else if (id === 'gulp') {
             code.text(gulp);
-        } else if (id === 'shell') {
+        } /*else if (id === 'shell') {
             code.text(shell);
-        }
+        }*/
 
         $(this).addClass('active').siblings().removeClass('active');
 
