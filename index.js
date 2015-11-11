@@ -133,7 +133,10 @@
             (sourceset, callback) =>
                 create(sourceset, (error, response) =>
                     callback(error, response))
-        ], (error, response) =>
+        ], (error, response) => {
+            if (error && typeof error === 'string') {
+                error = { status: null, error: error, message: null };
+            }
             next((error ? {
                 status: error.status,
                 error: error.name || 'Error',
@@ -142,6 +145,7 @@
                 images: _.compact(response.images),
                 files: _.compact(response.files),
                 html: _.compact(response.html)
-            }));
+            });
+        });
     };
 })();
