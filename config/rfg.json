@@ -67,5 +67,5 @@
 		"scaling_algorithm": "Mitchell",
 		"error_on_image_too_small": true
 	},
-	"versioning": true
+	"versioning": false
 }

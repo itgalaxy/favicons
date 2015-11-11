@@ -10,12 +10,11 @@
 
         const options = _.defaults(parameters || {}, config.defaults),
             µ = require('./helpers.js')(options),
-            rfg = require('./rfg.js').init(),
             background = µ.General.background(options.background);
 
         function createFavicon(sourceset, properties, name, callback) {
             const minimum = Math.min(properties.width, properties.height),
-                icon = _.min(sourceset, image => image.size >= minimum);
+                icon = _.min(sourceset, (image) => image.size >= minimum);
             async.waterfall([
                 (callback) =>
                     µ.Images.read(icon.file, (error, image) =>
