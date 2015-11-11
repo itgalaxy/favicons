@@ -24,10 +24,10 @@
                     µ.Images.resize(image, minimum, (error, image) =>
                         callback(error, image)),
                 (image, callback) =>
-                    µ.Images.create(properties.width, properties.height, background, (error, canvas) =>
+                    µ.Images.create(properties, background, (error, canvas) =>
                         callback(error, image, canvas)),
                 (image, canvas, callback) =>
-                    µ.Images.composite(canvas, image, properties.height, properties.width, minimum, (error, canvas) =>
+                    µ.Images.composite(canvas, image, properties, minimum, (error, canvas) =>
                         callback(error, canvas)),
                 (canvas, callback) =>
                     µ.Images.getBuffer(canvas, (error, buffer) =>

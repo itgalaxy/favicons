@@ -19,7 +19,7 @@
 
     module.exports = function (options) {
 
-        Array.prototype.contains = function(element) {
+        Array.prototype.contains = function (element) {
             return this.indexOf(element.toLowerCase()) > -1;
         };
 
@@ -135,9 +135,9 @@
             },
 
             Images: {
-                create: function (width, height, background, callback) {
-                    print('Image:create', 'Creating empty ' + width + 'x' + height + ' canvas with ' + background + ' background');
-                    var jimp = new Jimp(width, height, background, function (error, canvas) {
+                create: function (properties, background, callback) {
+                    print('Image:create', 'Creating empty ' + properties.width + 'x' + properties.height + ' canvas with ' + (properties.transparent ? 'transparent' : background) + ' background');
+                    var jimp = new Jimp(properties.width, properties.height, (properties.transparent ? 0x00000000 : background), function (error, canvas) {
                         return callback(error, canvas, jimp);
                     });
                 },
@@ -152,10 +152,10 @@
                     image.resize(minimum, Jimp.AUTO);
                     return callback(null, image);
                 },
-                composite: function (canvas, image, height, width, minimum, callback) {
-                    var offsetHeight = (height - minimum > 0 ? (height - minimum) / 2 : 0),
-                        offsetWidth = (width - minimum > 0 ? (width - minimum) / 2 : 0);
-                    print('Images:composite', 'Compositing ' + minimum + 'x' + minimum + ' favicon on ' + width + 'x' + height + ' canvas');
+                composite: function (canvas, image, properties, minimum, callback) {
+                    var offsetHeight = (properties.height - minimum > 0 ? (properties.height - minimum) / 2 : 0),
+                        offsetWidth = (properties.width - minimum > 0 ? (properties.width - minimum) / 2 : 0);
+                    print('Images:composite', 'Compositing ' + minimum + 'x' + minimum + ' favicon on ' + properties.width + 'x' + properties.height + ' canvas');
                     canvas.composite(image, offsetWidth, offsetHeight);
                     return callback(null, canvas);
                 },
