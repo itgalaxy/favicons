@@ -5,7 +5,7 @@
     const _ = require('underscore'),
         async = require('async'),
         path = require('path'),
-        config = require('loadobjects').sync(path.join(__dirname, 'config'));
+        config = require('require-directory')(module, 'config');
 
     module.exports = function (source, parameters, next) {
 

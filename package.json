@@ -1,6 +1,6 @@
 {
   "name": "favicons",
-  "version": "4.0.5",
+  "version": "4.0.6",
   "description": "Favicon generator for Node.js",
   "main": "index.js",
   "repository": {
@@ -31,9 +31,8 @@
     "image-size": "^0.3.5",
     "jimp": "^0.2.13",
     "jsontoxml": "0.0.11",
-    "loadobjects": "^1.1.3",
-    "metaparser": "^1.0.5",
     "node-rest-client": "^1.5.1",
+    "require-directory": "^2.1.1",
     "tinycolor2": "^1.1.2",
     "underscore": "^1.8.3"
   },
