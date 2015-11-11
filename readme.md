@@ -17,7 +17,7 @@ Favicons generates it’s icons locally using pure Javascript with no external d
 ```js
 
 var favicons = require('favicons'),
-    source = 'test/logo.png',           // Path(s) for source images. `string` or array of `{ size: filepath }`
+    source = 'test/logo.png',           // Source image(s). `string`, `buffer` or array of `{ size: filepath }`
     configuration = {
         appName: null,                  // Your application's name. `string`
         appDescription: null,           // Your application's description. `string`
