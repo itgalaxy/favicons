@@ -1,7 +1,5 @@
 # Favicons [![Build Status](https://travis-ci.org/haydenbleasel/favicons.svg?branch=master)](https://travis-ci.org/haydenbleasel/favicons)
 
-## Installation
-
 The Node.js RealFaviconGenerator implementation for generating Favicons, originally built for [Google's Web Starter Kit](https://github.com/google/web-starter-kit) and [Catalyst](https://github.com/haydenbleasel/catalyst). Installed through NPM with:
 
 ```
@@ -10,104 +8,51 @@ npm install favicons
 
 ## Usage
 
-Require the module and call it, optionally specifying configuration and callback objects i.e.
+To use Favicons, require the appropriate module and call it, optionally specifying configuration and callback objects. A sample is shown on the right. The full list of options can be found on GitHub.
+
+The Gulp / Grunt wrapper modules have a few extra properties. You can also configure and use Favicons from the terminal with dot syntax.
+
+Favicons generates it’s icons locally using pure Javascript with no external dependencies. However, due to extensive collaboration with RealFaviconGenerator, you can opt to have your favicons generated using their online API.
 
 ```js
-var favicons = require('favicons');
-favicons(configuration, callback);
-```
 
-### Configuration
-
-To keep things organised, the configuration object contains 4 sub-objects: `files`, `icons`, `settings` and `favicon_generation`. An example of usage with the default values is shown below:
-
-```js
-{
-    files: {
-        src: null,                // Path(s) for file to produce the favicons. `string` or `object`
-        dest: null,               // Path for writing the favicons to. `string`
-        html: null,               // Path(s) for HTML file to write or append metadata. `string` or `array`
-        iconsPath: null,          // Path for overriding default icons path. `string`
-        androidManifest: null,    // Path for an existing android_chrome_manifest.json. `string`
-        browserConfig: null,      // Path for an existing browserconfig.xml. `string`
-        firefoxManifest: null,    // Path for an existing manifest.webapp. `string`
-        yandexManifest: null      // Path for an existing yandex-browser-manifest.json. `string`
-    },
-    icons: {
-        android: true,            // Create Android homescreen icon. `boolean`
-        appleIcon: true,          // Create Apple touch icons. `boolean`
-        appleStartup: true,       // Create Apple startup images. `boolean`
-        coast: true,              // Create Opera Coast icon. `boolean`
-        favicons: true,           // Create regular favicons. `boolean`
-        firefox: true,            // Create Firefox OS icons. `boolean`
-        opengraph: true,          // Create Facebook OpenGraph. `boolean`
-        windows: true,            // Create Windows 8 tiles. `boolean`
-        yandex: true              // Create Yandex browser icon. `boolean`
-    },
-    settings: {
-        appName: null,            // Your application's name. `string`
-        appDescription: null,     // Your application's description. `string`
-        developer: null,          // Your (or your developer's) name. `string`
-        developerURL: null,       // Your (or your developer's) URL. `string`
-        version: 1.0,             // Your application's version number. `number`
-        background: null,         // Background colour for flattened icons. `string`
-        index: null,              // Path for the initial page on the site. `string`
-        url: null,                // URL for your website. `string`
-        silhouette: false,        // Turn the logo into a white silhouette for Windows 8. `boolean`
-        logging: false            // Print logs to console? `boolean`
-    },
-    favicon_generation: null,     // Complete JSON overwrite for the favicon_generation object. `object`
-}
-```
-
-#### Custom Overwrites
-
-The `favicon_generation` object is optional and is used to completely overwrite the [RealFaviconGenerator request](http://realfavicongenerator.net/api/non_interactive_api). An example of this would be:
-
-```js
-favicon_generation: {
-    favicon_design: {
-            ios: {
-                margin: 0
-            }
+var favicons = require('favicons'),
+    source = 'test/logo.png',           // Path(s) for source images. `string` or array of `{ size: filepath }`
+    configuration = {
+        appName: null,                  // Your application's name. `string`
+        appDescription: null,           // Your application's description. `string`
+        developerName: null,            // Your (or your developer's) name. `string`
+        developerURL: null,             // Your (or your developer's) URL. `string`
+        background: "#fff",             // Background colour for flattened icons. `string`
+        path: "/",                      // Path for overriding default icons path. `string`
+        display: "standalone",          // Android display: "Browser" or "Standalone". `string`
+        orientation: "portrait",        // Android orientation: "Portrait" or "Landscape". `string`
+        version: "1.0",                 // Your application's version number. `number`
+        logging: false,                 // Print logs to console? `boolean`
+        online: false,                  // Use RealFaviconGenerator to create favicons? `boolean`
+        icons: {
+            android: true,              // Create Android homescreen icon. `boolean`
+            appleIcon: true,            // Create Apple touch icons. `boolean`
+            appleStartup: true,         // Create Apple startup images. `boolean`
+            coast: true,                // Create Opera Coast icon. `boolean`
+            favicons: true,             // Create regular favicons. `boolean`
+            firefox: true,              // Create Firefox OS icons. `boolean`
+            opengraph: true,            // Create Facebook OpenGraph. `boolean`
+            windows: true,              // Create Windows 8 tiles. `boolean`
+            yandex: true                // Create Yandex browser icon. `boolean`
         }
-    }
-    settings: {
-        compression: 1
-    }
-}
+    },
+    callback = function (error, response) {
+        console.log(error.status);      // HTTP error code (e.g. `200`) or `null`
+        console.log(error.name);        // Error name e.g. "API Error"
+        console.log(error.message);     // Error description e.g. "An unknown error has occurred"
+        console.log(response.images);   // Array of { name: string, contents: <buffer> }
+        console.log(response.files);    // Array of { name: string, contents: <buffer> }
+        console.log(response.html);     // Array of strings (html elements)
+    };
+
+favicons(source, configuration, callback);
 ```
-
-You can overwrite any options you'd like and they are merged in with the recommended default configuration.
-
-#### Multiple Sources
-
-You can specify custom source images for each platform with the following syntax for `files.src`:
-
-```js
-src: {
-    android: 'images/android.png',
-    appleIcon: 'images/apple-icon.png',
-    // ...
-}
-```
-
-Note: If you choose to specify custom source images for each platform, you will need to specify every platform individually for it to work - there's nothing to default to.
-
-### Callback
-
-Favicons follows the typical error-first callback syntax. The callback accepts two parameters:
-
-```js
-function (error, metadata) {
-    if (error) {
-        throw error;
-    }
-    console.log(metadata, 'Metadata produced during the build process');
-}
-```
-
-### Command Line
 
 You can use favicons from the terminal accessing the nested config options via this dot syntax.
 
