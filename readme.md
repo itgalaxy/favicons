@@ -25,8 +25,8 @@ var favicons = require('favicons'),
         developerURL: null,             // Your (or your developer's) URL. `string`
         background: "#fff",             // Background colour for flattened icons. `string`
         path: "/",                      // Path for overriding default icons path. `string`
-        display: "standalone",          // Android display: "Browser" or "Standalone". `string`
-        orientation: "portrait",        // Android orientation: "Portrait" or "Landscape". `string`
+        display: "standalone",          // Android display: "browser" or "standalone". `string`
+        orientation: "portrait",        // Android orientation: "portrait" or "landscape". `string`
         version: "1.0",                 // Your application's version number. `number`
         logging: false,                 // Print logs to console? `boolean`
         online: false,                  // Use RealFaviconGenerator to create favicons? `boolean`
@@ -54,7 +54,7 @@ var favicons = require('favicons'),
 favicons(source, configuration, callback);
 ```
 
-You can use favicons from the terminal accessing the nested config options via this dot syntax.
+You can also configure and use Favicons from the terminal with dot syntax:
 
 ```sh
 favicons --files.src='images/image.png' --files.dest='favicons/' --settings.logging
