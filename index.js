@@ -42,7 +42,7 @@
                 µ.HTML.parse(code, (error, metadata) =>
                     callback(html.push(metadata) && error)),
             (error) =>
-                callback(error, _.compact(html)));
+                callback(error, html));
         }
 
         function createFiles(platform, callback) {
@@ -51,7 +51,7 @@
                 µ.Files.create(properties, name, (error, file) =>
                     callback(files.push(file) && error)),
             (error) =>
-                callback(error, _.compact(files)));
+                callback(error, files));
         }
 
         function createFavicons(sourceset, platform, callback) {
@@ -60,7 +60,7 @@
                 createFavicon(sourceset, properties, name, (error, image) =>
                     callback(images.push(image) && error)),
             (error) =>
-                callback(error, _.compact(images)));
+                callback(error, images));
         }
 
         function createPlatform(sourceset, platform, callback) {
@@ -95,6 +95,15 @@
                 callback(error, response));
         }
 
+        function unpack(pack, callback) {
+            const response = { images: [], files: [], html: pack.html.split(',') };
+            async.each(pack.files, (url, callback) =>
+                µ.RFG.fetch(url, (error, box) =>
+                    callback(response.images.push(box.image) && response.files.push(box.file) && null)),
+            (error) =>
+                callback(error, response));
+        }
+
         function createOnline(sourceset, callback) {
             async.waterfall([
                 (callback) =>
@@ -104,11 +113,10 @@
                     µ.RFG.request(request, (error, pack) =>
                         callback(error, pack)),
                 (pack, callback) =>
-                    µ.RFG.unpack(pack, (error, response) =>
+                    unpack(pack, (error, response) =>
                         callback(error, response))
-            ], (error, results) => {
-                console.log(results, 'results:createonline');
-                callback(error, results) } );
+            ], (error, results) =>
+                callback(error, results));
         }
 
         function create(sourceset, callback) {
@@ -132,9 +140,9 @@
                 error: error.name || 'Error',
                 message: error.message || 'An unknown error has occured'
             } : null), {
-                images: response.images,
-                files: response.files,
-                html: response.html
+                images: _.compact(response.images),
+                files: _.compact(response.files),
+                html: _.compact(response.html)
             }));
     };
 })();

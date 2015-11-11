@@ -18,6 +18,10 @@
 
     module.exports = function (options) {
 
+        Array.prototype.contains = function(element) {
+            return this.indexOf(element.toLowerCase()) > -1;
+        };
+
         function print(context, message) {
             var newMessage = '';
             if (options.logging && message) {
@@ -142,6 +146,7 @@
 
             RFG: {
                 configure: function (sourceset, request, callback) {
+                    print('RFG:configure', 'Configuring RFG API request');
                     var source = _.max(sourceset, image => image.size.width).file;
                     fs.readFile(source, function (error, file) {
                         if (error) {
@@ -216,6 +221,7 @@
                     });
                 },
                 request: function (request, callback) {
+                    print('RFG:request', 'Posting a request to the RFG API');
                     var client = new NRC();
                     client.post("http://realfavicongenerator.net/api/favicon", {
                         data: { "favicon_generation": request },
@@ -231,9 +237,21 @@
                         }
                     });
                 },
-                unpack: function (pack, callback) {
-                    console.log(pack, 'package');
-                    return callback(null);
+                fetch: function (url, callback) {
+                    var client = new NRC(),
+                        name = path.basename(url),
+                        image = ['.png', '.jpg', '.bmp', '.ico', '.svg'].contains(path.extname(name));
+                    print('RFG:fetch', 'Fetching ' + (image ? 'image' : 'file') + ' from RFG: ' + url);
+                    client.get(url, function(buffer, response) {
+                        if (buffer && response.statusCode === 200) {
+                            return callback(null, {
+                                file: (image ? null : { name: name, contents: buffer }),
+                                image: (image ? { name: name, contents: buffer } : null)
+                            });
+                        } else {
+                            return callback('Could not fetch URL: ' + url);
+                        }
+                    });
                 }
             }
 
