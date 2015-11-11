@@ -73,14 +73,17 @@ var favicons = require("favicons");
 favicons({
     appName: "My App",
     appDescription: "This is my application",
-    developer: "Hayden Bleasel",
+    developerName: "Hayden Bleasel",
     developerURL: "haydenbleasel.com",
     background: "#020307",
     path: "favicons/",
-    online: false,
+    display: "standalone",
+    orientation: "portrait",
     version: 1.0,
-}, function (error, images, files, html) {
-    // Handle favicons
+    logging: false,
+    online: false
+}, function (error, response) {
+    // Handle error and response
 });
 </pre>
             </div>
