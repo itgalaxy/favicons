@@ -66,13 +66,17 @@ Coming soon: https://github.com/haydenbleasel/favicons/issues/54
 Depending on which platforms you opt for, the output includes:
 
 ```
+Files:
+browserconfig.xml
+manifest.json
+manifest.webapp
+yandex-browser-manifest.json
 android-chrome-144x144.png
 android-chrome-192x192.png
 android-chrome-36x36.png
 android-chrome-48x48.png
 android-chrome-72x72.png
 android-chrome-96x96.png
-android-chrome-manifest.json
 apple-touch-icon-114x114.png
 apple-touch-icon-120x120.png
 apple-touch-icon-144x144.png
@@ -82,7 +86,6 @@ apple-touch-icon-57x57.png
 apple-touch-icon-60x60.png
 apple-touch-icon-72x72.png
 apple-touch-icon-76x76.png
-apple-touch-icon-precomposed.png
 apple-touch-icon.png
 apple-touch-startup-image-1024x748.png
 apple-touch-startup-image-1536x2008.png
@@ -91,7 +94,6 @@ apple-touch-startup-image-320x460.png
 apple-touch-startup-image-640x1096.png
 apple-touch-startup-image-640x920.png
 apple-touch-startup-image-768x1004.png
-browserconfig.xml
 coast-228x228.png
 favicon-16x16.png
 favicon-230x230.png
@@ -101,7 +103,6 @@ favicon.ico
 firefox_app_128x128.png
 firefox_app_512x512.png
 firefox_app_60x60.png
-manifest.webapp
 mstile-144x144.png
 mstile-150x150.png
 mstile-310x150.png
@@ -109,43 +110,41 @@ mstile-310x310.png
 mstile-70x70.png
 open-graph.png
 yandex-browser-50x50.png
-yandex-browser-manifest.json
 ```
 
 It will also create the following HTML:
 
 ```html
-<link rel="apple-touch-icon" sizes="57x57" href="favicons/apple-touch-icon-57x57.png">
-<link rel="apple-touch-icon" sizes="60x60" href="favicons/apple-touch-icon-60x60.png">
-<link rel="apple-touch-icon" sizes="72x72" href="favicons/apple-touch-icon-72x72.png">
-<link rel="apple-touch-icon" sizes="76x76" href="favicons/apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" sizes="114x114" href="favicons/apple-touch-icon-114x114.png">
-<link rel="apple-touch-icon" sizes="120x120" href="favicons/apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" sizes="144x144" href="favicons/apple-touch-icon-144x144.png">
-<link rel="apple-touch-icon" sizes="152x152" href="favicons/apple-touch-icon-152x152.png">
-<link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon-180x180.png">
-<link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 1)" href="favicons/apple-touch-startup-image-1024x748.png">
-<link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)" href="favicons/apple-touch-startup-image-1536x2008.png">
-<link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)" href="favicons/apple-touch-startup-image-2048x1496.png">
-<link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 1)" href="favicons/apple-touch-startup-image-320x460.png">
-<link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="favicons/apple-touch-startup-image-640x1096.png">
-<link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)" href="favicons/apple-touch-startup-image-640x920.png">
-<link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 1)" href="favicons/apple-touch-startup-image-768x1004.png">
-<link rel="icon" type="image/png" href="favicons/favicon-32x32.png" sizes="32x32">
-<link rel="icon" type="image/png" href="favicons/favicon-230x230.png" sizes="230x230">
-<link rel="icon" type="image/png" href="favicons/favicon-96x96.png" sizes="96x96">
-<link rel="icon" type="image/png" href="favicons/android-chrome-192x192.png" sizes="192x192">
-<link rel="icon" type="image/png" href="favicons/coast-228x228.png" sizes="228x228">
-<link rel="icon" type="image/png" href="favicons/favicon-16x16.png" sizes="16x16">
-<link rel="manifest" href="favicons/android-chrome-manifest.json">
-<link rel="shortcut icon" href="favicons/favicon.ico">
-<link rel="yandex-tableau-widget" href="favicons/yandex-browser-manifest.json">
-<meta property="og:image" content="favicons/open-graph.png">
+<link rel="icon" type="image/png" sizes="192x192" href="android-chrome-192x192.png">
+<link rel="manifest" href="android-chrome-manifest.json">
+<link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="120x120" href="apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180x180.png">
+<link rel="apple-touch-icon" sizes="57x57" href="apple-touch-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="60x60" href="apple-touch-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="72x72" href="apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="76x76" href="apple-touch-icon-76x76.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="msapplication-TileColor" content="#27353f">
-<meta name="msapplication-TileImage" content="favicons/mstile-144x144.png">
-<meta name="msapplication-config" content="favicons/browserconfig.xml">
-<meta name="theme-color" content="#27353f">
+<link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 1)" href="apple-touch-startup-image-1024x748.png">
+<link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)" href="apple-touch-startup-image-1536x2008.png">
+<link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)" href="apple-touch-startup-image-2048x1496.png">
+<link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 1)" href="apple-touch-startup-image-320x460.png">
+<link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="apple-touch-startup-image-640x1096.png">
+<link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)" href="apple-touch-startup-image-640x920.png">
+<link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 1)" href="apple-touch-startup-image-768x1004.png">
+<link rel="icon" type="image/png" sizes="228x228" href="favicon-228x228.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="230x230" href="favicon-230x230.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="yandex-tableau-widget" href="yandex-browser-manifest.json">
+<meta name="msapplication-TileColor" content="#FFFFFF">
+<meta name="msapplication-TileImage" content="mstile-144x144.png">
+<meta name="msapplication-config" content="browserconfig.xml">
+<meta property="og:image" content="http:/favicons.io/open-graph.png">
 ```
 
 ## Credits
