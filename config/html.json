@@ -25,7 +25,6 @@
     "<link rel='apple-touch-startup-image' media='(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 1)' href='apple-touch-startup-image-768x1004.png'>"
   ],
   "favicons": [
-    "<link rel='icon' type='image/png' sizes='228x228' href='favicon-228x228.png'>",
     "<link rel='icon' type='image/png' sizes='16x16' href='favicon-16x16.png'>",
     "<link rel='icon' type='image/png' sizes='230x230' href='favicon-230x230.png'>",
     "<link rel='icon' type='image/png' sizes='32x32' href='favicon-32x32.png'>",

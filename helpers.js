@@ -163,6 +163,7 @@
                 composite: function (canvas, image, properties, minimum, callback) {
                     var offsetHeight = (properties.height - minimum > 0 ? (properties.height - minimum) / 2 : 0),
                         offsetWidth = (properties.width - minimum > 0 ? (properties.width - minimum) / 2 : 0);
+                    image.rotate(properties.rotate ? 90 : 0);
                     print('Images:composite', 'Compositing ' + minimum + 'x' + minimum + ' favicon on ' + properties.width + 'x' + properties.height + ' canvas');
                     canvas.composite(image, offsetWidth, offsetHeight);
                     return callback(null, canvas);
