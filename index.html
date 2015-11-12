@@ -58,7 +58,7 @@
         <div class="container clearfix">
             <div class="column">
                 <p>To use Favicons, require the appropriate module and call it, optionally specifying configuration and callback objects. A sample is shown on the right. The full list of options can be found on GitHub.</p>
-                <p>The Gulp wrapper modules has a few extra properties. You can also configure and use Favicons from the terminal with dot syntax.</p>
+                <p>The Gulp wrapper modules has one extra property for writing HTML. You can also configure and use Favicons from the terminal with dot syntax.</p>
                 <p>Favicons generates it’s icons locally using pure Javascript with no external dependencies. However, due to extensive collaboration with RealFaviconGenerator, you can opt to have your favicons generated using their online API.</p>
             </div>
             <div class="column">
@@ -74,9 +74,10 @@ favicons({
     appName: "My App",
     appDescription: "This is my application",
     developerName: "Hayden Bleasel",
-    developerURL: "haydenbleasel.com",
+    developerURL: "http://haydenbleasel.com/",
     background: "#020307",
     path: "favicons/",
+    url: "http://haydenbleasel.com/",
     display: "standalone",
     orientation: "portrait",
     version: 1.0,
