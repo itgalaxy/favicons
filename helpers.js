@@ -23,6 +23,14 @@
             return this.indexOf(element.toLowerCase()) > -1;
         };
 
+        String.prototype.relative = function () {
+            return path.join(options.path, this);
+        }
+
+        String.prototype.absolute = function () {
+            return path.join(options.url, this);
+        }
+
         function print(context, message) {
             var newMessage = '';
             if (options.logging && message) {
@@ -31,10 +39,6 @@
                 });
                 console.log('[Favicons] '.green + context.yellow + ':' + newMessage + '...');
             }
-        }
-
-        function relative(name) {
-            return path.join(options.path, name);
         }
 
         function readFile(filepath, callback) {
@@ -89,7 +93,11 @@
                         attribute = (link ? 'href' : 'content'),
                         value = $('*').first().attr(attribute);
                     if (path.extname(value)) {
-                        $('*').first().attr(attribute, relative(value));
+                        if (html.includes('og:image')) {
+                            $('*').first().attr(attribute, value.absolute());
+                        } else {
+                            $('*').first().attr(attribute, value.relative());
+                        }
                     }
                     return callback(null, $.html());
                 }
@@ -101,7 +109,7 @@
                     if (name === 'manifest.json') {
                         properties.name = options.appName;
                         _.map(properties.icons, function (icon) {
-                            icon.src = relative(icon.src);
+                            icon.src = icon.src.relative();
                         });
                         properties = JSON.stringify(properties, null, 2);
                     } else if (name === 'manifest.webapp') {
@@ -111,7 +119,7 @@
                         properties.developer.name = options.developerName;
                         properties.developer.url = options.developerURL;
                         _.map(properties.icons, function (property) {
-                            property = relative(property);
+                            property = property.relative();
                         });
                         properties = JSON.stringify(properties, null, 2);
                     } else if (name === 'browserconfig.xml') {
@@ -119,14 +127,14 @@
                             if (property.name === 'TileColor') {
                                 property.text = options.background;
                             } else {
-                                property.attrs.src = relative(property.attrs.src);
+                                property.attrs.src = property.attrs.src.relative();
                             }
                         });
                         properties = jsonxml(properties, xmlconfig);
                     } else if (name === 'yandex-browser-manifest.json') {
                         properties.version = options.version;
                         properties.api_version = 1;
-                        properties.layout.logo = relative(properties.layout.logo);
+                        properties.layout.logo = properties.layout.logo.relative();
                         properties.layout.color = options.background;
                         properties = JSON.stringify(properties, null, 2);
                     }

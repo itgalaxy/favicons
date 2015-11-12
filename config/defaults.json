@@ -5,6 +5,7 @@
   "developerURL": null,
   "background": "#fff",
   "path": "/",
+  "url": "/",
   "display": "standalone",
   "orientation": "portrait",
   "version": "1.0",

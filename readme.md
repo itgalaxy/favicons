@@ -25,6 +25,7 @@ var favicons = require('favicons'),
         developerURL: null,             // Your (or your developer's) URL. `string`
         background: "#fff",             // Background colour for flattened icons. `string`
         path: "/",                      // Path for overriding default icons path. `string`
+        url: "/",                       // Absolute URL for OpenGraph image. `string`
         display: "standalone",          // Android display: "browser" or "standalone". `string`
         orientation: "portrait",        // Android orientation: "portrait" or "landscape". `string`
         version: "1.0",                 // Your application's version number. `number`
