@@ -38,7 +38,7 @@ jQuery(function ($) {
             '        orientation: "portrait",',
             '        version: 1.0,',
             '        logging: false,',
-            '        online: false',
+            '        online: false,',
             '        html: "index.html"',
             '    })).pipe(gulp.dest("./"));',
             '});'
