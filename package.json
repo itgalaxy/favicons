@@ -39,6 +39,7 @@
   "devDependencies": {
     "eslint": "^1.9.0",
     "mkdirp": "^0.5.1",
-    "mocha": "^2.3.4"
+    "mocha": "^2.3.4",
+    "rimraf": "^2.4.3"
   }
 }
