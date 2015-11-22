@@ -1,6 +1,6 @@
 # Favicons [![Build Status](https://travis-ci.org/haydenbleasel/favicons.svg?branch=master)](https://travis-ci.org/haydenbleasel/favicons)
 
-A Node.js module for generating favicons and their associated files. Originally built for [Google's Web Starter Kit](https://github.com/google/web-starter-kit) and [Catalyst](https://github.com/haydenbleasel/catalyst). Installed through NPM with:
+A Node.js module for generating favicons and their associated files. Originally built for [Google's Web Starter Kit](https://github.com/google/web-starter-kit) and [Catalyst](https://github.com/haydenbleasel/catalyst). Requires Node 4+. Installed through NPM with:
 
 ```
 npm install favicons
@@ -55,6 +55,12 @@ var favicons = require('favicons'),
     };
 
 favicons(source, configuration, callback);
+```
+
+If you need an ES5 build for legacy purposes, just require the ES5 file:
+
+```js
+var favicons = require('favicons/es5');
 ```
 
 You can also configure and use Favicons from the terminal with dot syntax:
@@ -154,28 +160,26 @@ It will also create the following HTML:
 This module uses Mocha tests. If you add a feature, please implement the
 corresponding test(s).
 
-#### Favicon generation
+### Favicon generation
 
 Favicon generation is tested in `test/favicons.js`. To add a test:
 
-  - Add your own test case (if you don't know Mocha, just copy/paste an
-  existing test case... you know the story).
-  - Choose a short test case name (eg. `android_background`) and create a
-  directory named after it, eg. `test/expected/favicons/android_background`.
-  - In this directory, create a file named `html.txt`. In this file, put the
-  HTML markups you expect the module will produce.
-  - Run the test by running `mocha` (you may need to install it with
-  `npm install mocha -g`). It should fail, because there are no expected images
-  yet.
-  - Look at the images the test case generated, eg. in
-  `test/output/favicons/android_background/images` and inspect them: are they
-  correct? If so, copy them in the expected directory, eg. in
-  `test/expected/favicons/android_background/images`.
-  - Run the test again: it should now pass regarding the images. Yet, it may
-  fail again because of the other files (`browserconfig.xml`, other
-  manifests...). If so, you can repeat the process above: inspect the generated
-  files and copy them (eg. from `test/output/favicons/android_background/files`
-  to `test/expected/favicons/android_background/files`).
+- Add your own test case (if you don't know Mocha, just copy/paste an existing test case... you know the story).
+- Choose a short test case name (eg. `android_background`) and create a directory named after it, eg. `test/expected/favicons/android_background`.
+- In this directory, create a file named `html.txt`. In this file, put the HTML markups you expect the module will produce.
+- Run the test by running `mocha` (you may need to install it with `npm install mocha -g`). It should fail, because there are no expected images yet.
+- Look at the images the test case generated, eg. in `test/output/favicons/android_background/images` and inspect them: are they correct? If so, copy them in the expected directory, eg. in `test/expected/favicons/android_background/images`.
+- Run the test again: it should now pass regarding the images. Yet, it may fail again because of the other files (`browserconfig.xml`, other manifests...). If so, you can repeat the process above: inspect the generated files and copy them (eg. from `test/output/favicons/android_background/files` to `test/expected/favicons/android_background/files`).
+
+
+### ES5 compatibility
+
+To build the ES5 version:
+
+```sh
+npm install -g babel-cli
+babel --presets es2015 index.js --out-file es5.js
+```
 
 ## Credits
 

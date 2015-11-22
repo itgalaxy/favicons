@@ -1,130 +1,132 @@
+const _ = require('underscore'),
+    async = require('async'),
+    config = require('require-directory')(module, 'config'),
+    helpers = require('./helpers.js');
+
 (() => {
 
     'use strict';
 
-    const _ = require('underscore'),
-        async = require('async'),
-        path = require('path'),
-        config = require('require-directory')(module, 'config');
-
-    module.exports = function (source, parameters, next) {
+    function favicons (source, parameters, next) {
 
         const options = _.defaults(parameters || {}, config.defaults),
-            µ = require('./helpers.js')(options),
+            µ = helpers(options),
             background = µ.General.background(options.background);
 
-        function createFavicon(sourceset, properties, name, callback) {
+        function createFavicon (sourceset, properties, name, callback) {
             const minimum = Math.min(properties.width, properties.height),
-                icon = _.min(sourceset, (image) => image.size >= minimum);
+                icon = _.min(sourceset, (ico) => ico.size >= minimum);
+
             async.waterfall([
-                (callback) =>
-                    µ.Images.read(icon.file, (error, image) =>
-                        callback(error, image)),
-                (image, callback) =>
-                    µ.Images.resize(image, minimum, (error, image) =>
-                        callback(error, image)),
-                (image, callback) =>
+                (cb) =>
+                    µ.Images.read(icon.file, (error, buffer) =>
+                        cb(error, buffer)),
+                (buffer, cb) =>
+                    µ.Images.resize(buffer, minimum, (error, resizedBuffer) =>
+                        cb(error, resizedBuffer)),
+                (resizedBuffer, cb) =>
                     µ.Images.create(properties, background, (error, canvas) =>
-                        callback(error, image, canvas)),
-                (image, canvas, callback) =>
-                    µ.Images.composite(canvas, image, properties, minimum, (error, canvas) =>
-                        callback(error, canvas)),
-                (canvas, callback) =>
-                    µ.Images.getBuffer(canvas, (error, buffer) =>
-                        callback(error, buffer))
+                        cb(error, resizedBuffer, canvas)),
+                (resizedBuffer, canvas, cb) =>
+                    µ.Images.composite(canvas, resizedBuffer, properties, minimum, (error, composite) =>
+                        cb(error, composite)),
+                (composite, cb) =>
+                    µ.Images.getBuffer(composite, (error, buffer) =>
+                        cb(error, buffer))
             ], (error, buffer) =>
-                callback(error, { name: name, contents: buffer }));
+                callback(error, { name, contents: buffer }));
         }
 
-        function createHTML(platform, callback) {
-            let html = [];
-            async.each(config.html[platform], (code, callback) =>
+        function createHTML (platform, callback) {
+            const html = [];
+
+            async.each(config.html[platform], (code, cb) =>
                 µ.HTML.parse(code, (error, metadata) =>
-                    callback(html.push(metadata) && error)),
+                    cb(html.push(metadata) && error)),
             (error) =>
                 callback(error, html));
         }
 
-        function createFiles(platform, callback) {
-            let files = [];
-            async.forEachOf(config.files[platform], (properties, name, callback) =>
+        function createFiles (platform, callback) {
+            const files = [];
+
+            async.forEachOf(config.files[platform], (properties, name, cb) =>
                 µ.Files.create(properties, name, (error, file) =>
-                    callback(files.push(file) && error)),
+                    cb(files.push(file) && error)),
             (error) =>
                 callback(error, files));
         }
 
-        function createFavicons(sourceset, platform, callback) {
-            let images = [];
-            async.forEachOf(config.icons[platform], (properties, name, callback) =>
+        function createFavicons (sourceset, platform, callback) {
+            const images = [];
+
+            async.forEachOf(config.icons[platform], (properties, name, cb) =>
                 createFavicon(sourceset, properties, name, (error, image) =>
-                    callback(images.push(image) && error)),
+                    cb(images.push(image) && error)),
             (error) =>
                 callback(error, images));
         }
 
-        function createPlatform(sourceset, platform, callback) {
+        function createPlatform (sourceset, platform, callback) {
             async.parallel([
-                (callback) =>
+                (cb) =>
                     createFavicons(sourceset, platform, (error, images) =>
-                        callback(error, images)),
-                (callback) =>
+                        cb(error, images)),
+                (cb) =>
                     createFiles(platform, (error, files) =>
-                        callback(error, files)),
-                (callback) =>
+                        cb(error, files)),
+                (cb) =>
                     createHTML(platform, (error, code) =>
-                        callback(error, code))
+                        cb(error, code))
             ], (error, results) =>
                 callback(error, results[0], results[1], results[2]));
         }
 
-        function createOffline(sourceset, callback) {
+        function createOffline (sourceset, callback) {
             const response = { images: [], files: [], html: [] };
-            async.forEachOf(options.icons, (enabled, platform, callback) => {
+
+            async.forEachOf(options.icons, (enabled, platform, cb) => {
                 if (enabled) {
                     createPlatform(sourceset, platform, (error, images, files, html) => {
                         response.images = response.images.concat(images);
                         response.files = response.files.concat(files);
                         response.html = response.html.concat(html);
-                        return callback(error);
+                        return cb(error);
                     });
                 } else {
                     return callback(null);
                 }
-            }, error =>
+            }, (error) =>
                 callback(error, response));
         }
 
-        function unpack(pack, callback) {
+        function unpack (pack, callback) {
             const response = { images: [], files: [], html: pack.html.split(',') };
-            async.each(pack.files, (url, callback) =>
+
+            async.each(pack.files, (url, cb) =>
                 µ.RFG.fetch(url, (error, box) =>
-                    callback(response.images.push(box.image) && response.files.push(box.file) && null)),
-            (error) =>
-                callback(error, response));
+                    cb(response.images.push(box.image) && response.files.push(box.file) && error)),
+            () =>
+                callback(null, response));
         }
 
-        function createOnline(sourceset, callback) {
+        function createOnline (sourceset, callback) {
             async.waterfall([
-                (callback) =>
+                (cb) =>
                     µ.RFG.configure(sourceset, config.rfg, (error, request) =>
-                        callback(error, request)),
-                (request, callback) =>
+                        cb(error, request)),
+                (request, cb) =>
                     µ.RFG.request(request, (error, pack) =>
-                        callback(error, pack)),
-                (pack, callback) =>
+                        cb(error, pack)),
+                (pack, cb) =>
                     unpack(pack, (error, response) =>
-                        callback(error, response))
+                        cb(error, response))
             ], (error, results) =>
                 callback(error, results));
         }
 
-        function create(sourceset, callback) {
-            options.online ?
-                createOnline(sourceset, (error, response) =>
-                    callback(error, response)) :
-                createOffline(sourceset, (error, response) =>
-                    callback(error, response));
+        function create (sourceset, callback) {
+            options.online ? createOnline(sourceset, (error, response) => callback(error, response)) : createOffline(sourceset, (error, response) => callback(error, response));
         }
 
         async.waterfall([
@@ -136,17 +138,20 @@
                     callback(error, response))
         ], (error, response) => {
             if (error && typeof error === 'string') {
-                error = { status: null, error: error, message: null };
+                error = { status: null, error, message: null };
             }
-            next((error ? {
+            next(error ? {
                 status: error.status,
                 error: error.name || 'Error',
                 message: error.message || 'An unknown error has occured'
-            } : null), {
+            } : null, {
                 images: _.compact(response.images),
                 files: _.compact(response.files),
                 html: _.compact(response.html)
             });
         });
-    };
+    }
+
+    module.exports = favicons;
+
 })();
