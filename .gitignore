@@ -1,9 +1,10 @@
-# Created by http://www.gitignore.io
+# Created by https://www.gitignore.io/api/node,osx,windows
 
 ### Node ###
 # Logs
 logs
 *.log
+npm-debug.log*
 
 # Runtime data
 pids
@@ -19,22 +20,70 @@ coverage
 # Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
 
+# node-waf configuration
+.lock-wscript
+
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
 
 # Dependency directory
-# Commenting this out is preferred by some people, see
-# https://npmjs.org/doc/faq.html#Should-I-check-my-node_modules-folder-into-git
+# https://docs.npmjs.com/misc/faq#should-i-check-my-node-modules-folder-into-git
 node_modules
 
-# Users Environment Variables
-.lock-wscript
+
+### OSX ###
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+
+### Windows ###
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
 
 
 ### Custom ###
 test/test.html
-test/images-online/
-test/files-online/
-test/images-offline/
-test/files-offline/
 test/output/
+test/files-offline
+test/files-online
+test/images-offline
+test/images-online
