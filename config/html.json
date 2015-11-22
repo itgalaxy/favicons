@@ -1,7 +1,7 @@
 {
   "android": [
     "<link rel='icon' type='image/png' sizes='192x192' href='android-chrome-192x192.png'>",
-    "<link rel='manifest' href='android-chrome-manifest.json'>"
+    "<link rel='manifest' href='manifest.json'>"
   ],
   "appleIcon": [
     "<link rel='apple-touch-icon' sizes='114x114' href='apple-touch-icon-114x114.png'>",

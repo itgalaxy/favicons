@@ -118,7 +118,7 @@ It will also create the following HTML:
 
 ```html
 <link rel="icon" type="image/png" sizes="192x192" href="android-chrome-192x192.png">
-<link rel="manifest" href="android-chrome-manifest.json">
+<link rel='manifest' href='manifest.json'>
 <link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-114x114.png">
 <link rel="apple-touch-icon" sizes="120x120" href="apple-touch-icon-120x120.png">
 <link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144.png">
