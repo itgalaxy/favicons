@@ -40,8 +40,9 @@ var favicons = require('favicons'),
             coast: true,                // Create Opera Coast icon. `boolean`
             favicons: true,             // Create regular favicons. `boolean`
             firefox: true,              // Create Firefox OS icons. `boolean`
-            opengraph: true,            // Create Facebook OpenGraph. `boolean`
-            windows: true,              // Create Windows 8 tiles. `boolean`
+            opengraph: true,            // Create Facebook OpenGraph image. `boolean`
+            twitter: true,              // Create Twitter Summary Card image. `boolean`
+            windows: true,              // Create Windows 8 tile icons. `boolean`
             yandex: true                // Create Yandex browser icon. `boolean`
         }
     },
@@ -117,6 +118,7 @@ mstile-310x150.png
 mstile-310x310.png
 mstile-70x70.png
 open-graph.png
+twitter.png
 yandex-browser-50x50.png
 ```
 
@@ -152,6 +154,7 @@ It will also create the following HTML:
 <meta name="msapplication-TileImage" content="mstile-144x144.png">
 <meta name="msapplication-config" content="browserconfig.xml">
 <meta property="og:image" content="http:/favicons.io/open-graph.png">
+<meta property="twitter:image" content="http:/favicons.io/twitter.png">
 ```
 ## Contributing
 

@@ -235,6 +235,14 @@
       "rotate": false
     }
   },
+  "twitter": {
+    "twitter.png": {
+      "width": 1400,
+      "height": 750,
+      "transparent": false,
+      "rotate": false
+    }
+  },
   "windows": {
     "mstile-144x144.png": {
       "width": 144,
