@@ -18,6 +18,11 @@
         xmlconfig = { prettyPrint: true, xmlHeader: true, indent: '  ' };
 
     module.exports = function (options) {
+        
+        // Only create 1 REST client to avoid reconnect overhead
+        var client = new NRC();
+        // Set to avoid "warning: possible EventEmitter memory leak detected"
+        client.setMaxListeners(0);
 
         Array.prototype.contains = function (element) {
             return this.indexOf(element.toLowerCase()) > -1;
@@ -246,7 +251,6 @@
                 },
                 request: function (request, callback) {
                     print('RFG:request', 'Posting a request to the RFG API');
-                    var client = new NRC();
                     client.post("http://realfavicongenerator.net/api/favicon", {
                         data: { "favicon_generation": request },
                         headers: { "Content-Type": "application/json" }
@@ -262,8 +266,7 @@
                     });
                 },
                 fetch: function (url, callback) {
-                    var client = new NRC(),
-                        name = path.basename(url),
+                    var name = path.basename(url),
                         image = ['.png', '.jpg', '.bmp', '.ico', '.svg'].contains(path.extname(name));
                     print('RFG:fetch', 'Fetching ' + (image ? 'image' : 'file') + ' from RFG: ' + url);
                     client.get(url, function(buffer, response) {
