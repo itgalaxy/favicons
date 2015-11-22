@@ -16,6 +16,8 @@ const favicons = require('./index'),
         background: '#26353F',
         path: 'test/images/',
         url: 'http://haydenbleasel.com/',
+        display: 'browser',
+        orientation: 'landscape',
         version: '1.0',
         logging: true,
         online: false
@@ -54,6 +56,8 @@ const favicons = require('./index'),
         developerURL: 'http://haydenbleasel.com/',
         background: '#26353F',
         path: 'test/images/',
+        display: 'browser',
+        orientation: 'landscape',
         version: '1.0',
         online: true
     }, (error, response) => {
