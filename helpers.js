@@ -268,18 +268,18 @@ const path = require('path'),
                         }) : callback(result.result.error_message);
                     });
                 },
-                fetch: (url, callback) => {
-                    const name = path.basename(url),
+                fetch: (address, callback) => {
+                    const name = path.basename(address),
                         image = contains(['.png', '.jpg', '.bmp', '.ico', '.svg'], path.extname(name));
 
-                    print('RFG:fetch', `Fetching ${ image ? 'image' : 'file' } from RFG: ${ url }`);
-                    client.get(url, (buffer, response) => {
+                    print('RFG:fetch', `Fetching ${ image ? 'image' : 'file' } from RFG: ${ address }`);
+                    client.get(address, (buffer, response) => {
                         const success = buffer && response.statusCode === HTTP_SUCCESS;
 
                         return success ? callback(null, {
                             file: image ? null : { name, contents: buffer },
                             image: image ? { name, contents: buffer } : null
-                        }) : callback(`Could not fetch URL: ${ url }`);
+                        }) : callback(`Could not fetch URL: ${ address }`);
                     });
                 }
             }
