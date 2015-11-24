@@ -20,7 +20,10 @@ const favicons = require('./index'),
         orientation: 'landscape',
         version: '1.0',
         logging: true,
-        online: false
+        online: false,
+        icons: {
+            coast: false
+        }
     }, (error, response) => {
 
         if (error) {
