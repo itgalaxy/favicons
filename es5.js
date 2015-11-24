@@ -2,15 +2,18 @@
 
 var _ = require('underscore'),
     async = require('async'),
+    mergeDefaults = require('merge-defaults'),
     config = require('require-directory')(module, 'config'),
     helpers = require('./helpers.js');
 
 (function () {
     'use strict';
 
+    _.mergeDefaults = mergeDefaults;
+
     function favicons(source, parameters, next) {
 
-        var options = _.defaults(parameters || {}, config.defaults),
+        var options = _.mergeDefaults(parameters || {}, config.defaults),
             µ = helpers(options),
             background = µ.General.background(options.background);
 
@@ -111,7 +114,7 @@ var _ = require('underscore'),
                         return cb(error);
                     });
                 } else {
-                    return callback(null);
+                    return cb(null);
                 }
             }, function (error) {
                 return callback(error, response);
