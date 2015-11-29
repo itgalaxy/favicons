@@ -182,6 +182,7 @@ To build the ES5 version:
 ```sh
 npm install -g babel-cli
 babel --presets es2015 index.js --out-file es5.js
+babel --presets es2015 helpers-es6.js --out-file helpers.js
 ```
 
 ## Credits
