@@ -6,7 +6,7 @@ const gulp = require('gulp'),
     'use strict';
 
     gulp.task('default', () =>
-        gulp.src('index.html').pipe(favicons({
+        gulp.src('logo.png').pipe(favicons({
             appName: 'Favicons 4.0',
             appDescription: 'Testing suite for Favicons',
             developerName: 'Hayden Bleasel',
@@ -22,7 +22,7 @@ const gulp = require('gulp'),
             icons: {
                 coast: false
             },
-            html: 'stream.html'
-        }).pipe(gulp.dest('./'))));
+            html: 'index.html'
+        })).pipe(gulp.dest('stream/')));
 
 })();

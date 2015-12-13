@@ -1,6 +1,6 @@
 {
   "name": "gulp-favicons",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Favicons generator for Gulp",
   "main": "index.js",
   "repository": {
@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/haydenbleasel/favicons#gulp",
   "dependencies": {
-    "favicons": "^4.2.7"
+    "favicons": "^4.3.0"
   },
   "devDependencies": {
     "babel-preset-es2015": "*",
