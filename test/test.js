@@ -1,67 +1,90 @@
-/*jslint node:true*/
+/* eslint no-sync: 0 */
 
-'use strict';
+const favicons = require('../'),
+    fs = require('fs'),
+    mkdirp = require('mkdirp');
 
-var assert = require('assert');
-var fs = require('fs');
-var path = require('path');
-var mkdirp = require('mkdirp');
-var rimraf = require('rimraf');
+(() => {
 
-function dumpAnyFiles(files, dir) {
-  files.forEach(function(f) {
-    fs.writeFileSync(path.join(dir, f.name), f.contents);
-  });
-}
+    'use strict';
 
-function assertAnyFiles(fileList, scenarioPath, dirName) {
-  var expImgDir = path.join('test', 'expected', scenarioPath, dirName);
+    favicons('./logo.png', {
+        appName: 'Favicons 4.0',
+        appDescription: 'Testing suite for Favicons',
+        developerName: 'Hayden Bleasel',
+        developerURL: 'http://haydenbleasel.com/',
+        background: '#26353F',
+        path: 'images/',
+        url: 'http://haydenbleasel.com/',
+        display: 'browser',
+        orientation: 'landscape',
+        version: '1.0',
+        logging: true,
+        online: false,
+        icons: {
+            coast: false
+        }
+    }, (error, response) => {
 
-  var obsImgDir = path.join('test', 'output', scenarioPath, dirName);
-  if (fs.existsSync(obsImgDir)) {
-    rimraf.sync(obsImgDir);
-  }
-  mkdirp.sync(obsImgDir);
+        if (error) {
+            throw error;
+        }
 
-  // Why do we dump the files before compariing the lists?
-  // Because, when writing a new tests, we will review these
-  // files and use them as the expected result.
-  dumpAnyFiles(fileList, obsImgDir);
+        console.log(`Images: ${ response.images }`);
+        console.log(`Files: ${ response.files }`);
+        console.log(`HTML: ${ response.html }`);
 
-  // Make sure we generated all expected files,
-  // and only these files.
-  var expFiles = fs.readdirSync(expImgDir).sort();
-  var obsFiles = fileList.map(function(i) {
-    return i.name;
-  }).sort();
-  assert.deepEqual(obsFiles, expFiles);
+        if (response.images) {
+            mkdirp.sync('./images-offline/');
+            response.images.forEach((image) =>
+                fs.writeFileSync(`./images-offline/${ image.name }`, image.contents));
+        }
 
-  // Make sure the proper files were generated
-  expFiles.forEach(function(img) {
-    assert.equal(
-      fs.readFileSync(path.join(obsImgDir, img)).toString(),
-      fs.readFileSync(path.join(expImgDir, img)).toString());
-  });
-}
+        if (response.files) {
+            mkdirp.sync('./files-offline/');
+            response.files.forEach((file) =>
+                fs.writeFileSync(`./files-offline/${ file.name }`, file.contents));
+        }
 
-function assertHtml(result, scenarioPath) {
-  var expected = fs.readFileSync(
-    path.join('test', 'expected', scenarioPath, 'html.txt')).toString();
-  assert.equal(result.html.join('\n'), expected);
-}
+        if (response.html) {
+            fs.writeFileSync('./test.html', response.html.join('\n'));
+        }
 
-function assertImages(result, scenarioPath) {
-  assertAnyFiles(result.images, scenarioPath, 'images');
-}
+    });
 
-function assertFiles(result, scenarioPath) {
-  assertAnyFiles(result.files, scenarioPath, 'files');
-}
+    favicons('./logo.png', {
+        appName: 'Favicons 4.0',
+        appDescription: 'Testing suite for Favicons',
+        developerName: 'Hayden Bleasel',
+        developerURL: 'http://haydenbleasel.com/',
+        background: '#26353F',
+        path: 'images/',
+        display: 'browser',
+        orientation: 'landscape',
+        version: '1.0',
+        online: true
+    }, (error, response) => {
 
-module.exports = {
-  assertFaviconGeneration(result, scenarioPath) {
-    assertHtml(result, scenarioPath);
-    assertImages(result, scenarioPath);
-    assertFiles(result, scenarioPath);
-  }
-}
+        if (error) {
+            throw error;
+        }
+
+        console.log(`Images: ${ response.images }`);
+        console.log(`Files: ${ response.files }`);
+        console.log(`HTML: ${ response.html }`);
+
+        if (response.images) {
+            mkdirp.sync('./images-online/');
+            response.images.forEach((image) =>
+                fs.writeFileSync(`./images-online/${ image.name }`, image.contents));
+        }
+
+        if (response.files) {
+            mkdirp.sync('./files-online/');
+            response.files.forEach((file) =>
+                fs.writeFileSync(`./files-online/${ file.name }`, file.contents));
+        }
+
+    });
+
+})();

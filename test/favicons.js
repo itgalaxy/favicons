@@ -3,7 +3,7 @@
 'use strict';
 
 var favicons = require('../index');
-var test = require('./test');
+var test = require('./test2');
 var assert = require('assert');
 
 describe('Favicon local generation', function() {

@@ -1,5 +1,6 @@
 const _ = require('underscore'),
     async = require('async'),
+    through2 = require('through2'),
     mergeDefaults = require('merge-defaults'),
     config = require('require-directory')(module, 'config'),
     helpers = require('./helpers.js');
@@ -155,6 +156,63 @@ const _ = require('underscore'),
         });
     }
 
+    function stream (params) {
+
+        const µ = helpers(params);
+
+        function processDocuments (documents, html, callback) {
+            async.each(documents, (document) =>
+                µ.HTML.update(document, html, config.tags, (error) =>
+                    callback(error)),
+            (error) =>
+                callback(error));
+        }
+
+        /* eslint func-names: 0, no-invalid-this: 0 */
+        return through2.obj(function (file, encoding, next) {
+            const self = this;
+
+            if (file.isNull()) {
+                return next(null, file);
+            }
+
+            if (file.isStream()) {
+                return next(new Error('[gulp-favicons] Streaming not supported'));
+            }
+
+            async.waterfall([
+                (callback) =>
+                    favicons(file.contents, params, (error, response) =>
+                        callback(error, response)),
+                (response, cb) =>
+                    async.each(response.images, (image, c) => {
+                        self.push(µ.General.vinyl(image));
+                        return c();
+                    }, (error) =>
+                        cb(error, response)),
+                (response, cb) =>
+                    async.each(response.files, (fileobj, c) => {
+                        self.push(µ.General.vinyl(fileobj));
+                        return c();
+                    }, (error) =>
+                        cb(error, response)),
+                (response, cb) => {
+                    let documents = null;
+
+                    if (params.html) {
+                        documents = typeof params.html === 'object' ? params.html : [params.html];
+                        processDocuments(documents, response.html, (error) =>
+                            cb(error));
+                    } else {
+                        return cb(null);
+                    }
+                }
+            ], (error) =>
+                next(error));
+        });
+    }
+
     module.exports = favicons;
+    module.exports.stream = stream;
 
 })();

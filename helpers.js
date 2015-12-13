@@ -15,6 +15,7 @@ var path = require('path'),
     sizeOf = require('image-size'),
     async = require('async'),
     Jimp = require('jimp'),
+    File = require('vinyl'),
     NRC = require('node-rest-client').Client;
 
 (function () {
@@ -98,6 +99,13 @@ var path = require('path'),
                     } else {
                         return callback('Invalid source type provided');
                     }
+                },
+
+                vinyl: function vinyl(object) {
+                    return new File({
+                        path: object.name,
+                        contents: Buffer.isBuffer(object.contents) ? object.contents : new Buffer(object.contents)
+                    });
                 }
             },
 
@@ -117,6 +125,40 @@ var path = require('path'),
                         }
                     }
                     return callback(null, $.html());
+                },
+                update: function update(document, code, tags, callback) {
+                    var encoding = { encoding: 'utf8' };
+
+                    async.waterfall([function (cb) {
+                        return fs.readFile(document, encoding, function (error, data) {
+                            var err = error;
+
+                            return err ? cb(null, null) : cb(error, data);
+                        });
+                    }, function (data, cb) {
+                        if (data) {
+                            (function () {
+                                var $ = cheerio.load(data, { decodeEntities: false }),
+                                    target = $('head').length > 0 ? $('head') : $.root();
+
+                                async.each(tags, function (tag, c) {
+                                    $(tag).remove();
+                                    return c(null);
+                                }, function (error) {
+                                    target.append(code.join('\n'));
+                                    return cb(error, $.html().replace(/^\s*$[\n\r]{1,}/gm, ''));
+                                });
+                            })();
+                        } else {
+                            return cb(null, code.join('\n'));
+                        }
+                    }, function (html, cb) {
+                        return fs.writeFile(document, html, options, function (error) {
+                            return cb(error);
+                        });
+                    }], function (error) {
+                        return callback(error);
+                    });
                 }
             },
 

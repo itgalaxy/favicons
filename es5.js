@@ -1,7 +1,10 @@
 'use strict';
 
+function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
+
 var _ = require('underscore'),
     async = require('async'),
+    through2 = require('through2'),
     mergeDefaults = require('merge-defaults'),
     config = require('require-directory')(module, 'config'),
     helpers = require('./helpers.js');
@@ -183,5 +186,67 @@ var _ = require('underscore'),
         });
     }
 
+    function stream(params) {
+
+        var µ = helpers(params);
+
+        function processDocuments(documents, html, callback) {
+            async.each(documents, function (document) {
+                return µ.HTML.update(document, html, config.tags, function (error) {
+                    return callback(error);
+                });
+            }, function (error) {
+                return callback(error);
+            });
+        }
+
+        /* eslint func-names: 0, no-invalid-this: 0 */
+        return through2.obj(function (file, encoding, next) {
+            var self = this;
+
+            if (file.isNull()) {
+                return next(null, file);
+            }
+
+            if (file.isStream()) {
+                return next(new Error('[gulp-favicons] Streaming not supported'));
+            }
+
+            async.waterfall([function (callback) {
+                return favicons(file.contents, params, function (error, response) {
+                    return callback(error, response);
+                });
+            }, function (response, cb) {
+                return async.each(response.images, function (image, c) {
+                    self.push(µ.General.vinyl(image));
+                    return c();
+                }, function (error) {
+                    return cb(error, response);
+                });
+            }, function (response, cb) {
+                return async.each(response.files, function (fileobj, c) {
+                    self.push(µ.General.vinyl(fileobj));
+                    return c();
+                }, function (error) {
+                    return cb(error, response);
+                });
+            }, function (response, cb) {
+                var documents = null;
+
+                if (params.html) {
+                    documents = _typeof(params.html) === 'object' ? params.html : [params.html];
+                    processDocuments(documents, response.html, function (error) {
+                        return cb(error);
+                    });
+                } else {
+                    return cb(null);
+                }
+            }], function (error) {
+                return next(error);
+            });
+        });
+    }
+
     module.exports = favicons;
+    module.exports.stream = stream;
 })();
