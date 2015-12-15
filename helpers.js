@@ -119,7 +119,7 @@ var path = require('path'),
                         value = $('*').first().attr(attribute);
 
                     if (path.extname(value)) {
-                        if (html.indexOf('og:image') !== -1 || html.indexOf('twitter:image') !== -1) {
+                        if (html.indexOf('og:image') !== NON_EXISTANT || html.indexOf('twitter:image') !== NON_EXISTANT) {
                             $('*').first().attr(attribute, absolute(value));
                         } else {
                             $('*').first().attr(attribute, relative(value));
