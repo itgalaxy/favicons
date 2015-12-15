@@ -62,7 +62,10 @@ const favicons = require('../'),
         display: 'browser',
         orientation: 'landscape',
         version: '1.0',
-        online: true
+        online: true,
+        icons: {
+            coast: false
+        }
     }, (error, response) => {
 
         if (error) {

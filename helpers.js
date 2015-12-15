@@ -16,6 +16,7 @@ var path = require('path'),
     async = require('async'),
     Jimp = require('jimp'),
     File = require('vinyl'),
+    Reflect = require('harmony-reflect'),
     NRC = require('node-rest-client').Client;
 
 (function () {
