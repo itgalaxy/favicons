@@ -1,7 +1,6 @@
 /* eslint camelcase: 0, no-shadow: 0 */
 
 const path = require('path'),
-    url = require('url'),
     fs = require('fs'),
     _ = require('underscore'),
     color = require('tinycolor2'),
@@ -35,11 +34,11 @@ const path = require('path'),
         }
 
         function relative (directory) {
-            return url.resolve(options.path, directory);
+            return path.join(options.path, directory);
         }
 
         function absolute (directory) {
-            return url.resolve(options.path, directory);
+            return path.join(options.url, options.path, directory);
         }
 
         function print (context, message) {
