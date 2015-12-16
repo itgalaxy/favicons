@@ -88,6 +88,10 @@ const favicons = require('../'),
                 fs.writeFileSync(`./files-online/${ file.name }`, file.contents));
         }
 
+        if (response.html) {
+            fs.writeFileSync('./rfg.html', response.html.join('\n'));
+        }
+
     });
 
 })();
