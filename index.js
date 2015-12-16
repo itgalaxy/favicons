@@ -3,7 +3,7 @@ const _ = require('underscore'),
     through2 = require('through2'),
     mergeDefaults = require('merge-defaults'),
     config = require('require-directory')(module, 'config'),
-    helpers = require('./helpers.js');
+    helpers = require('./helpers-es6.js');
 
 (() => {
 
@@ -44,9 +44,9 @@ const _ = require('underscore'),
         function createHTML (platform, callback) {
             const html = [];
 
-            async.each(config.html[platform], (code, cb) =>
-                µ.HTML.parse(code, (error, metadata) =>
-                    cb(html.push(metadata) && error)),
+            async.forEachOf(config.html[platform], (tag, selector, cb) => {
+                µ.HTML.parse(tag, (error, metadata) =>
+                    cb(html.push(metadata) && error)); },
             (error) =>
                 callback(error, html));
         }
@@ -162,7 +162,7 @@ const _ = require('underscore'),
 
         function processDocuments (documents, html, callback) {
             async.each(documents, (document) =>
-                µ.HTML.update(document, html, config.tags, (error) =>
+                µ.HTML.update(document, html, config.html, (error) =>
                     callback(error)),
             (error) =>
                 callback(error));

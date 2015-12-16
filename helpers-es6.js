@@ -57,6 +57,39 @@ const path = require('path'),
                 callback(error, buffer));
         }
 
+        function updateDocument (document, code, tags, callback) {
+            const $ = cheerio.load(document, { decodeEntities: false }),
+                target = $('head').length > 0 ? $('head') : $.root();
+
+            async.forEachOf(tags, (tag, selector, cb) => {
+
+                if (options.replace) {
+                    $(selector).remove();
+                }
+
+                // code[x] matches selector
+
+                async.each(code, (line, cb) => {
+
+                    // line === selector ?
+
+                    if ($(selector).length) {
+                        target.append(line);
+                    }
+
+                    return cb(null);
+                }, (error) =>
+            );
+
+                return cb(null);
+
+            }, (error) =>
+                callback(error));
+
+            // target.append(code.join('\n'));
+            // return callback(error, $.html().replace(/^\s*$[\n\r]{1,}/gm, ''));
+        }
+
         return {
 
             General: {
@@ -125,23 +158,12 @@ const path = require('path'),
 
                     async.waterfall([
                         (cb) =>
-                            fs.readFile(document, encoding, (error, data) => {
-                                const err = error;
-
-                                return err ? cb(null, null) : cb(error, data);
-                            }),
+                            fs.readFile(document, encoding, (error, data) =>
+                                cb(error, error ? null : data)),
                         (data, cb) => {
                             if (data) {
-                                const $ = cheerio.load(data, { decodeEntities: false }),
-                                    target = $('head').length > 0 ? $('head') : $.root();
-
-                                async.each(tags, (tag, c) => {
-                                    $(tag).remove();
-                                    return c(null);
-                                }, (error) => {
-                                    target.append(code.join('\n'));
-                                    return cb(error, $.html().replace(/^\s*$[\n\r]{1,}/gm, ''));
-                                });
+                                updateDocument(data, code, tags, (error, html) =>
+                                    cb(error, html));
                             } else {
                                 return cb(null, code.join('\n'));
                             }
