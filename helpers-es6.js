@@ -1,4 +1,4 @@
-/* eslint camelcase: 0 */
+/* eslint camelcase: 0, no-shadow: 0 */
 
 const path = require('path'),
     url = require('url'),
@@ -212,12 +212,31 @@ const path = require('path'),
                 },
                 composite: (canvas, image, properties, minimum, callback) => {
                     const offsetHeight = properties.height - minimum > 0 ? (properties.height - minimum) / 2 : 0,
-                        offsetWidth = properties.width - minimum > 0 ? (properties.width - minimum) / 2 : 0;
+                        offsetWidth = properties.width - minimum > 0 ? (properties.width - minimum) / 2 : 0,
+                        circle = Jimp.read(path.join(__dirname, 'mask.png')),
+                        overlay = Jimp.read(path.join(__dirname, 'overlay.png'));
 
-                    image.rotate(properties.rotate ? ROTATE_DEGREES : 0);
+                    if (properties.rotate) {
+                        print('Images:composite', `Rotating image`);
+                        image.rotate(ROTATE_DEGREES);
+                    }
+
                     print('Images:composite', `Compositing ${ minimum }x${ minimum } favicon on ${ properties.width }x${ properties.height } canvas`);
                     canvas.composite(image, offsetWidth, offsetHeight);
-                    return callback(null, canvas);
+
+                    if (properties.mask) {
+                        print('Images:composite', `Masking composite image on circle`);
+                        Promise.all([circle, overlay]).then((images) => {
+                            images[0].resize(minimum, Jimp.AUTO);
+                            images[1].resize(minimum, Jimp.AUTO);
+                            canvas.mask(images[0], 0, 0);
+                            canvas.composite(images[1], 0, 0);
+                            return callback(null, canvas);
+                        }, (error) =>
+                            callback(error, canvas));
+                    } else {
+                        return callback(null, canvas);
+                    }
                 },
                 getBuffer: (canvas, callback) => {
                     print('Images:getBuffer', 'Collecting image buffer from canvas');

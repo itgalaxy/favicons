@@ -10,6 +10,7 @@ var _ = require('underscore'),
     helpers = require('./helpers.js');
 
 (function () {
+
     'use strict';
 
     _.mergeDefaults = mergeDefaults;
