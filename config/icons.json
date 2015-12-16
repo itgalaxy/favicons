@@ -192,6 +192,27 @@
       "transparent": false,
       "rotate": false,
       "mask": false
+    },
+    "apple-touch-startup-image-1182x2208.png": {
+      "width": 1182,
+      "height": 2208,
+      "transparent": false,
+      "rotate": true,
+      "mask": false
+    },
+    "apple-touch-startup-image-1242x2148.png": {
+      "width": 1242,
+      "height": 2148,
+      "transparent": false,
+      "rotate": true,
+      "mask": false
+    },
+    "apple-touch-startup-image-750x1294.png": {
+      "width": 750,
+      "height": 1294,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
     }
   },
   "coast": {
