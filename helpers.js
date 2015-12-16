@@ -227,8 +227,8 @@ var path = require('path'),
                 composite: function composite(canvas, image, properties, minimum, callback) {
                     var offsetHeight = properties.height - minimum > 0 ? (properties.height - minimum) / 2 : 0,
                         offsetWidth = properties.width - minimum > 0 ? (properties.width - minimum) / 2 : 0,
-                        circle = Jimp.read(path.join(__dirname, 'mask.png')),
-                        overlay = Jimp.read(path.join(__dirname, 'overlay.png'));
+                        circle = path.join(__dirname, 'mask.png'),
+                        overlay = path.join(__dirname, 'overlay.png');
 
                     if (properties.rotate) {
                         print('Images:composite', 'Rotating image');
@@ -240,13 +240,19 @@ var path = require('path'),
 
                     if (properties.mask) {
                         print('Images:composite', 'Masking composite image on circle');
-                        Promise.all([circle, overlay]).then(function (images) {
+                        async.parallel([function (cb) {
+                            return Jimp.read(circle, function (error, image) {
+                                return cb(error, image);
+                            });
+                        }, function (cb) {
+                            return Jimp.read(overlay, function (error, image) {
+                                return cb(error, image);
+                            });
+                        }], function (error, images) {
                             images[0].resize(minimum, Jimp.AUTO);
                             images[1].resize(minimum, Jimp.AUTO);
                             canvas.mask(images[0], 0, 0);
                             canvas.composite(images[1], 0, 0);
-                            return callback(null, canvas);
-                        }, function (error) {
                             return callback(error, canvas);
                         });
                     } else {
