@@ -46,9 +46,9 @@ const path = require('path'),
 
             if (options.logging && message) {
                 _.each(message.split(' '), (item) => {
-                    newMessage += `${ ((/^\d+x\d+$/gm).test(item) ? colors.magenta(item) : item) }`;
+                    newMessage += ` ${ ((/^\d+x\d+$/gm).test(item) ? colors.magenta(item) : item) }`;
                 });
-                console.log(`${ colors.green('[Favicons]') } ${ context.yellow }: ${ newMessage }...`);
+                console.log(`${ colors.green('[Favicons]') } ${ context.yellow }:${ newMessage }...`);
             }
         }
 
