@@ -23,7 +23,8 @@ const gulp = require('gulp'),
                 icons: {
                     coast: false
                 },
-                html: 'stream.html'
+                html: 'stream.html',
+                replace: false
             }))
             .pipe(gulp.dest('stream/')));
 

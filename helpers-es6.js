@@ -46,7 +46,7 @@ const path = require('path'),
 
             if (options.logging && message) {
                 _.each(message.split(' '), (item) => {
-                    newMessage += ` ${ ((/^\d+x\d+$/gm).test(item) ? colors.magenta(item) : item) }`;
+                    newMessage += `${ ((/^\d+x\d+$/gm).test(item) ? colors.magenta(item) : item) }`;
                 });
                 console.log(`${ colors.green('[Favicons]') } ${ context.yellow }: ${ newMessage }...`);
             }
@@ -57,37 +57,27 @@ const path = require('path'),
                 callback(error, buffer));
         }
 
-        function updateDocument (document, code, tags, callback) {
+        function updateDocument (document, code, tags, next) {
             const $ = cheerio.load(document, { decodeEntities: false }),
-                target = $('head').length > 0 ? $('head') : $.root();
+                target = $('head').length > 0 ? $('head') : $.root(),
+                newCode = cheerio.load(code.join('\n'), { decodeEntities: false });
 
-            async.forEachOf(tags, (tag, selector, cb) => {
-
-                if (options.replace) {
-                    $(selector).remove();
-                }
-
-                // code[x] matches selector
-
-                async.each(code, (line, cb) => {
-
-                    // line === selector ?
-
-                    if ($(selector).length) {
-                        target.append(line);
+            async.each(tags, (platform, callback) => {
+                async.forEachOf(platform, (tag, selector, cb) => {
+                    if (options.replace) {
+                        console.log(`removing ${ selector } from $`);
+                        $(selector).remove();
+                    } else if ($(selector).length) {
+                        console.log(`removing ${ selector } from newCode`);
+                        newCode(selector).remove();
                     }
-
                     return cb(null);
-                }, (error) =>
-            );
-
-                return cb(null);
-
+                }, (error) => {
+                    target.append(newCode.html());
+                    return callback(error, newCode.html().replace(/^\s*$[\n\r]{1,}/gm, ''));
+                });
             }, (error) =>
-                callback(error));
-
-            // target.append(code.join('\n'));
-            // return callback(error, $.html().replace(/^\s*$[\n\r]{1,}/gm, ''));
+                next(error));
         }
 
         return {
