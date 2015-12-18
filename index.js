@@ -3,7 +3,7 @@ const _ = require('underscore'),
     through2 = require('through2'),
     mergeDefaults = require('merge-defaults'),
     config = require('require-directory')(module, 'config'),
-    helpers = require('./helpers-es6.js');
+    helpers = require('./helpers.js');
 
 (() => {
 
@@ -44,9 +44,9 @@ const _ = require('underscore'),
         function createHTML (platform, callback) {
             const html = [];
 
-            async.forEachOf(config.html[platform], (tag, selector, cb) => {
+            async.forEachOf(config.html[platform], (tag, selector, cb) =>
                 µ.HTML.parse(tag, (error, metadata) =>
-                    cb(html.push(metadata) && error)); },
+                    cb(html.push(metadata) && error)),
             (error) =>
                 callback(error, html));
         }

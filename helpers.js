@@ -52,13 +52,35 @@ var path = require('path'),
                 _.each(message.split(' '), function (item) {
                     newMessage += ' ' + (/^\d+x\d+$/gm.test(item) ? colors.magenta(item) : item);
                 });
-                console.log(colors.green('[Favicons]') + ' ' + context.yellow + ': ' + newMessage + '...');
+                console.log(colors.green('[Favicons]') + ' ' + context.yellow + ':' + newMessage + '...');
             }
         }
 
         function readFile(filepath, callback) {
             fs.readFile(filepath, function (error, buffer) {
                 return callback(error, buffer);
+            });
+        }
+
+        function updateDocument(document, code, tags, next) {
+            var $ = cheerio.load(document, { decodeEntities: false }),
+                target = $('head').length > 0 ? $('head') : $.root(),
+                newCode = cheerio.load(code.join('\n'), { decodeEntities: false });
+
+            async.each(tags, function (platform, callback) {
+                async.forEachOf(platform, function (tag, selector, cb) {
+                    if (options.replace) {
+                        $(selector).remove();
+                    } else if ($(selector).length) {
+                        newCode(selector).remove();
+                    }
+                    return cb(null);
+                }, function (error) {
+                    return callback(error);
+                });
+            }, function (error) {
+                target.append(newCode.html());
+                return next(error, $.html().replace(/^\s*$[\n\r]{1,}/gm, ''));
             });
         }
 
@@ -132,24 +154,13 @@ var path = require('path'),
 
                     async.waterfall([function (cb) {
                         return fs.readFile(document, encoding, function (error, data) {
-                            var err = error;
-
-                            return err ? cb(null, null) : cb(error, data);
+                            return cb(error, error ? null : data);
                         });
                     }, function (data, cb) {
                         if (data) {
-                            (function () {
-                                var $ = cheerio.load(data, { decodeEntities: false }),
-                                    target = $('head').length > 0 ? $('head') : $.root();
-
-                                async.each(tags, function (tag, c) {
-                                    $(tag).remove();
-                                    return c(null);
-                                }, function (error) {
-                                    target.append(code.join('\n'));
-                                    return cb(error, $.html().replace(/^\s*$[\n\r]{1,}/gm, ''));
-                                });
-                            })();
+                            updateDocument(data, code, tags, function (error, html) {
+                                return cb(error, html);
+                            });
                         } else {
                             return cb(null, code.join('\n'));
                         }

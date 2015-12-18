@@ -55,8 +55,8 @@ var _ = require('underscore'),
         function createHTML(platform, callback) {
             var html = [];
 
-            async.each(config.html[platform], function (code, cb) {
-                return µ.HTML.parse(code, function (error, metadata) {
+            async.forEachOf(config.html[platform], function (tag, selector, cb) {
+                return µ.HTML.parse(tag, function (error, metadata) {
                     return cb(html.push(metadata) && error);
                 });
             }, function (error) {
@@ -193,7 +193,7 @@ var _ = require('underscore'),
 
         function processDocuments(documents, html, callback) {
             async.each(documents, function (document) {
-                return µ.HTML.update(document, html, config.tags, function (error) {
+                return µ.HTML.update(document, html, config.html, function (error) {
                     return callback(error);
                 });
             }, function (error) {

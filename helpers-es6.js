@@ -65,19 +65,17 @@ const path = require('path'),
             async.each(tags, (platform, callback) => {
                 async.forEachOf(platform, (tag, selector, cb) => {
                     if (options.replace) {
-                        console.log(`removing ${ selector } from $`);
                         $(selector).remove();
                     } else if ($(selector).length) {
-                        console.log(`removing ${ selector } from newCode`);
                         newCode(selector).remove();
                     }
                     return cb(null);
-                }, (error) => {
-                    target.append(newCode.html());
-                    return callback(error, newCode.html().replace(/^\s*$[\n\r]{1,}/gm, ''));
-                });
-            }, (error) =>
-                next(error));
+                }, (error) =>
+                    callback(error));
+            }, (error) => {
+                target.append(newCode.html());
+                return next(error, $.html().replace(/^\s*$[\n\r]{1,}/gm, ''));
+            });
         }
 
         return {
