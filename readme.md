@@ -25,7 +25,8 @@ gulp.task("default", function () {
         version: 1.0,
         logging: false,
         online: false,
-        html: "index.html"
+        html: "index.html",
+        replace: true
     })).pipe(gulp.dest("./"));
 });
 ```

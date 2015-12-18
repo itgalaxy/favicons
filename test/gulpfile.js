@@ -22,7 +22,8 @@ const gulp = require('gulp'),
             icons: {
                 coast: false
             },
-            html: 'index.html'
+            html: 'index.html',
+            replace: true
         })).pipe(gulp.dest('stream/')));
 
 })();
