@@ -40,6 +40,7 @@ jQuery(function ($) {
             '        logging: false,',
             '        online: false,',
             '        html: "index.html"',
+            '        replace: true',
             '    })).pipe(gulp.dest("./"));',
             '});'
         ].join('\n');
