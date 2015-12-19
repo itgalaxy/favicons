@@ -9,6 +9,7 @@ const path = require('path'),
     jsonxml = require('jsontoxml'),
     sizeOf = require('image-size'),
     async = require('async'),
+    mkdirp = require('mkdirp'),
     Jimp = require('jimp'),
     File = require('vinyl'),
     Reflect = require('harmony-reflect'),
@@ -145,6 +146,9 @@ const path = require('path'),
                     const encoding = { encoding: 'utf8' };
 
                     async.waterfall([
+                        (cb) =>
+                            mkdirp(path.dirname(document), (error) =>
+                                cb(error)),
                         (cb) =>
                             fs.readFile(document, encoding, (error, data) =>
                                 cb(error, error ? null : data)),

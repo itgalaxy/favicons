@@ -13,13 +13,13 @@ var path = require('path'),
     jsonxml = require('jsontoxml'),
     sizeOf = require('image-size'),
     async = require('async'),
+    mkdirp = require('mkdirp'),
     Jimp = require('jimp'),
     File = require('vinyl'),
     Reflect = require('harmony-reflect'),
     NRC = require('node-rest-client').Client;
 
 (function () {
-
     'use strict';
 
     var xmlconfig = { prettyPrint: true, xmlHeader: true, indent: '  ' },
@@ -153,6 +153,10 @@ var path = require('path'),
                     var encoding = { encoding: 'utf8' };
 
                     async.waterfall([function (cb) {
+                        return mkdirp(path.dirname(document), function (error) {
+                            return cb(error);
+                        });
+                    }, function (cb) {
                         return fs.readFile(document, encoding, function (error, data) {
                             return cb(error, error ? null : data);
                         });
