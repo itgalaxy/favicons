@@ -1,6 +1,6 @@
 {
   "name": "favicons",
-  "version": "4.4.1",
+  "version": "4.4.2",
   "description": "Favicon generator for Node.js",
   "main": "index.js",
   "repository": {
@@ -29,7 +29,7 @@
     "cheerio": "^0.19.0",
     "colors": "^1.1.2",
     "harmony-reflect": "^1.4.2",
-    "image-size": "^0.3.5",
+    "image-size": "^0.4.0",
     "jimp": "^0.2.13",
     "jsontoxml": "0.0.11",
     "merge-defaults": "^0.2.1",

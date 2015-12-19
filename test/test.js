@@ -1,7 +1,8 @@
 /* eslint no-sync: 0 */
 
 const favicons = require('../'),
-    fs = require('fs');
+    fs = require('fs'),
+    mkdirp = require('mkdirp');
 
 (() => {
 
@@ -34,11 +35,13 @@ const favicons = require('../'),
         console.log(`HTML: ${ response.html }`);
 
         if (response.images) {
+            mkdirp.sync('./images-offline/');
             response.images.forEach((image) =>
                 fs.writeFileSync(`./images-offline/${ image.name }`, image.contents));
         }
 
         if (response.files) {
+            mkdirp.sync('./files-offline/');
             response.files.forEach((file) =>
                 fs.writeFileSync(`./files-offline/${ file.name }`, file.contents));
         }
@@ -74,11 +77,13 @@ const favicons = require('../'),
         console.log(`HTML: ${ response.html }`);
 
         if (response.images) {
+            mkdirp.sync('./images-online/');
             response.images.forEach((image) =>
                 fs.writeFileSync(`./images-online/${ image.name }`, image.contents));
         }
 
         if (response.files) {
+            mkdirp.sync('./files-online/');
             response.files.forEach((file) =>
                 fs.writeFileSync(`./files-online/${ file.name }`, file.contents));
         }
