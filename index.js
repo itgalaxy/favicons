@@ -156,7 +156,11 @@ const _ = require('underscore'),
         });
     }
 
-    function stream (params) {
+  /**
+   * @param {Object} params
+   * @param {function(string)=} htmlCallback an optional function to be called with the generated HTML
+   */
+    function stream (params, htmlCallback) {
 
         const µ = helpers(params);
 
@@ -197,6 +201,10 @@ const _ = require('underscore'),
                     }, (error) =>
                         cb(error, response)),
                 (response, cb) => {
+                    if (htmlCallback) {
+                        htmlCallback(response.html);
+                    }
+
                     let documents = null;
 
                     if (params.html) {
