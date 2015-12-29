@@ -213,6 +213,7 @@ const _ = require('underscore'),
     }
 
     module.exports = favicons;
+    module.exports.config = config;
     module.exports.stream = stream;
 
 })();
