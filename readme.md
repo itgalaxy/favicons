@@ -66,6 +66,13 @@ If you need an ES5 build for legacy purposes, just require the ES5 file:
 var favicons = require('favicons/es5');
 ```
 
+To programmatically access Favicons configuration, e.g. to work with
+its list of icon file names, HTML, or manifest files:
+
+```js
+var faviconsConfig = require('favicons').config;
+```
+
 You can also configure and use Favicons from the terminal with dot syntax:
 
 ```sh
