@@ -5,19 +5,20 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
 var _ = require('underscore'),
     async = require('async'),
     through2 = require('through2'),
+    clone = require('clone'),
     mergeDefaults = require('merge-defaults'),
-    config = require('require-directory')(module, 'config'),
+    configDefaults = require('require-directory')(module, 'config'),
     helpers = require('./helpers.js');
 
 (function () {
-
     'use strict';
 
     _.mergeDefaults = mergeDefaults;
 
     function favicons(source, parameters, next) {
 
-        var options = _.mergeDefaults(parameters || {}, config.defaults),
+        var config = clone(configDefaults),
+            options = _.mergeDefaults(parameters || {}, config.defaults),
             µ = helpers(options),
             background = µ.General.background(options.background);
 
@@ -175,7 +176,7 @@ var _ = require('underscore'),
             if (error && typeof error === 'string') {
                 error = { status: null, error: error, message: null };
             }
-            next(error ? {
+            return next(error ? {
                 status: error.status,
                 error: error.name || 'Error',
                 message: error.message || 'An unknown error has occured'
@@ -187,9 +188,10 @@ var _ = require('underscore'),
         });
     }
 
-    function stream(params) {
+    function stream(params, next) {
 
-        var µ = helpers(params);
+        var config = clone(configDefaults),
+            µ = helpers(params);
 
         function processDocuments(documents, html, callback) {
             async.each(documents, function (document) {
@@ -202,20 +204,20 @@ var _ = require('underscore'),
         }
 
         /* eslint func-names: 0, no-invalid-this: 0 */
-        return through2.obj(function (file, encoding, next) {
+        return through2.obj(function (file, encoding, callback) {
             var self = this;
 
             if (file.isNull()) {
-                return next(null, file);
+                return callback(null, file);
             }
 
             if (file.isStream()) {
-                return next(new Error('[gulp-favicons] Streaming not supported'));
+                return callback(new Error('[gulp-favicons] Streaming not supported'));
             }
 
-            async.waterfall([function (callback) {
+            async.waterfall([function (cb) {
                 return favicons(file.contents, params, function (error, response) {
-                    return callback(error, response);
+                    return cb(error, response);
                 });
             }, function (response, cb) {
                 return async.each(response.images, function (image, c) {
@@ -232,6 +234,10 @@ var _ = require('underscore'),
                     return cb(error, response);
                 });
             }, function (response, cb) {
+                if (next) {
+                    return next(response.html);
+                }
+
                 var documents = null;
 
                 if (params.html) {
@@ -243,11 +249,12 @@ var _ = require('underscore'),
                     return cb(null);
                 }
             }], function (error) {
-                return next(error);
+                return callback(error);
             });
         });
     }
 
     module.exports = favicons;
+    module.exports.config = configDefaults;
     module.exports.stream = stream;
 })();

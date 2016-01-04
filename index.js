@@ -146,7 +146,7 @@ const _ = require('underscore'),
             if (error && typeof error === 'string') {
                 error = { status: null, error, message: null };
             }
-            next(error ? {
+            return next(error ? {
                 status: error.status,
                 error: error.name || 'Error',
                 message: error.message || 'An unknown error has occured'
@@ -158,7 +158,7 @@ const _ = require('underscore'),
         });
     }
 
-    function stream (params, htmlCallback) {
+    function stream (params, next) {
 
         const config = clone(configDefaults),
             µ = helpers(params);
@@ -172,21 +172,21 @@ const _ = require('underscore'),
         }
 
         /* eslint func-names: 0, no-invalid-this: 0 */
-        return through2.obj(function (file, encoding, next) {
+        return through2.obj(function (file, encoding, callback) {
             const self = this;
 
             if (file.isNull()) {
-                return next(null, file);
+                return callback(null, file);
             }
 
             if (file.isStream()) {
-                return next(new Error('[gulp-favicons] Streaming not supported'));
+                return callback(new Error('[gulp-favicons] Streaming not supported'));
             }
 
             async.waterfall([
-                (callback) =>
+                (cb) =>
                     favicons(file.contents, params, (error, response) =>
-                        callback(error, response)),
+                        cb(error, response)),
                 (response, cb) =>
                     async.each(response.images, (image, c) => {
                         self.push(µ.General.vinyl(image));
@@ -200,8 +200,8 @@ const _ = require('underscore'),
                     }, (error) =>
                         cb(error, response)),
                 (response, cb) => {
-                    if (htmlCallback) {
-                        htmlCallback(response.html);
+                    if (next) {
+                        return next(response.html);
                     }
 
                     let documents = null;
@@ -215,12 +215,12 @@ const _ = require('underscore'),
                     }
                 }
             ], (error) =>
-                next(error));
+                callback(error));
         });
     }
 
     module.exports = favicons;
-    module.exports.config = config;
+    module.exports.config = configDefaults;
     module.exports.stream = stream;
 
 })();
