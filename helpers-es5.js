@@ -158,7 +158,7 @@ var path = require('path'),
                         });
                     }, function (cb) {
                         return fs.readFile(document, encoding, function (error, data) {
-                            return cb(error, error ? null : data);
+                            return cb(null, error ? null : data);
                         });
                     }, function (data, cb) {
                         if (data) {

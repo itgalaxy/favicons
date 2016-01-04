@@ -151,7 +151,7 @@ const path = require('path'),
                                 cb(error)),
                         (cb) =>
                             fs.readFile(document, encoding, (error, data) =>
-                                cb(error, error ? null : data)),
+                                cb(null, error ? null : data)),
                         (data, cb) => {
                             if (data) {
                                 updateDocument(data, code, tags, (error, html) =>

@@ -143,7 +143,7 @@ To build the ES5 version for Node.js:
 ```sh
 npm install -g babel-cli
 babel --presets es2015 index.js --out-file es5.js
-babel --presets es2015 helpers-es6.js --out-file helpers.js
+babel --presets es2015 helpers.js --out-file helpers-es5.js
 ```
 
 To build the ES5 version for Gulp, run the following and remember to require the ES5 version.
