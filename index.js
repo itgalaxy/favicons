@@ -1,8 +1,9 @@
 const _ = require('underscore'),
     async = require('async'),
     through2 = require('through2'),
+    clone = require('clone'),
     mergeDefaults = require('merge-defaults'),
-    config = require('require-directory')(module, 'config'),
+    configDefaults = require('require-directory')(module, 'config'),
     helpers = require('./helpers.js');
 
 (() => {
@@ -13,7 +14,8 @@ const _ = require('underscore'),
 
     function favicons (source, parameters, next) {
 
-        const options = _.mergeDefaults(parameters || {}, config.defaults),
+        const config = clone(configDefaults),
+            options = _.mergeDefaults(parameters || {}, config.defaults),
             µ = helpers(options),
             background = µ.General.background(options.background);
 
@@ -158,7 +160,8 @@ const _ = require('underscore'),
 
     function stream (params) {
 
-        const µ = helpers(params);
+        const config = clone(configDefaults),
+            µ = helpers(params);
 
         function processDocuments (documents, html, callback) {
             async.each(documents, (document) =>
