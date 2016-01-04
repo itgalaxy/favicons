@@ -148,6 +148,8 @@ var path = require('path'),
                         }
                     } else if (value.slice(0, 1) === '#') {
                         $('*').first().attr(attribute, options.background);
+                    } else if (html.indexOf('application-name') !== NON_EXISTANT || html.indexOf('apple-mobile-web-app-title') !== NON_EXISTANT) {
+                        $('*').first().attr(attribute, options.appName);
                     }
                     return callback(null, $.html());
                 },
