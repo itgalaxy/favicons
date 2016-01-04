@@ -158,7 +158,7 @@ const _ = require('underscore'),
         });
     }
 
-    function stream (params) {
+    function stream (params, htmlCallback) {
 
         const config = clone(configDefaults),
             µ = helpers(params);
@@ -200,6 +200,10 @@ const _ = require('underscore'),
                     }, (error) =>
                         cb(error, response)),
                 (response, cb) => {
+                    if (htmlCallback) {
+                        htmlCallback(response.html);
+                    }
+
                     let documents = null;
 
                     if (params.html) {
