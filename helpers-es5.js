@@ -146,6 +146,8 @@ var path = require('path'),
                         } else {
                             $('*').first().attr(attribute, relative(value));
                         }
+                    } else if (value.slice(0, 1) === '#') {
+                        $('*').first().attr(attribute, options.background);
                     }
                     return callback(null, $.html());
                 },
