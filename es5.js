@@ -8,7 +8,7 @@ var _ = require('underscore'),
     clone = require('clone'),
     mergeDefaults = require('merge-defaults'),
     configDefaults = require('require-directory')(module, 'config'),
-    helpers = require('./helpers.js');
+    helpers = require('./helpers-es5.js');
 
 (function () {
     'use strict';
