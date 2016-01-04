@@ -8,6 +8,8 @@ npm install favicons
 
 ## Usage
 
+### Node.js
+
 To use Favicons, require the appropriate module and call it, optionally specifying configuration and callback objects. A sample is shown on the right. The full list of options can be found on GitHub.
 
 The Gulp / Grunt wrapper modules have a few extra properties. You can also configure and use Favicons from the terminal with dot syntax.
@@ -17,7 +19,6 @@ Favicons generates it’s icons locally using pure Javascript with no external d
 Please note: Favicons is written in ES6, meaning you need Node 4.x or above.
 
 ```js
-
 var favicons = require('favicons'),
     source = 'test/logo.png',           // Source image(s). `string`, `buffer` or array of `{ size: filepath }`
     configuration = {
@@ -72,6 +73,41 @@ You can programmatically access Favicons configuration (icon filenames, HTML, ma
 var config = require('favicons').config;
 ```
 
+### Gulp
+
+To use Favicons with Gulp, require the `gulp-favicons` wrapper and use it as follows:
+
+```js
+var favicons = require("gulp-favicons");
+
+gulp.task("default", function () {
+    gulp.src("logo.png").pipe(favicons({
+        appName: "My App",
+        appDescription: "This is my application",
+        developerName: "Hayden Bleasel",
+        developerURL: "http://haydenbleasel.com/",
+        background: "#020307",
+        path: "favicons/",
+        url: "http://haydenbleasel.com/",
+        display: "standalone",
+        orientation: "portrait",
+        version: 1.0,
+        logging: false,
+        online: false,
+        html: "index.html",
+        replace: true
+    })).pipe(gulp.dest("./"));
+});
+```
+
+If you need an ES5 build for legacy purposes, just require the ES5 file:
+
+```js
+var favicons = require('gulp-favicons/es5');
+```
+
+### Shell
+
 You can also configure and use Favicons from the terminal with dot syntax:
 
 ```sh
@@ -80,96 +116,13 @@ Coming soon: https://github.com/haydenbleasel/favicons/issues/54
 
 ## Output
 
-Depending on which platforms you opt for, the output includes:
+For the full list of files, check `config/files.json`. For the full HTML code, check `config/html.json`. Finally, for the full list of icons, check `config/icons.json`.
 
-```
-Files:
-browserconfig.xml
-manifest.json
-manifest.webapp
-yandex-browser-manifest.json
-android-chrome-144x144.png
-android-chrome-192x192.png
-android-chrome-36x36.png
-android-chrome-48x48.png
-android-chrome-72x72.png
-android-chrome-96x96.png
-apple-touch-icon-114x114.png
-apple-touch-icon-120x120.png
-apple-touch-icon-144x144.png
-apple-touch-icon-152x152.png
-apple-touch-icon-180x180.png
-apple-touch-icon-57x57.png
-apple-touch-icon-60x60.png
-apple-touch-icon-72x72.png
-apple-touch-icon-76x76.png
-apple-touch-icon.png
-apple-touch-startup-image-1024x748.png
-apple-touch-startup-image-1536x2008.png
-apple-touch-startup-image-2048x1496.png
-apple-touch-startup-image-320x460.png
-apple-touch-startup-image-640x1096.png
-apple-touch-startup-image-640x920.png
-apple-touch-startup-image-768x1004.png
-coast-228x228.png
-favicon-16x16.png
-favicon-230x230.png
-favicon-32x32.png
-favicon-96x96.png
-favicon.ico
-firefox_app_128x128.png
-firefox_app_512x512.png
-firefox_app_60x60.png
-mstile-144x144.png
-mstile-150x150.png
-mstile-310x150.png
-mstile-310x310.png
-mstile-70x70.png
-open-graph.png
-twitter.png
-yandex-browser-50x50.png
-```
-
-It will also create the following HTML:
-
-```html
-<link rel="icon" type="image/png" sizes="192x192" href="android-chrome-192x192.png">
-<link rel='manifest' href='manifest.json'>
-<link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-114x114.png">
-<link rel="apple-touch-icon" sizes="120x120" href="apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144.png">
-<link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152x152.png">
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180x180.png">
-<link rel="apple-touch-icon" sizes="57x57" href="apple-touch-icon-57x57.png">
-<link rel="apple-touch-icon" sizes="60x60" href="apple-touch-icon-60x60.png">
-<link rel="apple-touch-icon" sizes="72x72" href="apple-touch-icon-72x72.png">
-<link rel="apple-touch-icon" sizes="76x76" href="apple-touch-icon-76x76.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 1)" href="apple-touch-startup-image-1024x748.png">
-<link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)" href="apple-touch-startup-image-1536x2008.png">
-<link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)" href="apple-touch-startup-image-2048x1496.png">
-<link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 1)" href="apple-touch-startup-image-320x460.png">
-<link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="apple-touch-startup-image-640x1096.png">
-<link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)" href="apple-touch-startup-image-640x920.png">
-<link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 1)" href="apple-touch-startup-image-768x1004.png">
-<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="230x230" href="favicon-230x230.png">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
-<link rel="shortcut icon" href="favicon.ico">
-<link rel="yandex-tableau-widget" href="yandex-browser-manifest.json">
-<meta name="msapplication-TileColor" content="#FFFFFF">
-<meta name="msapplication-TileImage" content="mstile-144x144.png">
-<meta name="msapplication-config" content="browserconfig.xml">
-<meta property="og:image" content="http:/favicons.io/open-graph.png">
-<meta property="twitter:image" content="http:/favicons.io/twitter.png">
-```
 ## Contributing
 
 ### Testing
 
-This module uses Mocha tests. If you add a feature, please implement the
-corresponding test(s).
+This module is planning on using Mocha tests in the near future. If you add a feature, please implement the corresponding test(s).
 
 ### Favicon generation
 
@@ -185,12 +138,19 @@ Favicon generation is tested in `test/favicons.js`. To add a test:
 
 ### ES5 compatibility
 
-To build the ES5 version:
+To build the ES5 version for Node.js:
 
 ```sh
 npm install -g babel-cli
 babel --presets es2015 index.js --out-file es5.js
 babel --presets es2015 helpers-es6.js --out-file helpers.js
+```
+
+To build the ES5 version for Gulp, run the following and remember to require the ES5 version.
+
+```sh
+npm install -g babel-cli
+babel --presets es2015 index.js --out-file es5.js
 ```
 
 ## Credits
