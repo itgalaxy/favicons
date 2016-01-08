@@ -1,9 +1,10 @@
-const favicons = require('favicons').stream;
+const favicons = require('favicons');
 
 (() => {
 
     'use strict';
 
-    module.exports = (params) => favicons(params);
+    module.exports = (params) => favicons.stream(params);
+    module.exports.config = favicons.config;
 
 })();
