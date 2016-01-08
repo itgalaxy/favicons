@@ -38,11 +38,11 @@ var path = require('path'),
         }
 
         function relative(directory) {
-            return path.join(options.path, directory);
+            return path.join(options.path, directory).replace(/\\/g, '/');
         }
 
         function absolute(directory) {
-            return path.join(options.url, options.path, directory);
+            return path.join(options.url, options.path, directory).replace(/\\/g, '/');
         }
 
         function print(context, message) {
