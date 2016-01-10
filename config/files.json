@@ -2,6 +2,7 @@
   "android": {
     "manifest.json": {
     	"name": "Favicons",
+    	"short_name": "Favicons",
       "display": "standalone",
     	"orientation": "portrait",
     	"icons": [
