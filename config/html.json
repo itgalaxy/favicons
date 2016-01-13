@@ -32,6 +32,9 @@
     "link[rel='apple-touch-startup-image'][media='(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)'][href$='apple-touch-startup-image-1536x2008.png']": "<link rel='apple-touch-startup-image' media='(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)' href='apple-touch-startup-image-1536x2008.png'>",
     "link[rel='apple-touch-startup-image'][media='(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)'][href$='apple-touch-startup-image-2048x1496.png']": "<link rel='apple-touch-startup-image' media='(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)' href='apple-touch-startup-image-2048x1496.png'>"
   },
+  "coast": {
+    "link[rel='icon'][type='image/png'][sizes='228x228'][href$='coast-228x228.png']": "<link rel='icon' type='image/png' sizes='228x228' href='coast-228x228.png'>"
+  },
   "favicons": {
     "link[rel='icon'][type='image/png'][sizes='16x16'][href$='favicon-16x16.png']": "<link rel='icon' type='image/png' sizes='16x16' href='favicon-16x16.png'>",
     "link[rel='icon'][type='image/png'][sizes='230x230'][href$='favicon-230x230.png']": "<link rel='icon' type='image/png' sizes='230x230' href='favicon-230x230.png'>",
