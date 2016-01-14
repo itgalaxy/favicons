@@ -39,7 +39,7 @@ const path = require('path'),
         }
 
         function absolute (directory) {
-            return path.join(options.url, options.path, directory).replace(/\\/g, '/');
+            return path.join(options.url, options.path, directory);
         }
 
         function print (context, message) {
