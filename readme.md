@@ -106,14 +106,6 @@ If you need an ES5 build for legacy purposes, just require the ES5 file:
 var favicons = require('gulp-favicons/es5');
 ```
 
-### Shell
-
-You can also configure and use Favicons from the terminal with dot syntax:
-
-```sh
-Coming soon: https://github.com/haydenbleasel/favicons/issues/54
-```
-
 ## Output
 
 For the full list of files, check `config/files.json`. For the full HTML code, check `config/html.json`. Finally, for the full list of icons, check `config/icons.json`.
