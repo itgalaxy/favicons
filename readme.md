@@ -153,11 +153,21 @@ npm install -g babel-cli
 babel --presets es2015 index.js --out-file es5.js
 ```
 
+## Questions
+
+> Why isn't there a multi-sized `favicon.ico` generated / why is my `favicon.ico` corrupted? It seems pretty standard.
+
+Couple of reasons. First and foremost, [we can't find](https://github.com/haydenbleasel/favicons/issues/101) a pure JS generator for multi-layered `.ico` files at this point. If you find one in the future, please re-open that issue. Secondly, all modern browsers [support a PNG favicon](https://en.wikipedia.org/wiki/Favicon#File_format_support) anyway.
+
+> What's the difference between offline and online?
+
+Offline uses pure Javascript image manipulation (JIMP) in Node.js to create your Favicons. Online uses the [RealFaviconGenerator API](https://realfavicongenerator.net/) to generate a Favicons package and then we download it. When using offline, generating favicons is a lot faster and doesn't require an internet connection, however we're missing a few features from RFG at the moment (like the aforementioned `.ico` support).
+
 ## Credits
 
 Thank you to...
 
-- [@phbernard](https://github.com/phbernard) for all the work we did together on [RealFaviconGenerator](https://github.com/realfavicongenerator) to make Favicons and RFG awesome.
+- [@phbernard](https://github.com/phbernard) for all the work we did together to make Favicons and RFG awesome.
 - [@addyosmani](https://github.com/addyosmani), [@gauntface](https://github.com/gauntface), [@paulirish](https://github.com/paulirish), [@mathiasbynens](https://github.com/mathiasbynens) and [@pbakaus](https://github.com/pbakaus) for [their input](https://github.com/google/web-starter-kit/pull/442) on multiple source images.
 - [@sindresorhus](https://github.com/sindresorhus) for his help on documentation and parameter improvements.
 - Everyone who opens an issue or submits a pull request to this repo :)
