@@ -187,7 +187,7 @@ const path = require('path'),
                         properties.description = options.appDescription;
                         properties.developer.name = options.developerName;
                         properties.developer.url = options.developerURL;
-                        _.map(properties.icons, (property) => property = relative(property));
+                        properties.icons = _.mapObject(properties.icons, property => relative(property));
                         properties = JSON.stringify(properties, null, 2);
                     } else if (name === 'browserconfig.xml') {
                         _.map(properties[0].children[0].children[0].children, (property) => {
