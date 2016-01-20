@@ -9,6 +9,7 @@ var path = require('path'),
     _ = require('underscore'),
     color = require('tinycolor2'),
     cheerio = require('cheerio'),
+    url = require('url'),
     colors = require('colors'),
     jsonxml = require('jsontoxml'),
     sizeOf = require('image-size'),
@@ -42,7 +43,9 @@ var path = require('path'),
         }
 
         function absolute(directory) {
-            return path.join(options.url, options.path, directory);
+            var filepath = path.join(options.path, directory);
+
+            return url.resolve(options.url, filepath);
         }
 
         function print(context, message) {

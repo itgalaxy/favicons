@@ -5,6 +5,7 @@ const path = require('path'),
     _ = require('underscore'),
     color = require('tinycolor2'),
     cheerio = require('cheerio'),
+    url = require('url'),
     colors = require('colors'),
     jsonxml = require('jsontoxml'),
     sizeOf = require('image-size'),
@@ -39,7 +40,9 @@ const path = require('path'),
         }
 
         function absolute (directory) {
-            return path.join(options.url, options.path, directory);
+            const filepath = path.join(options.path, directory);
+
+            return url.resolve(options.url, filepath);
         }
 
         function print (context, message) {
@@ -188,7 +191,7 @@ const path = require('path'),
                         properties.description = options.appDescription;
                         properties.developer.name = options.developerName;
                         properties.developer.url = options.developerURL;
-                        properties.icons = _.mapObject(properties.icons, property => relative(property));
+                        properties.icons = _.mapObject(properties.icons, (property) => relative(property));
                         properties = JSON.stringify(properties, null, 2);
                     } else if (name === 'browserconfig.xml') {
                         _.map(properties[0].children[0].children[0].children, (property) => {
