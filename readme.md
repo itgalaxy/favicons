@@ -145,6 +145,10 @@ Couple of reasons. First and foremost, [we can't find](https://github.com/hayden
 
 Offline uses pure Javascript image manipulation (JIMP) in Node.js to create your Favicons. Online uses the [RealFaviconGenerator API](https://realfavicongenerator.net/) to generate a Favicons package and then we download it. When using offline, generating favicons is a lot faster and doesn't require an internet connection, however we're missing a few features from RFG at the moment (like the aforementioned `.ico` support).
 
+> Why are you missing certain favicons?
+
+Because pure Javascript modules aren't available at the moment. For example, the [El Capitan SVG favicon](https://github.com/haydenbleasel/favicons/issues/61) and the [Windows tile silhouette ability](https://github.com/haydenbleasel/favicons/issues/58) both require [SVG support](https://github.com/haydenbleasel/favicons/issues/53). If modules for these task begin to appear, please jump on the appropriate issue and we'll get on it ASAP.
+
 ## Credits
 
 Thank you to...
