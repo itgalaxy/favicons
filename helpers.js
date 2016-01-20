@@ -40,9 +40,7 @@ const path = require('path'),
         }
 
         function absolute (directory) {
-            const filepath = path.join(options.path, directory);
-
-            return url.resolve(options.url, filepath);
+            return url.resolve(options.url, relative(directory));
         }
 
         function print (context, message) {
