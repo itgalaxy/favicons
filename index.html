@@ -33,7 +33,6 @@
         <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/basics/1.2.2/basics.css" />
         <link rel="stylesheet" href="styles.css" />
-
         <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.js"></script>
     </head>
@@ -58,14 +57,13 @@
         <div class="container clearfix">
             <div class="column">
                 <p>To use Favicons, require the appropriate module and call it, optionally specifying configuration and callback objects. A sample is shown on the right. The full list of options can be found on GitHub.</p>
-                <p>The Gulp wrapper modules has two extra properties: HTML for updating metadata and REPLACE for optionally preserving existing metadata. You can also configure and use Favicons from the terminal with dot syntax.</p>
+                <p>The Gulp wrapper modules uses the same options as Node, but has two extra properties: HTML for updating metadata and REPLACE for optionally preserving existing metadata.</p>
                 <p>Favicons generates it’s icons locally using pure Javascript with no external dependencies. However, due to extensive collaboration with <a href="http://realfavicongenerator.net/">RealFaviconGenerator</a>, you can opt to have your favicons generated using their online API.</p>
             </div>
             <div class="column">
                 <div id="platform-switcher" class="clearfix">
                     <div id="node" class="active">Node</div>
                     <div id="gulp">Gulp</div>
-                    <div id="shell">Shell</div>
                 </div>
 <pre id="code">
 var favicons = require("favicons");

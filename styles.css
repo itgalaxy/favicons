@@ -37,8 +37,8 @@ body {
 
 #platform-switcher {
     position: absolute;
-    left: -89px;
-    top: 90px;
+    left: -75px;
+    top: 65px;
     transform: rotate(270deg);
     -moz-user-select: none;
     -webkit-user-select: none;
@@ -48,14 +48,14 @@ body {
 #platform-switcher > div {
     background: #F7F8F9;
     border: 1px solid #ddd;
-    border-radius: 3px 3px 0 0;
+    border-radius: 3px;
     font-size: 12px;
     color: #859BA6;
     line-height: 33px;
     text-align: center;
     float: right;
     width: 72px;
-    margin-right: -1px;
+    margin-right: 10px;
     cursor: pointer;
     opacity: 0.5;
 }
