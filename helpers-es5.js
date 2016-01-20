@@ -1,6 +1,6 @@
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
 
 /* eslint camelcase: 0, no-shadow: 0 */
 
@@ -20,7 +20,6 @@ var path = require('path'),
     NRC = require('node-rest-client').Client;
 
 (function () {
-
     'use strict';
 
     var xmlconfig = { prettyPrint: true, xmlHeader: true, indent: '  ' },
@@ -188,6 +187,7 @@ var path = require('path'),
                     print('Files:create', 'Creating file: ' + name);
                     if (name === 'manifest.json') {
                         properties.name = options.appName;
+                        properties.short_name = options.appName;
                         properties.display = options.display;
                         properties.orientation = options.orientation;
                         _.map(properties.icons, function (icon) {

@@ -177,6 +177,7 @@ const path = require('path'),
                     print('Files:create', `Creating file: ${ name }`);
                     if (name === 'manifest.json') {
                         properties.name = options.appName;
+                        properties.short_name = options.appName;
                         properties.display = options.display;
                         properties.orientation = options.orientation;
                         _.map(properties.icons, (icon) => icon.src = relative(icon.src));
