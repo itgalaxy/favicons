@@ -1,6 +1,6 @@
 'use strict';
 
-function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 var _ = require('underscore'),
     async = require('async'),
@@ -11,6 +11,7 @@ var _ = require('underscore'),
     helpers = require('./helpers-es5.js');
 
 (function () {
+
     'use strict';
 
     _.mergeDefaults = mergeDefaults;
@@ -172,6 +173,11 @@ var _ = require('underscore'),
             return create(sourceset, function (error, response) {
                 return callback(error, response);
             });
+        }, function (response, callback) {
+            if (options.pipeHTML) µ.Files.create(response.html, options.html, function (error, file) {
+                response.files = response.files.concat([file]);
+                return callback(error, response);
+            });else return callback(null, response);
         }], function (error, response) {
             if (error && typeof error === 'string') {
                 error = { status: null, error: error, message: null };
@@ -240,7 +246,7 @@ var _ = require('underscore'),
 
                 var documents = null;
 
-                if (params.html) {
+                if (params.html && !params.pipeHTML) {
                     documents = _typeof(params.html) === 'object' ? params.html : [params.html];
                     processDocuments(documents, response.html, function (error) {
                         return cb(error);

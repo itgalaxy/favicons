@@ -95,6 +95,7 @@ gulp.task("default", function () {
         logging: false,
         online: false,
         html: "index.html",
+        pipeHTML: true,
         replace: true
     })).pipe(gulp.dest("./"));
 });

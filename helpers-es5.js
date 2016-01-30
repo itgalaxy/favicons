@@ -1,6 +1,6 @@
 'use strict';
 
-function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 /* eslint camelcase: 0, no-shadow: 0 */
 
@@ -21,6 +21,7 @@ var path = require('path'),
     NRC = require('node-rest-client').Client;
 
 (function () {
+
     'use strict';
 
     var xmlconfig = { prettyPrint: true, xmlHeader: true, indent: '  ' },
@@ -43,9 +44,7 @@ var path = require('path'),
         }
 
         function absolute(directory) {
-            var filepath = path.join(options.path, directory);
-
-            return url.resolve(options.url, filepath);
+            return url.resolve(options.url, relative(directory));
         }
 
         function print(context, message) {
@@ -222,6 +221,8 @@ var path = require('path'),
                         properties.layout.logo = relative(properties.layout.logo);
                         properties.layout.color = options.background;
                         properties = JSON.stringify(properties, null, 2);
+                    } else if (/\.html$/.test(name)) {
+                        properties = properties.join('\n');
                     }
                     return callback(null, { name: name, contents: properties });
                 }

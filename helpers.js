@@ -206,6 +206,8 @@ const path = require('path'),
                         properties.layout.logo = relative(properties.layout.logo);
                         properties.layout.color = options.background;
                         properties = JSON.stringify(properties, null, 2);
+                    } else if (/\.html$/.test(name)) {
+                        properties = properties.join('\n');
                     }
                     return callback(null, { name, contents: properties });
                 }

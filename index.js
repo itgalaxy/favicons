@@ -141,7 +141,16 @@ const _ = require('underscore'),
                     callback(error, sourceset)),
             (sourceset, callback) =>
                 create(sourceset, (error, response) =>
-                    callback(error, response))
+                    callback(error, response)),
+            (response, callback) => {
+                if(options.pipeHTML)
+                    µ.Files.create(response.html, options.html, (error, file) => {
+                        response.files = response.files.concat([file]);
+                        return callback(error, response);
+                    });
+                else
+                    return callback(null, response);
+            }
         ], (error, response) => {
             if (error && typeof error === 'string') {
                 error = { status: null, error, message: null };
@@ -206,7 +215,7 @@ const _ = require('underscore'),
 
                     let documents = null;
 
-                    if (params.html) {
+                    if (params.html && !params.pipeHTML) {
                         documents = typeof params.html === 'object' ? params.html : [params.html];
                         processDocuments(documents, response.html, (error) =>
                             cb(error));
