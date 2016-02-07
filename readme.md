@@ -81,7 +81,7 @@ To use Favicons with Gulp, require the `gulp-favicons` wrapper and use it as fol
 var favicons = require("gulp-favicons");
 
 gulp.task("default", function () {
-    gulp.src("logo.png").pipe(favicons({
+    return gulp.src("logo.png").pipe(favicons({
         appName: "My App",
         appDescription: "This is my application",
         developerName: "Hayden Bleasel",
