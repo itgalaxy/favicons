@@ -1,4 +1,5 @@
 const gulp = require('gulp'),
+    gutil = require('gutil'),
     favicons = require('../').stream;
 
 (() => {
@@ -26,6 +27,7 @@ const gulp = require('gulp'),
                 html: 'stream.html',
                 replace: false
             }))
+            .on('error', gutil.log)
             .pipe(gulp.dest('stream/')));
 
 })();

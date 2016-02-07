@@ -78,7 +78,8 @@ var config = require('favicons').config;
 To use Favicons with Gulp, require the `gulp-favicons` wrapper and use it as follows:
 
 ```js
-var favicons = require("gulp-favicons");
+var favicons = require("gulp-favicons"),
+    gutil = require("gutil");
 
 gulp.task("default", function () {
     gulp.src("logo.png").pipe(favicons({
@@ -96,7 +97,9 @@ gulp.task("default", function () {
         online: false,
         html: "index.html",
         replace: true
-    })).pipe(gulp.dest("./"));
+    }))
+    .on("error", gutil.log)
+    .pipe(gulp.dest("./"));
 });
 ```
 
