@@ -96,6 +96,7 @@ gulp.task("default", function () {
         logging: false,
         online: false,
         html: "index.html",
+        pipeHTML: true,
         replace: true
     }))
     .on("error", gutil.log)
@@ -118,16 +119,7 @@ For the full list of files, check `config/files.json`. For the full HTML code, c
 To build the ES5 version for Node.js:
 
 ```sh
-npm install -g babel-cli
-babel --presets es2015 index.js --out-file es5.js
-babel --presets es2015 helpers.js --out-file helpers-es5.js
-```
-
-To build the ES5 version for Gulp, run the following and remember to require the ES5 version.
-
-```sh
-npm install -g babel-cli
-babel --presets es2015 index.js --out-file es5.js
+gulp build
 ```
 
 ## Questions
