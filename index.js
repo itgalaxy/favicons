@@ -25,20 +25,16 @@ const _ = require('underscore'),
 
             async.waterfall([
                 (cb) =>
-                    µ.Images.read(icon.file, (error, buffer) =>
-                        cb(error, buffer)),
+                    µ.Images.read(icon.file, cb),
                 (buffer, cb) =>
-                    µ.Images.resize(buffer, minimum, (error, resizedBuffer) =>
-                        cb(error, resizedBuffer)),
+                    µ.Images.resize(buffer, minimum, cb),
                 (resizedBuffer, cb) =>
                     µ.Images.create(properties, background, (error, canvas) =>
                         cb(error, resizedBuffer, canvas)),
                 (resizedBuffer, canvas, cb) =>
-                    µ.Images.composite(canvas, resizedBuffer, properties, minimum, (error, composite) =>
-                        cb(error, composite)),
+                    µ.Images.composite(canvas, resizedBuffer, properties, minimum, cb),
                 (composite, cb) =>
-                    µ.Images.getBuffer(composite, (error, buffer) =>
-                        cb(error, buffer))
+                    µ.Images.getBuffer(composite, cb)
             ], (error, buffer) =>
                 callback(error, { name, contents: buffer }));
         }
@@ -76,14 +72,11 @@ const _ = require('underscore'),
         function createPlatform (sourceset, platform, callback) {
             async.parallel([
                 (cb) =>
-                    createFavicons(sourceset, platform, (error, images) =>
-                        cb(error, images)),
+                    createFavicons(sourceset, platform, cb),
                 (cb) =>
-                    createFiles(platform, (error, files) =>
-                        cb(error, files)),
+                    createFiles(platform, cb),
                 (cb) =>
-                    createHTML(platform, (error, code) =>
-                        cb(error, code))
+                    createHTML(platform, cb)
             ], (error, results) =>
                 callback(error, results[0], results[1], results[2]));
         }
@@ -97,10 +90,10 @@ const _ = require('underscore'),
                         response.images = response.images.concat(images);
                         response.files = response.files.concat(files);
                         response.html = response.html.concat(html);
-                        return cb(error);
+                        cb(error);
                     });
                 } else {
-                    return cb(null);
+                    cb(null);
                 }
             }, (error) =>
                 callback(error, response));
@@ -112,61 +105,52 @@ const _ = require('underscore'),
             async.each(pack.files, (url, cb) =>
                 µ.RFG.fetch(url, (error, box) =>
                     cb(response.images.push(box.image) && response.files.push(box.file) && error)),
-            () =>
-                callback(null, response));
+            (error) =>
+                callback(error, response));
         }
 
         function createOnline (sourceset, callback) {
             async.waterfall([
                 (cb) =>
-                    µ.RFG.configure(sourceset, config.rfg, (error, request) =>
-                        cb(error, request)),
+                    µ.RFG.configure(sourceset, config.rfg, cb),
                 (request, cb) =>
-                    µ.RFG.request(request, (error, pack) =>
-                        cb(error, pack)),
+                    µ.RFG.request(request, cb),
                 (pack, cb) =>
-                    unpack(pack, (error, response) =>
-                        cb(error, response))
+                    unpack(pack, cb)
             ], (error, results) =>
                 callback(error, results));
         }
 
         function create (sourceset, callback) {
-            options.online ? createOnline(sourceset, (error, response) => callback(error, response)) : createOffline(sourceset, (error, response) => callback(error, response));
+            options.online ? createOnline(sourceset, callback) : createOffline(sourceset, callback);
         }
 
         async.waterfall([
             (callback) =>
-                µ.General.source(source, (error, sourceset) =>
-                    callback(error, sourceset)),
+                µ.General.source(source, callback),
             (sourceset, callback) =>
-                create(sourceset, (error, response) =>
-                    callback(error, response))
+                create(sourceset, callback)
         ], (error, response) => {
-            if (error && typeof error === 'string') {
-                error = { status: null, error, message: null };
+            if (error) {
+                next(error);
+            } else {
+                next(null, {
+                    images: _.compact(response.images),
+                    files: _.compact(response.files),
+                    html: _.compact(response.html)
+                });
             }
-            return next(error ? {
-                status: error.status,
-                error: error.name || 'Error',
-                message: error.message || 'An unknown error has occured'
-            } : null, {
-                images: _.compact(response.images),
-                files: _.compact(response.files),
-                html: _.compact(response.html)
-            });
         });
     }
 
-    function stream (params, next) {
+    function stream (params, handleHtml) {
 
         const config = clone(configDefaults),
             µ = helpers(params);
 
         function processDocuments (documents, html, callback) {
-            async.each(documents, (document) =>
-                µ.HTML.update(document, html, config.html, (error) =>
-                    callback(error)),
+            async.each(documents, (document, cb) =>
+                µ.HTML.update(document, html, config.html, cb),
             (error) =>
                 callback(error));
         }
@@ -185,33 +169,23 @@ const _ = require('underscore'),
 
             async.waterfall([
                 (cb) =>
-                    favicons(file.contents, params, (error, response) =>
-                        cb(error, response)),
+                    favicons(file.contents, params, cb),
                 (response, cb) =>
-                    async.each(response.images, (image, c) => {
+                    async.each(response.images.concat(response.files), (image, c) => {
                         self.push(µ.General.vinyl(image));
-                        return c();
-                    }, (error) =>
-                        cb(error, response)),
-                (response, cb) =>
-                    async.each(response.files, (fileobj, c) => {
-                        self.push(µ.General.vinyl(fileobj));
-                        return c();
+                        c();
                     }, (error) =>
                         cb(error, response)),
                 (response, cb) => {
-                    if (next) {
-                        return next(response.html);
+                    if (handleHtml) {
+                        handleHtml(response.html);
+                        cb(null);
                     }
-
-                    let documents = null;
-
                     if (params.html) {
-                        documents = typeof params.html === 'object' ? params.html : [params.html];
-                        processDocuments(documents, response.html, (error) =>
-                            cb(error));
+                        let documents = typeof params.html === 'object' ? params.html : [params.html];
+                        processDocuments(documents, response.html, cb);
                     } else {
-                        return cb(null);
+                        cb(null);
                     }
                 }
             ], (error) =>
