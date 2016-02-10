@@ -129,7 +129,17 @@ const _ = require('underscore'),
             (callback) =>
                 µ.General.source(source, callback),
             (sourceset, callback) =>
-                create(sourceset, callback)
+                create(sourceset, callback),
+            (response, callback) => {
+                if (options.pipeHTML) {
+                    µ.Files.create(response.html, options.html, (error, file) => {
+                        response.files = response.files.concat([file]);
+                        return callback(error, response);
+                    });
+                } else {
+                    return callback(null, response);
+                }
+            }
         ], (error, response) => {
             if (error) {
                 next(error);
@@ -181,8 +191,9 @@ const _ = require('underscore'),
                         handleHtml(response.html);
                         cb(null);
                     }
-                    if (params.html) {
-                        let documents = typeof params.html === 'object' ? params.html : [params.html];
+                    if (params.html && !params.pipeHTML) {
+                        const documents = typeof params.html === 'object' ? params.html : [params.html];
+
                         processDocuments(documents, response.html, cb);
                     } else {
                         cb(null);

@@ -1,6 +1,6 @@
 'use strict';
 
-function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 var _ = require('underscore'),
     async = require('async'),
@@ -11,6 +11,7 @@ var _ = require('underscore'),
     helpers = require('./helpers-es5.js');
 
 (function () {
+
     'use strict';
 
     _.mergeDefaults = mergeDefaults;
@@ -29,25 +30,17 @@ var _ = require('underscore'),
             });
 
             async.waterfall([function (cb) {
-                return µ.Images.read(icon.file, function (error, buffer) {
-                    return cb(error, buffer);
-                });
+                return µ.Images.read(icon.file, cb);
             }, function (buffer, cb) {
-                return µ.Images.resize(buffer, minimum, function (error, resizedBuffer) {
-                    return cb(error, resizedBuffer);
-                });
+                return µ.Images.resize(buffer, minimum, cb);
             }, function (resizedBuffer, cb) {
                 return µ.Images.create(properties, background, function (error, canvas) {
                     return cb(error, resizedBuffer, canvas);
                 });
             }, function (resizedBuffer, canvas, cb) {
-                return µ.Images.composite(canvas, resizedBuffer, properties, minimum, function (error, composite) {
-                    return cb(error, composite);
-                });
+                return µ.Images.composite(canvas, resizedBuffer, properties, minimum, cb);
             }, function (composite, cb) {
-                return µ.Images.getBuffer(composite, function (error, buffer) {
-                    return cb(error, buffer);
-                });
+                return µ.Images.getBuffer(composite, cb);
             }], function (error, buffer) {
                 return callback(error, { name: name, contents: buffer });
             });
@@ -91,17 +84,11 @@ var _ = require('underscore'),
 
         function createPlatform(sourceset, platform, callback) {
             async.parallel([function (cb) {
-                return createFavicons(sourceset, platform, function (error, images) {
-                    return cb(error, images);
-                });
+                return createFavicons(sourceset, platform, cb);
             }, function (cb) {
-                return createFiles(platform, function (error, files) {
-                    return cb(error, files);
-                });
+                return createFiles(platform, cb);
             }, function (cb) {
-                return createHTML(platform, function (error, code) {
-                    return cb(error, code);
-                });
+                return createHTML(platform, cb);
             }], function (error, results) {
                 return callback(error, results[0], results[1], results[2]);
             });
@@ -116,10 +103,10 @@ var _ = require('underscore'),
                         response.images = response.images.concat(images);
                         response.files = response.files.concat(files);
                         response.html = response.html.concat(html);
-                        return cb(error);
+                        cb(error);
                     });
                 } else {
-                    return cb(null);
+                    cb(null);
                 }
             }, function (error) {
                 return callback(error, response);
@@ -133,71 +120,61 @@ var _ = require('underscore'),
                 return µ.RFG.fetch(url, function (error, box) {
                     return cb(response.images.push(box.image) && response.files.push(box.file) && error);
                 });
-            }, function () {
-                return callback(null, response);
+            }, function (error) {
+                return callback(error, response);
             });
         }
 
         function createOnline(sourceset, callback) {
             async.waterfall([function (cb) {
-                return µ.RFG.configure(sourceset, config.rfg, function (error, request) {
-                    return cb(error, request);
-                });
+                return µ.RFG.configure(sourceset, config.rfg, cb);
             }, function (request, cb) {
-                return µ.RFG.request(request, function (error, pack) {
-                    return cb(error, pack);
-                });
+                return µ.RFG.request(request, cb);
             }, function (pack, cb) {
-                return unpack(pack, function (error, response) {
-                    return cb(error, response);
-                });
+                return unpack(pack, cb);
             }], function (error, results) {
                 return callback(error, results);
             });
         }
 
         function create(sourceset, callback) {
-            options.online ? createOnline(sourceset, function (error, response) {
-                return callback(error, response);
-            }) : createOffline(sourceset, function (error, response) {
-                return callback(error, response);
-            });
+            options.online ? createOnline(sourceset, callback) : createOffline(sourceset, callback);
         }
 
         async.waterfall([function (callback) {
-            return µ.General.source(source, function (error, sourceset) {
-                return callback(error, sourceset);
-            });
+            return µ.General.source(source, callback);
         }, function (sourceset, callback) {
-            return create(sourceset, function (error, response) {
-                return callback(error, response);
-            });
-        }], function (error, response) {
-            if (error && typeof error === 'string') {
-                error = { status: null, error: error, message: null };
+            return create(sourceset, callback);
+        }, function (response, callback) {
+            if (options.pipeHTML) {
+                µ.Files.create(response.html, options.html, function (error, file) {
+                    response.files = response.files.concat([file]);
+                    return callback(error, response);
+                });
+            } else {
+                return callback(null, response);
             }
-            return next(error ? {
-                status: error.status,
-                error: error.name || 'Error',
-                message: error.message || 'An unknown error has occured'
-            } : null, {
-                images: _.compact(response.images),
-                files: _.compact(response.files),
-                html: _.compact(response.html)
-            });
+        }], function (error, response) {
+            if (error) {
+                next(error);
+            } else {
+                next(null, {
+                    images: _.compact(response.images),
+                    files: _.compact(response.files),
+                    html: _.compact(response.html)
+                });
+            }
         });
     }
 
-    function stream(params, next) {
+    function stream(params, handleHtml) {
 
         var config = clone(configDefaults),
             µ = helpers(params);
 
         function processDocuments(documents, html, callback) {
-            async.each(documents, function (document) {
-                return µ.HTML.update(document, html, config.html, function (error) {
-                    return callback(error);
-                });
+            async.each(documents, function (document, cb) {
+                return µ.HTML.update(document, html, config.html, cb);
             }, function (error) {
                 return callback(error);
             });
@@ -216,37 +193,25 @@ var _ = require('underscore'),
             }
 
             async.waterfall([function (cb) {
-                return favicons(file.contents, params, function (error, response) {
-                    return cb(error, response);
-                });
+                return favicons(file.contents, params, cb);
             }, function (response, cb) {
-                return async.each(response.images, function (image, c) {
+                return async.each(response.images.concat(response.files), function (image, c) {
                     self.push(µ.General.vinyl(image));
-                    return c();
+                    c();
                 }, function (error) {
                     return cb(error, response);
                 });
             }, function (response, cb) {
-                return async.each(response.files, function (fileobj, c) {
-                    self.push(µ.General.vinyl(fileobj));
-                    return c();
-                }, function (error) {
-                    return cb(error, response);
-                });
-            }, function (response, cb) {
-                if (next) {
-                    return next(response.html);
+                if (handleHtml) {
+                    handleHtml(response.html);
+                    cb(null);
                 }
+                if (params.html && !params.pipeHTML) {
+                    var documents = _typeof(params.html) === 'object' ? params.html : [params.html];
 
-                var documents = null;
-
-                if (params.html) {
-                    documents = _typeof(params.html) === 'object' ? params.html : [params.html];
-                    processDocuments(documents, response.html, function (error) {
-                        return cb(error);
-                    });
+                    processDocuments(documents, response.html, cb);
                 } else {
-                    return cb(null);
+                    cb(null);
                 }
             }], function (error) {
                 return callback(error);
