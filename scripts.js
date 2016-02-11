@@ -39,7 +39,8 @@ jQuery(function ($) {
             '        version: 1.0,',
             '        logging: false,',
             '        online: false,',
-            '        html: "index.html"',
+            '        html: "index.html",',
+            '        pipeHTML: true,',
             '        replace: true',
             '    })).pipe(gulp.dest("./"));',
             '});'
