@@ -1,6 +1,6 @@
 'use strict';
 
-var favicons = require('favicons');
+var favicons = require('favicons/es5');
 
 (function () {
     'use strict';
