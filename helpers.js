@@ -55,8 +55,7 @@ const path = require('path'),
         }
 
         function readFile (filepath, callback) {
-            fs.readFile(filepath, (error, buffer) =>
-                callback(error, buffer));
+            fs.readFile(filepath, callback);
         }
 
         function updateDocument (document, code, tags, next) {
@@ -72,8 +71,7 @@ const path = require('path'),
                         newCode(selector).remove();
                     }
                     return cb(null);
-                }, (error) =>
-                    callback(error));
+                }, callback);
             }, (error) => {
                 target.append(newCode.html());
                 return next(error, $.html().replace(/^\s*$[\n\r]{1,}/gm, ''));
@@ -118,7 +116,6 @@ const path = require('path'),
                         return callback('Invalid source type provided');
                     }
                 },
-
                 vinyl: (object) =>
                     new File({
                         path: object.name,
@@ -152,24 +149,14 @@ const path = require('path'),
 
                     async.waterfall([
                         (cb) =>
-                            mkdirp(path.dirname(document), (error) =>
-                                cb(error)),
+                            mkdirp(path.dirname(document), cb),
                         (cb) =>
-                            fs.readFile(document, encoding, (error, data) =>
-                                cb(null, error ? null : data)),
-                        (data, cb) => {
-                            if (data) {
-                                updateDocument(data, code, tags, (error, html) =>
-                                    cb(error, html));
-                            } else {
-                                return cb(null, code.join('\n'));
-                            }
-                        },
+                            fs.readFile(document, encoding, (error, data) => cb(null, error ? null : data)),
+                        (data, cb) =>
+                            (data ? updateDocument(data, code, tags, cb) : cb(null, code.join('\n'))),
                         (html, cb) =>
-                            fs.writeFile(document, html, options, (error) =>
-                                cb(error))
-                    ], (error) =>
-                        callback(error));
+                            fs.writeFile(document, html, options, cb)
+                    ], callback);
                 }
             },
 
@@ -181,7 +168,7 @@ const path = require('path'),
                         properties.short_name = options.appName;
                         properties.display = options.display;
                         properties.orientation = options.orientation;
-                        _.map(properties.icons, (icon) => icon.src = relative(icon.src));
+                        _.map(properties.icons, (icon) => (icon.src = relative(icon.src)));
                         properties = JSON.stringify(properties, null, 2);
                     } else if (name === 'manifest.webapp') {
                         properties.version = options.version;
@@ -217,14 +204,13 @@ const path = require('path'),
                 create: (properties, background, callback) => {
                     let jimp = null;
 
-                    print('Image:create', `Creating empty ${ properties.width }x${ properties.height } canvas with ${ (properties.transparent ? `transparent` : background) } background`);
+                    print('Image:create', `Creating empty ${ properties.width }x${ properties.height } canvas with ${ (properties.transparent ? 'transparent' : background) } background`);
                     jimp = new Jimp(properties.width, properties.height, properties.transparent ? 0x00000000 : background, (error, canvas) =>
                         callback(error, canvas, jimp));
                 },
                 read: (file, callback) => {
                     print('Image:read', `Reading file: ${ file.buffer }`);
-                    Jimp.read(file, (error, image) =>
-                        callback(error, image));
+                    Jimp.read(file, callback);
                 },
                 resize: (image, minimum, callback) => {
                     print('Images:resize', `Resizing image to ${ minimum }x${ minimum }`);
@@ -238,7 +224,7 @@ const path = require('path'),
                         overlay = path.join(__dirname, 'overlay.png');
 
                     if (properties.rotate) {
-                        print('Images:composite', `Rotating image`);
+                        print('Images:composite', `Rotating image by ${ROTATE_DEGREES}`);
                         image.rotate(ROTATE_DEGREES);
                     }
 
@@ -246,14 +232,10 @@ const path = require('path'),
                     canvas.composite(image, offsetWidth, offsetHeight);
 
                     if (properties.mask) {
-                        print('Images:composite', `Masking composite image on circle`);
+                        print('Images:composite', 'Masking composite image on circle');
                         async.parallel([
-                            (cb) =>
-                                Jimp.read(circle, (error, image) =>
-                                    cb(error, image)),
-                            (cb) =>
-                                Jimp.read(overlay, (error, image) =>
-                                    cb(error, image))
+                            (cb) => Jimp.read(circle, cb),
+                            (cb) => Jimp.read(overlay, cb)
                         ], (error, images) => {
                             images[0].resize(minimum, Jimp.AUTO);
                             images[1].resize(minimum, Jimp.AUTO);
@@ -267,8 +249,7 @@ const path = require('path'),
                 },
                 getBuffer: (canvas, callback) => {
                     print('Images:getBuffer', 'Collecting image buffer from canvas');
-                    canvas.getBuffer(Jimp.MIME_PNG, (error, buffer) =>
-                        callback(error, buffer));
+                    canvas.getBuffer(Jimp.MIME_PNG, callback);
                 }
             },
 

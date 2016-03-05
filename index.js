@@ -93,7 +93,7 @@ const _ = require('underscore'),
                         cb(error);
                     });
                 } else {
-                    cb(null);
+                    return cb(null);
                 }
             }, (error) =>
                 callback(error, response));
@@ -140,17 +140,12 @@ const _ = require('underscore'),
                     return callback(null, response);
                 }
             }
-        ], (error, response) => {
-            if (error) {
-                next(error);
-            } else {
-                next(null, {
-                    images: _.compact(response.images),
-                    files: _.compact(response.files),
-                    html: _.compact(response.html)
-                });
-            }
-        });
+        ], (error, response) =>
+            error ? next(error) : next(null, {
+                images: _.compact(response.images),
+                files: _.compact(response.files),
+                html: _.compact(response.html)
+            }));
     }
 
     function stream (params, handleHtml) {
@@ -167,7 +162,7 @@ const _ = require('underscore'),
 
         /* eslint func-names: 0, no-invalid-this: 0 */
         return through2.obj(function (file, encoding, callback) {
-            const self = this;
+            const that = this;
 
             if (file.isNull()) {
                 return callback(null, file);
@@ -182,21 +177,21 @@ const _ = require('underscore'),
                     favicons(file.contents, params, cb),
                 (response, cb) =>
                     async.each(response.images.concat(response.files), (image, c) => {
-                        self.push(µ.General.vinyl(image));
+                        that.push(µ.General.vinyl(image));
                         c();
                     }, (error) =>
                         cb(error, response)),
                 (response, cb) => {
                     if (handleHtml) {
                         handleHtml(response.html);
-                        cb(null);
+                        return cb(null);
                     }
                     if (params.html && !params.pipeHTML) {
                         const documents = typeof params.html === 'object' ? params.html : [params.html];
 
                         processDocuments(documents, response.html, cb);
                     } else {
-                        cb(null);
+                        return cb(null);
                     }
                 }
             ], (error) =>

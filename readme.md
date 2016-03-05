@@ -119,7 +119,7 @@ For the full list of files, check `config/files.json`. For the full HTML code, c
 To build the ES5 version for Node.js:
 
 ```sh
-gulp build
+gulp
 ```
 
 ## Questions

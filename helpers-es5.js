@@ -59,9 +59,7 @@ var path = require('path'),
         }
 
         function readFile(filepath, callback) {
-            fs.readFile(filepath, function (error, buffer) {
-                return callback(error, buffer);
-            });
+            fs.readFile(filepath, callback);
         }
 
         function updateDocument(document, code, tags, next) {
@@ -77,9 +75,7 @@ var path = require('path'),
                         newCode(selector).remove();
                     }
                     return cb(null);
-                }, function (error) {
-                    return callback(error);
-                });
+                }, callback);
             }, function (error) {
                 target.append(newCode.html());
                 return next(error, $.html().replace(/^\s*$[\n\r]{1,}/gm, ''));
@@ -125,7 +121,6 @@ var path = require('path'),
                         return callback('Invalid source type provided');
                     }
                 },
-
                 vinyl: function vinyl(object) {
                     return new File({
                         path: object.name,
@@ -159,28 +154,16 @@ var path = require('path'),
                     var encoding = { encoding: 'utf8' };
 
                     async.waterfall([function (cb) {
-                        return mkdirp(path.dirname(document), function (error) {
-                            return cb(error);
-                        });
+                        return mkdirp(path.dirname(document), cb);
                     }, function (cb) {
                         return fs.readFile(document, encoding, function (error, data) {
                             return cb(null, error ? null : data);
                         });
                     }, function (data, cb) {
-                        if (data) {
-                            updateDocument(data, code, tags, function (error, html) {
-                                return cb(error, html);
-                            });
-                        } else {
-                            return cb(null, code.join('\n'));
-                        }
+                        return data ? updateDocument(data, code, tags, cb) : cb(null, code.join('\n'));
                     }, function (html, cb) {
-                        return fs.writeFile(document, html, options, function (error) {
-                            return cb(error);
-                        });
-                    }], function (error) {
-                        return callback(error);
-                    });
+                        return fs.writeFile(document, html, options, cb);
+                    }], callback);
                 }
             },
 
@@ -239,9 +222,7 @@ var path = require('path'),
                 },
                 read: function read(file, callback) {
                     print('Image:read', 'Reading file: ' + file.buffer);
-                    Jimp.read(file, function (error, image) {
-                        return callback(error, image);
-                    });
+                    Jimp.read(file, callback);
                 },
                 resize: function resize(image, minimum, callback) {
                     print('Images:resize', 'Resizing image to ' + minimum + 'x' + minimum);
@@ -255,7 +236,7 @@ var path = require('path'),
                         overlay = path.join(__dirname, 'overlay.png');
 
                     if (properties.rotate) {
-                        print('Images:composite', 'Rotating image');
+                        print('Images:composite', 'Rotating image by ' + ROTATE_DEGREES);
                         image.rotate(ROTATE_DEGREES);
                     }
 
@@ -265,13 +246,9 @@ var path = require('path'),
                     if (properties.mask) {
                         print('Images:composite', 'Masking composite image on circle');
                         async.parallel([function (cb) {
-                            return Jimp.read(circle, function (error, image) {
-                                return cb(error, image);
-                            });
+                            return Jimp.read(circle, cb);
                         }, function (cb) {
-                            return Jimp.read(overlay, function (error, image) {
-                                return cb(error, image);
-                            });
+                            return Jimp.read(overlay, cb);
                         }], function (error, images) {
                             images[0].resize(minimum, Jimp.AUTO);
                             images[1].resize(minimum, Jimp.AUTO);
@@ -285,9 +262,7 @@ var path = require('path'),
                 },
                 getBuffer: function getBuffer(canvas, callback) {
                     print('Images:getBuffer', 'Collecting image buffer from canvas');
-                    canvas.getBuffer(Jimp.MIME_PNG, function (error, buffer) {
-                        return callback(error, buffer);
-                    });
+                    canvas.getBuffer(Jimp.MIME_PNG, callback);
                 }
             },
 

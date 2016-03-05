@@ -3,7 +3,7 @@ var gulp   = require('gulp'),
     babel  = require('gulp-babel'),
     rename = require("gulp-rename");
 
-gulp.task('build', () => {
+gulp.task('default', () => {
     return gulp.src(['index.js', 'helpers.js'])
     .pipe(babel({
         presets: ['es2015']
@@ -12,5 +12,3 @@ gulp.task('build', () => {
     .pipe(gulpif(/^helpers\.js$/, rename('helpers-es5.js')))
     .pipe(gulp.dest('.'));
 });
-
-gulp.task('default', ['build']);
