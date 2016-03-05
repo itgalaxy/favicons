@@ -150,7 +150,7 @@ const path = require('path'),
                     async.waterfall([
                         (cb) =>
                             mkdirp(path.dirname(document), cb),
-                        (cb) =>
+                        (made, cb) =>
                             fs.readFile(document, encoding, (error, data) => cb(null, error ? null : data)),
                         (data, cb) =>
                             (data ? updateDocument(data, code, tags, cb) : cb(null, code.join('\n'))),

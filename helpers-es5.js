@@ -155,7 +155,7 @@ var path = require('path'),
 
                     async.waterfall([function (cb) {
                         return mkdirp(path.dirname(document), cb);
-                    }, function (cb) {
+                    }, function (made, cb) {
                         return fs.readFile(document, encoding, function (error, data) {
                             return cb(null, error ? null : data);
                         });
