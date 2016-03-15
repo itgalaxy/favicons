@@ -75,10 +75,10 @@ var config = require('favicons').config;
 
 ### Gulp
 
-To use Favicons with Gulp, require the `gulp-favicons` wrapper and use it as follows:
+To use Favicons with Gulp, require the `favicons` as usual and use it as follows:
 
 ```js
-var favicons = require("gulp-favicons"),
+var favicons = require("favicons"),
     gutil = require("gulp-util");
 
 gulp.task("default", function () {
@@ -107,7 +107,7 @@ gulp.task("default", function () {
 If you need an ES5 build for legacy purposes, just require the ES5 file:
 
 ```js
-var favicons = require('gulp-favicons/es5');
+var favicons = require('favicons/es5');
 ```
 
 ## Output
