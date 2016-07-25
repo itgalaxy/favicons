@@ -233,8 +233,22 @@
       "mask": false
     },
     "favicon.ico": {
-      "width": 16,
-      "height": 16,
+      "sizes": [{
+        "width": 16,
+        "height": 16
+      }, {
+        "width": 24,
+        "height": 24
+      }, {
+        "width": 32,
+        "height": 32
+      }, {
+        "width": 48,
+        "height": 48
+      }, {
+        "width": 64,
+        "height": 64
+      }],
       "transparent": true,
       "rotate": false,
       "mask": false
