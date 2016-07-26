@@ -124,10 +124,6 @@ gulp
 
 ## Questions
 
-> Why isn't there a multi-sized `favicon.ico` generated / why is my `favicon.ico` corrupted? It seems pretty standard.
-
-Couple of reasons. First and foremost, [we can't find](https://github.com/haydenbleasel/favicons/issues/101) a pure JS generator for multi-layered `.ico` files at this point. If you find one in the future, please re-open that issue. Secondly, all modern browsers [support a PNG favicon](https://en.wikipedia.org/wiki/Favicon#File_format_support) anyway.
-
 > What's the difference between offline and online?
 
 Offline uses pure Javascript image manipulation (JIMP) in Node.js to create your Favicons. Online uses the [RealFaviconGenerator API](https://realfavicongenerator.net/) to generate a Favicons package and then we download it. When using offline, generating favicons is a lot faster and doesn't require an internet connection, however we're missing a few features from RFG at the moment (like the aforementioned `.ico` support).
