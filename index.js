@@ -4,7 +4,7 @@ const _ = require('underscore'),
     clone = require('clone'),
     mergeDefaults = require('merge-defaults'),
     configDefaults = require('require-directory')(module, 'config'),
-    helpers = require('./helpers-es5.js')
+    helpers = require('./helpers-es5.js'),
     path = require('path'),
     toIco = require('to-ico');
 
@@ -31,10 +31,9 @@ const _ = require('underscore'),
                         newProperties.width = sizeProperties.width;
                         newProperties.height = sizeProperties.height;
 
-                        const tempName = 'favicon-temp-' + newProperties.width + 'x' + newProperties.height +'.png';
+                        const tempName = `favicon-temp-${newProperties.width}x${newProperties.height}.png`;
 
-                        createFavicon(sourceset, newProperties, tempName, (error, icoImage) =>
-                            cb(error, icoImage))
+                        createFavicon(sourceset, newProperties, tempName, cb);
                     },
                     (error, results) => {
                         const files = [];
@@ -44,8 +43,8 @@ const _ = require('underscore'),
                         });
 
                         toIco(files).then((buffer) => {
-                            callback(error, {name, contents: buffer})
-                        })
+                            callback(error, { name, contents: buffer });
+                        });
                     }
                 );
             } else {
@@ -63,7 +62,7 @@ const _ = require('underscore'),
                     (resizedBuffer, canvas, cb) =>
                         µ.Images.composite(canvas, resizedBuffer, properties, minimum, cb),
                     (composite, cb) => {
-                        µ.Images.getBuffer(composite, cb)
+                        µ.Images.getBuffer(composite, cb);
                     }
                 ], (error, buffer) =>
                     callback(error, { name, contents: buffer }));

@@ -8,7 +8,9 @@ var _ = require('underscore'),
     clone = require('clone'),
     mergeDefaults = require('merge-defaults'),
     configDefaults = require('require-directory')(module, 'config'),
-    helpers = require('./helpers-es5.js');
+    helpers = require('./helpers-es5.js'),
+    path = require('path'),
+    toIco = require('to-ico');
 
 (function () {
 
@@ -24,26 +26,51 @@ var _ = require('underscore'),
             background = µ.General.background(options.background);
 
         function createFavicon(sourceset, properties, name, callback) {
-            var minimum = Math.min(properties.width, properties.height),
-                icon = _.min(sourceset, function (ico) {
-                return ico.size >= minimum;
-            });
+            if (path.extname(name) === '.ico') {
+                async.map(properties.sizes, function (sizeProperties, cb) {
+                    var newProperties = clone(properties);
 
-            async.waterfall([function (cb) {
-                return µ.Images.read(icon.file, cb);
-            }, function (buffer, cb) {
-                return µ.Images.resize(buffer, minimum, cb);
-            }, function (resizedBuffer, cb) {
-                return µ.Images.create(properties, background, function (error, canvas) {
-                    return cb(error, resizedBuffer, canvas);
+                    newProperties.width = sizeProperties.width;
+                    newProperties.height = sizeProperties.height;
+
+                    var tempName = 'favicon-temp-' + newProperties.width + 'x' + newProperties.height + '.png';
+
+                    createFavicon(sourceset, newProperties, tempName, cb);
+                }, function (error, results) {
+                    var files = [];
+
+                    results.forEach(function (icoImage) {
+                        files.push(icoImage.contents);
+                    });
+
+                    toIco(files).then(function (buffer) {
+                        callback(error, { name: name, contents: buffer });
+                    });
                 });
-            }, function (resizedBuffer, canvas, cb) {
-                return µ.Images.composite(canvas, resizedBuffer, properties, minimum, cb);
-            }, function (composite, cb) {
-                return µ.Images.getBuffer(composite, cb);
-            }], function (error, buffer) {
-                return callback(error, { name: name, contents: buffer });
-            });
+            } else {
+                (function () {
+                    var minimum = Math.min(properties.width, properties.height),
+                        icon = _.min(sourceset, function (ico) {
+                        return ico.size >= minimum;
+                    });
+
+                    async.waterfall([function (cb) {
+                        return µ.Images.read(icon.file, cb);
+                    }, function (buffer, cb) {
+                        return µ.Images.resize(buffer, minimum, cb);
+                    }, function (resizedBuffer, cb) {
+                        return µ.Images.create(properties, background, function (error, canvas) {
+                            return cb(error, resizedBuffer, canvas);
+                        });
+                    }, function (resizedBuffer, canvas, cb) {
+                        return µ.Images.composite(canvas, resizedBuffer, properties, minimum, cb);
+                    }, function (composite, cb) {
+                        µ.Images.getBuffer(composite, cb);
+                    }], function (error, buffer) {
+                        return callback(error, { name: name, contents: buffer });
+                    });
+                })();
+            }
         }
 
         function createHTML(platform, callback) {
