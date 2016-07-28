@@ -168,6 +168,7 @@ const path = require('path'),
                         properties.short_name = options.appName;
                         properties.display = options.display;
                         properties.orientation = options.orientation;
+                        properties.start_url = options.start_url;
                         _.map(properties.icons, (icon) => (icon.src = relative(icon.src)));
                         properties = JSON.stringify(properties, null, 2);
                     } else if (name === 'manifest.webapp') {

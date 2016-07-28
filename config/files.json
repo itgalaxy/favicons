@@ -5,6 +5,7 @@
     	"short_name": "Favicons",
       "display": "standalone",
     	"orientation": "portrait",
+    	"start_url": "/?homescreen=1",
     	"icons": [
     		{
     			"src": "android-chrome-36x36.png",

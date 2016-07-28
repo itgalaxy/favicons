@@ -175,6 +175,7 @@ var path = require('path'),
                         properties.short_name = options.appName;
                         properties.display = options.display;
                         properties.orientation = options.orientation;
+                        properties.start_url = options.start_url;
                         _.map(properties.icons, function (icon) {
                             return icon.src = relative(icon.src);
                         });
