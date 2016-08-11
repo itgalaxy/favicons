@@ -31,6 +31,7 @@ var favicons = require('favicons'),
         url: "/",                       // Absolute URL for OpenGraph image. `string`
         display: "standalone",          // Android display: "browser" or "standalone". `string`
         orientation: "portrait",        // Android orientation: "portrait" or "landscape". `string`
+        start_url: "/?homescreen=1",    // Andorid start application's URL. `string`
         version: "1.0",                 // Your application's version number. `number`
         logging: false,                 // Print logs to console? `boolean`
         online: false,                  // Use RealFaviconGenerator to create favicons? `boolean`
@@ -92,6 +93,7 @@ gulp.task("default", function () {
         url: "http://haydenbleasel.com/",
         display: "standalone",
         orientation: "portrait",
+        start_url: "/?homescreen=1",
         version: 1.0,
         logging: false,
         online: false,
