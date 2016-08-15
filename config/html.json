@@ -1,6 +1,5 @@
 {
   "android": {
-    "link[rel='icon'][type='image/png'][sizes='192x192'][href$='android-chrome-192x192.png']": "<link rel='icon' type='image/png' sizes='192x192' href='android-chrome-192x192.png'>",
     "link[rel='manifest'][href$='manifest.json']": "<link rel='manifest' href='manifest.json'>",
     "meta[name='mobile-web-app-capable']": "<meta name='mobile-web-app-capable' content='yes'>",
     "meta[name='theme-color']": "<meta name='theme-color' content='#FFFFFF'>",
@@ -36,10 +35,9 @@
     "link[rel='icon'][type='image/png'][sizes='228x228'][href$='coast-228x228.png']": "<link rel='icon' type='image/png' sizes='228x228' href='coast-228x228.png'>"
   },
   "favicons": {
-    "link[rel='icon'][type='image/png'][sizes='16x16'][href$='favicon-16x16.png']": "<link rel='icon' type='image/png' sizes='16x16' href='favicon-16x16.png'>",
     "link[rel='icon'][type='image/png'][sizes='32x32'][href$='favicon-32x32.png']": "<link rel='icon' type='image/png' sizes='32x32' href='favicon-32x32.png'>",
-    "link[rel='icon'][type='image/png'][sizes='96x96'][href$='favicon-96x96.png']": "<link rel='icon' type='image/png' sizes='96x96' href='favicon-96x96.png'>",
-    "link[rel='icon'][type='image/png'][sizes='230x230'][href$='favicon-230x230.png']": "<link rel='icon' type='image/png' sizes='230x230' href='favicon-230x230.png'>",
+    "link[rel='icon'][type='image/png'][sizes='192x192'][href$='android-chrome-192x192.png']": "<link rel='icon' type='image/png' sizes='192x192' href='android-chrome-192x192.png'>",
+    "link[rel='icon'][type='image/png'][sizes='16x16'][href$='favicon-16x16.png']": "<link rel='icon' type='image/png' sizes='16x16' href='favicon-16x16.png'>",
     "link[rel='shortcut icon'][href$='favicon.ico']": "<link rel='shortcut icon' href='favicon.ico'>"
   },
   "windows": {
