@@ -20,8 +20,6 @@
     "coast": true,
     "favicons": true,
     "firefox": true,
-    "opengraph": true,
-    "twitter": true,
     "windows": true,
     "yandex": true
   }

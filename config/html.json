@@ -42,12 +42,6 @@
     "link[rel='icon'][type='image/png'][sizes='230x230'][href$='favicon-230x230.png']": "<link rel='icon' type='image/png' sizes='230x230' href='favicon-230x230.png'>",
     "link[rel='shortcut icon'][href$='favicon.ico']": "<link rel='shortcut icon' href='favicon.ico'>"
   },
-  "opengraph": {
-    "meta[property='og:image'][content$='open-graph.png']": "<meta property='og:image' content='open-graph.png'>"
-  },
-  "twitter": {
-    "meta[property='twitter:image'][content$='twitter.png']": "<meta property='twitter:image' content='twitter.png'>"
-  },
   "windows": {
     "meta[name='msapplication-TileColor']": "<meta name='msapplication-TileColor' content='#FFFFFF'>",
     "meta[name='msapplication-TileImage'][content$='mstile-144x144.png']": "<meta name='msapplication-TileImage' content='mstile-144x144.png'>",

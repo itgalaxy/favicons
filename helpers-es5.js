@@ -9,7 +9,6 @@ var path = require('path'),
     _ = require('underscore'),
     color = require('tinycolor2'),
     cheerio = require('cheerio'),
-    url = require('url'),
     colors = require('colors'),
     jsonxml = require('jsontoxml'),
     sizeOf = require('image-size'),
@@ -41,10 +40,6 @@ var path = require('path'),
 
         function relative(directory) {
             return path.join(options.path, directory).replace(/\\/g, '/');
-        }
-
-        function absolute(directory) {
-            return url.resolve(options.url, relative(directory));
         }
 
         function print(context, message) {
@@ -138,11 +133,7 @@ var path = require('path'),
                         value = $('*').first().attr(attribute);
 
                     if (path.extname(value)) {
-                        if (html.indexOf('og:image') !== NON_EXISTANT || html.indexOf('twitter:image') !== NON_EXISTANT) {
-                            $('*').first().attr(attribute, absolute(value));
-                        } else {
-                            $('*').first().attr(attribute, relative(value));
-                        }
+                        $('*').first().attr(attribute, relative(value));
                     } else if (value.slice(0, 1) === '#') {
                         $('*').first().attr(attribute, options.background);
                     } else if (html.indexOf('application-name') !== NON_EXISTANT || html.indexOf('apple-mobile-web-app-title') !== NON_EXISTANT) {
@@ -314,12 +305,6 @@ var path = require('path'),
                         request.favicon_design.firefox_app.manifest.developer_url = options.developerURL;
                     } else {
                         Reflect.deleteProperty(request.favicon_design, 'firefox_app');
-                    }
-
-                    if (options.icons.opengraph) {
-                        request.favicon_design.open_graph.background_color = options.background;
-                    } else {
-                        Reflect.deleteProperty(request.favicon_design, 'open_graph');
                     }
 
                     if (options.icons.windows) {

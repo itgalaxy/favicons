@@ -28,7 +28,6 @@ var favicons = require('favicons'),
         developerURL: null,             // Your (or your developer's) URL. `string`
         background: "#fff",             // Background colour for flattened icons. `string`
         path: "/",                      // Path for overriding default icons path. `string`
-        url: "/",                       // Absolute URL for OpenGraph image. `string`
         display: "standalone",          // Android display: "browser" or "standalone". `string`
         orientation: "portrait",        // Android orientation: "portrait" or "landscape". `string`
         start_url: "/?homescreen=1",    // Andorid start application's URL. `string`
@@ -42,8 +41,6 @@ var favicons = require('favicons'),
             coast: true,                // Create Opera Coast icon. `boolean`
             favicons: true,             // Create regular favicons. `boolean`
             firefox: true,              // Create Firefox OS icons. `boolean`
-            opengraph: true,            // Create Facebook OpenGraph image. `boolean`
-            twitter: true,              // Create Twitter Summary Card image. `boolean`
             windows: true,              // Create Windows 8 tile icons. `boolean`
             yandex: true                // Create Yandex browser icon. `boolean`
         }

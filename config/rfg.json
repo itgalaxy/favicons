@@ -48,12 +48,6 @@
 			"background_color": "#FFFFFF",
 			"margin": "12%"
 		},
-		"open_graph": {
-			"picture_aspect": "background_and_margin",
-			"background_color": "#FFFFFF",
-			"margin": "12%",
-			"ratio": "1.91:1"
-		},
 		"yandex_browser": {
 			"background_color": "#FFFFFF",
 			"manifest": {
