@@ -255,7 +255,7 @@ const path = require('path'),
                         request.favicon_design.android_chrome.manifest.name = options.appName;
                         request.favicon_design.android_chrome.manifest.display = options.display;
                         request.favicon_design.android_chrome.manifest.orientation = options.orientation;
-                        request.favicon_design.android_chrome.manifest.theme_color = options.background;
+                        request.favicon_design.android_chrome.theme_color = options.background;
                     } else {
                         Reflect.deleteProperty(request.favicon_design, 'android_chrome');
                     }
