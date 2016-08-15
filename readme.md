@@ -125,7 +125,7 @@ gulp
 
 > What's the difference between offline and online?
 
-Offline uses pure Javascript image manipulation (JIMP) in Node.js to create your Favicons. Online uses the [RealFaviconGenerator API](https://realfavicongenerator.net/) to generate a Favicons package and then we download it. When using offline, generating favicons is a lot faster and doesn't require an internet connection, however we're missing a few features from RFG at the moment (like the aforementioned `.ico` support).
+Offline uses pure Javascript image manipulation (JIMP) in Node.js to create your Favicons. Online uses the [RealFaviconGenerator API](https://realfavicongenerator.net/) to generate a Favicons package and then we download it. When using offline, generating favicons is a lot faster and doesn't require an internet connection, however we're missing a few features from RFG at the moment.
 
 > Why are you missing certain favicons?
 
