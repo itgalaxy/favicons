@@ -30,7 +30,7 @@ var favicons = require('favicons'),
         path: "/",                      // Path for overriding default icons path. `string`
         display: "standalone",          // Android display: "browser" or "standalone". `string`
         orientation: "portrait",        // Android orientation: "portrait" or "landscape". `string`
-        start_url: "/?homescreen=1",    // Andorid start application's URL. `string`
+        start_url: "/?homescreen=1",    // Android start application's URL. `string`
         version: "1.0",                 // Your application's version number. `number`
         logging: false,                 // Print logs to console? `boolean`
         online: false,                  // Use RealFaviconGenerator to create favicons? `boolean`
