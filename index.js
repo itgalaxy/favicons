@@ -21,7 +21,7 @@ const _ = require('underscore'),
             µ = helpers(options),
             background = µ.General.background(options.background);
 
-        function createFavicon (sourceset, properties, name, callback) {
+        function createFavicon (sourceset, properties, name, platformOptions, callback) {
             if (path.extname(name) === '.ico') {
                 async.map(
                     properties.sizes,
@@ -33,7 +33,7 @@ const _ = require('underscore'),
 
                         const tempName = `favicon-temp-${newProperties.width}x${newProperties.height}.png`;
 
-                        createFavicon(sourceset, newProperties, tempName, cb);
+                        createFavicon(sourceset, newProperties, tempName, platformOptions, cb);
                     },
                     (error, results) => {
                         const files = [];
@@ -49,18 +49,20 @@ const _ = require('underscore'),
                 );
             } else {
                 const minimum = Math.min(properties.width, properties.height),
-                    icon = _.min(sourceset, (ico) => ico.size >= minimum);
+                    maximum = Math.max(properties.width, properties.height),
+                    icon = _.min(sourceset, (ico) => ico.size >= minimum),
+                    offset = Math.round(maximum / 100 * platformOptions.offset) || 0;
 
                 async.waterfall([
                     (cb) =>
                         µ.Images.read(icon.file, cb),
                     (buffer, cb) =>
-                        µ.Images.resize(buffer, minimum, cb),
+                        µ.Images.resize(buffer, properties, offset, cb),
                     (resizedBuffer, cb) =>
                         µ.Images.create(properties, background, (error, canvas) =>
                             cb(error, resizedBuffer, canvas)),
                     (resizedBuffer, canvas, cb) =>
-                        µ.Images.composite(canvas, resizedBuffer, properties, minimum, cb),
+                        µ.Images.composite(canvas, resizedBuffer, properties, maximum - offset, cb),
                     (composite, cb) => {
                         µ.Images.getBuffer(composite, cb);
                     }
@@ -90,20 +92,20 @@ const _ = require('underscore'),
                 callback(error, files));
         }
 
-        function createFavicons (sourceset, platform, callback) {
+        function createFavicons (sourceset, platform, platformOptions, callback) {
             const images = [];
 
             async.forEachOf(config.icons[platform], (properties, name, cb) =>
-                createFavicon(sourceset, properties, name, (error, image) =>
+                createFavicon(sourceset, properties, name, platformOptions, (error, image) =>
                     cb(images.push(image) && error)),
             (error) =>
                 callback(error, images));
         }
 
-        function createPlatform (sourceset, platform, callback) {
+        function createPlatform (sourceset, platform, platformOptions, callback) {
             async.parallel([
                 (cb) =>
-                    createFavicons(sourceset, platform, cb),
+                    createFavicons(sourceset, platform, platformOptions, cb),
                 (cb) =>
                     createFiles(platform, cb),
                 (cb) =>
@@ -116,8 +118,10 @@ const _ = require('underscore'),
             const response = { images: [], files: [], html: [] };
 
             async.forEachOf(options.icons, (enabled, platform, cb) => {
+                const platformOptions = typeof enabled == "object" ? enabled : {};
+
                 if (enabled) {
-                    createPlatform(sourceset, platform, (error, images, files, html) => {
+                    createPlatform(sourceset, platform, platformOptions, (error, images, files, html) => {
                         response.images = response.images.concat(images);
                         response.files = response.files.concat(files);
                         response.html = response.html.concat(html);

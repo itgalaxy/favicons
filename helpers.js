@@ -204,14 +204,19 @@ const path = require('path'),
                     print('Image:read', `Reading file: ${ file.buffer }`);
                     Jimp.read(file, callback);
                 },
-                resize: (image, minimum, callback) => {
-                    print('Images:resize', `Resizing image to ${ minimum }x${ minimum }`);
-                    image.resize(minimum, Jimp.AUTO);
+                resize: (image, properties, offset, callback) => {
+                    print('Images:resize', `Resizing image to contain in ${ properties.width }x${ properties.height } with offset ${ offset }`);
+                    image.contain(properties.width, properties.height, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE);
+
+                    if (offset) {
+                        image.resize(properties.width - offset, properties.height - offset);
+                    }
+                    
                     return callback(null, image);
                 },
-                composite: (canvas, image, properties, minimum, callback) => {
-                    const offsetHeight = properties.height - minimum > 0 ? (properties.height - minimum) / 2 : 0,
-                        offsetWidth = properties.width - minimum > 0 ? (properties.width - minimum) / 2 : 0,
+                composite: (canvas, image, properties, maximum, callback) => {
+                    const offsetHeight = properties.height - maximum > 0 ? (properties.height - maximum) / 2 : 0,
+                        offsetWidth = properties.width - maximum > 0 ? (properties.width - maximum) / 2 : 0,
                         circle = path.join(__dirname, 'mask.png'),
                         overlay = path.join(__dirname, 'overlay.png');
 
@@ -220,7 +225,7 @@ const path = require('path'),
                         image.rotate(ROTATE_DEGREES);
                     }
 
-                    print('Images:composite', `Compositing ${ minimum }x${ minimum } favicon on ${ properties.width }x${ properties.height } canvas`);
+                    print('Images:composite', `Compositing ${ maximum }x${ maximum } favicon on ${ properties.width }x${ properties.height } canvas`);
                     canvas.composite(image, offsetWidth, offsetHeight);
 
                     if (properties.mask) {
@@ -229,8 +234,8 @@ const path = require('path'),
                             (cb) => Jimp.read(circle, cb),
                             (cb) => Jimp.read(overlay, cb)
                         ], (error, images) => {
-                            images[0].resize(minimum, Jimp.AUTO);
-                            images[1].resize(minimum, Jimp.AUTO);
+                            images[0].resize(maximum, Jimp.AUTO);
+                            images[1].resize(maximum, Jimp.AUTO);
                             canvas.mask(images[0], 0, 0);
                             canvas.composite(images[1], 0, 0);
                             return callback(error, canvas);
