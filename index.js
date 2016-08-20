@@ -118,9 +118,7 @@ const _ = require('underscore'),
             const response = { images: [], files: [], html: [] };
 
             async.forEachOf(options.icons, (enabled, platform, cb) => {
-                const platformOptions = typeof enabled == "object"
-                    ? enabled
-                    : {};
+                const platformOptions = typeof enabled == "object" ? enabled : {};
 
                 if (enabled) {
                     createPlatform(sourceset, platform, platformOptions, (error, images, files, html) => {

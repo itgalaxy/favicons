@@ -35,14 +35,14 @@ var favicons = require('favicons'),
         logging: false,                 // Print logs to console? `boolean`
         online: false,                  // Use RealFaviconGenerator to create favicons? `boolean`
         icons: {
-            android: true,              // Create Android homescreen icon. `boolean`
-            appleIcon: true,            // Create Apple touch icons. `boolean`
-            appleStartup: true,         // Create Apple startup images. `boolean`
-            coast: true,                // Create Opera Coast icon. `boolean`
-            favicons: true,             // Create regular favicons. `boolean`
-            firefox: true,              // Create Firefox OS icons. `boolean`
-            windows: true,              // Create Windows 8 tile icons. `boolean`
-            yandex: true                // Create Yandex browser icon. `boolean`
+            android: true,              // Create Android homescreen icon. `boolean` or `{ offset: offsetInPercentage }`
+            appleIcon: true,            // Create Apple touch icons. `boolean` or `{ offset: offsetInPercentage }`
+            appleStartup: true,         // Create Apple startup images. `boolean` or `{ offset: offsetInPercentage }`
+            coast: { offset: 25 },      // Create Opera Coast icon with offset 25%. `boolean` or `{ offset: offsetInPercentage }`
+            favicons: true,             // Create regular favicons. `boolean` or `{ offset: offsetInPercentage }`
+            firefox: true,              // Create Firefox OS icons. `boolean` or `{ offset: offsetInPercentage }`
+            windows: true,              // Create Windows 8 tile icons. `boolean` or `{ offset: offsetInPercentage }`
+            yandex: true                // Create Yandex browser icon. `boolean` or `{ offset: offsetInPercentage }`
         }
     },
     callback = function (error, response) {
