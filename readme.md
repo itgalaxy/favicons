@@ -14,7 +14,7 @@ To use Favicons, require the appropriate module and call it, optionally specifyi
 
 The Gulp / Grunt wrapper modules have a few extra properties. You can also configure and use Favicons from the terminal with dot syntax.
 
-Favicons generates it’s icons locally using pure Javascript with no external dependencies. However, due to extensive collaboration with RealFaviconGenerator, you can opt to have your favicons generated using their online API.
+Favicons generates its icons locally using pure Javascript with no external dependencies. However, due to extensive collaboration with RealFaviconGenerator, you can opt to have your favicons generated using their online API.
 
 Please note: Favicons is written in ES6, meaning you need Node 4.x or above.
 
