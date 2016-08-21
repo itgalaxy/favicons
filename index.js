@@ -53,7 +53,7 @@ const _ = require('underscore'),
 
                 async.waterfall([
                     (cb) =>
-                        µ.Images.nearest(sourceset, properties, cb),
+                        µ.Images.nearest(sourceset, properties, offset, cb),
                     (nearest, cb) =>
                         µ.Images.read(nearest.file, cb),
                     (buffer, cb) =>
@@ -62,7 +62,7 @@ const _ = require('underscore'),
                         µ.Images.create(properties, background, (error, canvas) =>
                             cb(error, resizedBuffer, canvas)),
                     (resizedBuffer, canvas, cb) =>
-                        µ.Images.composite(canvas, resizedBuffer, properties, maximum - offset, cb),
+                        µ.Images.composite(canvas, resizedBuffer, properties, offset, maximum, cb),
                     (composite, cb) => {
                         µ.Images.getBuffer(composite, cb);
                     }
@@ -118,7 +118,7 @@ const _ = require('underscore'),
             const response = { images: [], files: [], html: [] };
 
             async.forEachOf(options.icons, (enabled, platform, cb) => {
-                const platformOptions = typeof enabled == "object" ? enabled : {};
+                const platformOptions = µ.General.preparePlatformOptions(platform, enabled);
 
                 if (enabled) {
                     createPlatform(sourceset, platform, platformOptions, (error, images, files, html) => {

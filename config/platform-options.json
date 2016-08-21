@@ -1,0 +1,6 @@
+{
+	"offset": {
+		"platforms": ["appleIcon", "firefox", "coast"],
+		"defaultTo": 0
+	}
+}

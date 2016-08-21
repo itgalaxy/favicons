@@ -14,7 +14,8 @@ const path = require('path'),
     svg2png = require('svg2png'),
     File = require('vinyl'),
     Reflect = require('harmony-reflect'),
-    NRC = require('node-rest-client').Client;
+    NRC = require('node-rest-client').Client,
+    PLATFORM_OPTIONS = require('./config/platform-options.json');
 
 (() => {
 
@@ -121,6 +122,27 @@ const path = require('path'),
                         return callback('Invalid source type provided');
                     }
                 },
+                preparePlatformOptions: (platform, options) => {
+                    if (typeof options != 'object') {
+                        options = {};
+                    }
+
+                    _.each(options, (value, key) => {
+                        let platformOptionsRef = PLATFORM_OPTIONS[key];
+
+                        if (typeof platformOptionsRef == 'undefined' || platformOptionsRef.platforms.indexOf(platform) == -1) {
+                            return Reflect.deleteProperty(options, key);
+                        }
+                    });
+
+                    _.each(PLATFORM_OPTIONS, ({ platforms, defaultTo }, key) => {
+                        if (typeof options[key] == 'undefined' && platforms.indexOf(platform) != -1) {
+                            options[key] = defaultTo;
+                        }
+                    });
+
+                    return options;
+                },
                 vinyl: (object) =>
                     new File({
                         path: object.name,
@@ -214,16 +236,21 @@ const path = require('path'),
                     print('Image:read', `Reading file: ${ file.buffer }`);
                     return Jimp.read(file, callback);
                 },
-                nearest: (sourceset, properties, callback) => {
-                    print('Image:nearest', `Find nearest icon to ${ properties.width }x${ properties.height }`);
-                    let sideSize = Math.max(properties.width, properties.height),
-                        nearestIcon = sourceset[0],
-                        nearestSideSize = Math.max(nearestIcon.size.width, nearestIcon.size.height),
+                nearest: (sourceset, properties, offset, callback) => {
+                    print('Image:nearest', `Find nearest icon to ${ properties.width }x${ properties.height } with offset ${ offset }%`);
+                    
+                    const offsetSize = offset * 2,
+                        width = properties.width - offsetSize,
+                        height = properties.height - offsetSize,
+                        sideSize = Math.max(width, height),
                         svgSource = _.find(sourceset, (source) => source.size.type == 'svg');
 
+                    let nearestIcon = sourceset[0],
+                        nearestSideSize = Math.max(nearestIcon.size.width, nearestIcon.size.height);
+
                     if (svgSource) {
-                            print('Image:nearest', `SVG source will be saved as ${ properties.width }x${ properties.height }`);
-                            svg2png(svgSource.file, { height: properties.height, width: properties.width })
+                            print('Image:nearest', `SVG source will be saved as ${ width }x${ height }`);
+                            svg2png(svgSource.file, { height, width })
                                 .then((resizedBuffer) => callback(null, {
                                     size: sizeOf(resizedBuffer),
                                     file: resizedBuffer
@@ -233,7 +260,7 @@ const path = require('path'),
                         _.each(sourceset, (icon) => {
                             let max = Math.max(icon.size.width, icon.size.height);
 
-                            if ((nearestSideSize > max || nearestSideSize < sideSzie) && max >= sideSzie) {
+                            if ((nearestSideSize > max || nearestSideSize < sideSize) && max >= sideSize) {
                                 nearestIcon = icon;
                                 nearestSideSize = max;
                             }
@@ -243,18 +270,16 @@ const path = require('path'),
                     }
                 },
                 resize: (image, properties, offset, callback) => {
-                    print('Images:resize', `Resizing image to contain in ${ properties.width }x${ properties.height } with offset ${ offset }`);
-                    image.contain(properties.width, properties.height, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE);
-
-                    if (offset) {
-                        image.resize(properties.width - offset, properties.height - offset);
-                    }
-                    
+                    print('Images:resize', `Resizing image to contain in ${ properties.width }x${ properties.height } with offset ${ offset }%`);
+                    let offsetSize = offset * 2;
+                    image.contain(properties.width - offsetSize, properties.height - offsetSize, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE);                    
                     return callback(null, image);
                 },
-                composite: (canvas, image, properties, maximum, callback) => {
-                    const offsetHeight = properties.height - maximum > 0 ? (properties.height - maximum) / 2 : 0,
-                        offsetWidth = properties.width - maximum > 0 ? (properties.width - maximum) / 2 : 0,
+                composite: (canvas, image, properties, offset, maximum, callback) => {
+                    const offsetSize = offset * 2,
+                        maximumWithOffset = maximum - offsetSize,
+                        offsetHeight = properties.height - maximumWithOffset > 0 ? (properties.height - maximumWithOffset) / 2 : 0,
+                        offsetWidth = properties.width - maximumWithOffset > 0 ? (properties.width - maximumWithOffset) / 2 : 0,
                         circle = path.join(__dirname, 'mask.png'),
                         overlay = path.join(__dirname, 'overlay.png');
 
@@ -263,8 +288,10 @@ const path = require('path'),
                         image.rotate(ROTATE_DEGREES);
                     }
 
-                    print('Images:composite', `Compositing ${ maximum }x${ maximum } favicon on ${ properties.width }x${ properties.height } canvas`);
-                    canvas.composite(image, offsetWidth, offsetHeight);
+                    const compositeIcon = () => {
+                        print('Images:composite', `Compositing ${ maximum }x${ maximum } favicon on ${ properties.width }x${ properties.height } canvas with offset ${ offset }%`);
+                        canvas.composite(image, offsetWidth, offsetHeight);
+                    };
 
                     if (properties.mask) {
                         print('Images:composite', 'Masking composite image on circle');
@@ -276,9 +303,11 @@ const path = require('path'),
                             images[1].resize(maximum, Jimp.AUTO);
                             canvas.mask(images[0], 0, 0);
                             canvas.composite(images[1], 0, 0);
+                            compositeIcon();
                             return callback(error, canvas);
                         });
                     } else {
+                        compositeIcon();
                         return callback(null, canvas);
                     }
                 },
@@ -291,20 +320,23 @@ const path = require('path'),
             RFG: {
                 configure: (sourceset, request, callback) => {
                     print('RFG:configure', 'Configuring RFG API request');
-                    request.master_picture.content = _.max(sourceset, (image) => image.size.width).file.toString('base64');
+                    const svgSource = _.find(sourceset, (source) => source.size.type == 'svg');
+                    request.master_picture.content = (svgSource || _.max(sourceset, ({ size: { width, height }}) => Math.max(width, height))).file.toString('base64');
                     request.files_location.path = options.path;
 
                     if (options.icons.android) {
+                        request.favicon_design.android_chrome.theme_color = options.background;
                         request.favicon_design.android_chrome.manifest.name = options.appName;
                         request.favicon_design.android_chrome.manifest.display = options.display;
                         request.favicon_design.android_chrome.manifest.orientation = options.orientation;
-                        request.favicon_design.android_chrome.theme_color = options.background;
                     } else {
                         Reflect.deleteProperty(request.favicon_design, 'android_chrome');
                     }
 
                     if (options.icons.appleIcon) {
+                        let offset = _.property('offset')(options.icons.appleIcon) || 0;
                         request.favicon_design.ios.background_color = options.background;
+                        request.favicon_design.ios.margin = Math.round(57 / 100 * offset);
                     } else {
                         Reflect.deleteProperty(request.favicon_design, 'ios');
                     }
@@ -316,7 +348,9 @@ const path = require('path'),
                     }
 
                     if (options.icons.coast) {
+                        let offset = _.property('offset')(options.icons.coast) || 0;
                         request.favicon_design.coast.background_color = options.background;
+                        request.favicon_design.coast.margin = Math.round(228 / 100 * offset);
                     } else {
                         Reflect.deleteProperty(request.favicon_design, 'coast');
                     }
@@ -326,7 +360,9 @@ const path = require('path'),
                     }
 
                     if (options.icons.firefox) {
+                        let offset = _.property('offset')(options.icons.firefox) || 0;
                         request.favicon_design.firefox_app.background_color = options.background;
+                        request.favicon_design.firefox_app.margin = Math.round(60 / 100 * offset);
                         request.favicon_design.firefox_app.manifest.app_name = options.appName;
                         request.favicon_design.firefox_app.manifest.app_description = options.appDescription;
                         request.favicon_design.firefox_app.manifest.developer_name = options.developerName;

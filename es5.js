@@ -53,7 +53,7 @@ var _ = require('underscore'),
                         offset = Math.round(maximum / 100 * platformOptions.offset) || 0;
 
                     async.waterfall([function (cb) {
-                        return µ.Images.nearest(sourceset, properties);
+                        return µ.Images.nearest(sourceset, properties, offset, cb);
                     }, function (nearest, cb) {
                         return µ.Images.read(nearest.file, cb);
                     }, function (buffer, cb) {
@@ -63,7 +63,7 @@ var _ = require('underscore'),
                             return cb(error, resizedBuffer, canvas);
                         });
                     }, function (resizedBuffer, canvas, cb) {
-                        return µ.Images.composite(canvas, resizedBuffer, properties, maximum - offset, cb);
+                        return µ.Images.composite(canvas, resizedBuffer, properties, offset, maximum, cb);
                     }, function (composite, cb) {
                         µ.Images.getBuffer(composite, cb);
                     }], function (error, buffer) {
@@ -125,7 +125,7 @@ var _ = require('underscore'),
             var response = { images: [], files: [], html: [] };
 
             async.forEachOf(options.icons, function (enabled, platform, cb) {
-                var platformOptions = (typeof enabled === 'undefined' ? 'undefined' : _typeof(enabled)) == "object" ? enabled : {};
+                var platformOptions = µ.General.preparePlatformOptions(platform, enabled);
 
                 if (enabled) {
                     createPlatform(sourceset, platform, platformOptions, function (error, images, files, html) {
