@@ -143,7 +143,7 @@ var _ = require('underscore'),
         }
 
         function unpack(pack, callback) {
-            var response = { images: [], files: [], html: pack.html.split(',') };
+            var response = { images: [], files: [], html: pack.html.split('\n') };
 
             async.each(pack.files, function (url, cb) {
                 return µ.RFG.fetch(url, function (error, box) {
@@ -162,12 +162,16 @@ var _ = require('underscore'),
             }, function (pack, cb) {
                 return unpack(pack, cb);
             }], function (error, results) {
-                return callback(error, results);
+                if (error && options.preferOnline) {
+                    createOffline(sourceset, callback);
+                } else {
+                    callback(error, results);
+                }
             });
         }
 
         function create(sourceset, callback) {
-            options.online ? createOnline(sourceset, callback) : createOffline(sourceset, callback);
+            options.online || options.preferOnline ? createOnline(sourceset, callback) : createOffline(sourceset, callback);
         }
 
         async.waterfall([function (callback) {

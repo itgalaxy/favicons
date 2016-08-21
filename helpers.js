@@ -75,9 +75,32 @@ const path = require('path'),
             });
         }
 
+        function preparePlatformOptions(platform, options) {
+            if (typeof options != 'object') {
+                options = {};
+            }
+
+            _.each(options, (value, key) => {
+                let platformOptionsRef = PLATFORM_OPTIONS[key];
+
+                if (typeof platformOptionsRef == 'undefined' || platformOptionsRef.platforms.indexOf(platform) == -1) {
+                    return Reflect.deleteProperty(options, key);
+                }
+            });
+
+            _.each(PLATFORM_OPTIONS, ({ platforms, defaultTo }, key) => {
+                if (typeof options[key] == 'undefined' && platforms.indexOf(platform) != -1) {
+                    options[key] = defaultTo;
+                }
+            });
+
+            return options;
+        }
+
         return {
 
             General: {
+                preparePlatformOptions: preparePlatformOptions,
                 background: (hex) => {
                     print('General:background', `Parsing colour ${ hex }`);
                     const rgba = color(hex).toRgb();
@@ -121,27 +144,6 @@ const path = require('path'),
                     } else {
                         return callback('Invalid source type provided');
                     }
-                },
-                preparePlatformOptions: (platform, options) => {
-                    if (typeof options != 'object') {
-                        options = {};
-                    }
-
-                    _.each(options, (value, key) => {
-                        let platformOptionsRef = PLATFORM_OPTIONS[key];
-
-                        if (typeof platformOptionsRef == 'undefined' || platformOptionsRef.platforms.indexOf(platform) == -1) {
-                            return Reflect.deleteProperty(options, key);
-                        }
-                    });
-
-                    _.each(PLATFORM_OPTIONS, ({ platforms, defaultTo }, key) => {
-                        if (typeof options[key] == 'undefined' && platforms.indexOf(platform) != -1) {
-                            options[key] = defaultTo;
-                        }
-                    });
-
-                    return options;
                 },
                 vinyl: (object) =>
                     new File({
@@ -334,9 +336,9 @@ const path = require('path'),
                     }
 
                     if (options.icons.appleIcon) {
-                        let offset = _.property('offset')(options.icons.appleIcon) || 0;
+                        let appleIconOptions = preparePlatformOptions('appleIcon', options.icons.appleIcon);
                         request.favicon_design.ios.background_color = options.background;
-                        request.favicon_design.ios.margin = Math.round(57 / 100 * offset);
+                        request.favicon_design.ios.margin = Math.round(57 / 100 * appleIconOptions.offset);
                     } else {
                         Reflect.deleteProperty(request.favicon_design, 'ios');
                     }
@@ -348,9 +350,9 @@ const path = require('path'),
                     }
 
                     if (options.icons.coast) {
-                        let offset = _.property('offset')(options.icons.coast) || 0;
+                        let coastOptions = preparePlatformOptions('coast', options.icons.coast);
                         request.favicon_design.coast.background_color = options.background;
-                        request.favicon_design.coast.margin = Math.round(228 / 100 * offset);
+                        request.favicon_design.coast.margin = Math.round(228 / 100 * coastOptions.offset);
                     } else {
                         Reflect.deleteProperty(request.favicon_design, 'coast');
                     }
@@ -360,9 +362,9 @@ const path = require('path'),
                     }
 
                     if (options.icons.firefox) {
-                        let offset = _.property('offset')(options.icons.firefox) || 0;
+                        let firefoxOptions = preparePlatformOptions('firefox', options.icons.firefox);
                         request.favicon_design.firefox_app.background_color = options.background;
-                        request.favicon_design.firefox_app.margin = Math.round(60 / 100 * offset);
+                        request.favicon_design.firefox_app.margin = Math.round(60 / 100 * firefoxOptions.offset);
                         request.favicon_design.firefox_app.manifest.app_name = options.appName;
                         request.favicon_design.firefox_app.manifest.app_description = options.appDescription;
                         request.favicon_design.firefox_app.manifest.developer_name = options.developerName;

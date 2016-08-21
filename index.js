@@ -135,7 +135,7 @@ const _ = require('underscore'),
         }
 
         function unpack (pack, callback) {
-            const response = { images: [], files: [], html: pack.html.split(',') };
+            const response = { images: [], files: [], html: pack.html.split('\n') };
 
             async.each(pack.files, (url, cb) =>
                 µ.RFG.fetch(url, (error, box) =>
@@ -152,12 +152,17 @@ const _ = require('underscore'),
                     µ.RFG.request(request, cb),
                 (pack, cb) =>
                     unpack(pack, cb)
-            ], (error, results) =>
-                callback(error, results));
+            ], (error, results) => {
+                if (error && options.preferOnline) {
+                    createOffline(sourceset, callback)
+                } else {
+                    callback(error, results);
+                }
+            });
         }
 
         function create (sourceset, callback) {
-            options.online ? createOnline(sourceset, callback) : createOffline(sourceset, callback);
+            options.online || options.preferOnline ? createOnline(sourceset, callback) : createOffline(sourceset, callback);
         }
 
         async.waterfall([

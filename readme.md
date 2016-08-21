@@ -34,6 +34,7 @@ var favicons = require('favicons'),
         version: "1.0",                 // Your application's version number. `number`
         logging: false,                 // Print logs to console? `boolean`
         online: false,                  // Use RealFaviconGenerator to create favicons? `boolean`
+        preferOnline: false,            // Use offline generation, if online generation has failed. `boolean`
         icons: {
             android: true,              // Create Android homescreen icon. `boolean`
             appleIcon: true,            // Create Apple touch icons. `boolean` or `{ offset: offsetInPercentage }`
