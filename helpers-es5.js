@@ -15,6 +15,7 @@ var path = require('path'),
     async = require('async'),
     mkdirp = require('mkdirp'),
     Jimp = require('jimp'),
+    svg2png = require('svg2png'),
     File = require('vinyl'),
     Reflect = require('harmony-reflect'),
     NRC = require('node-rest-client').Client;
@@ -212,9 +213,20 @@ var path = require('path'),
                         return callback(error, canvas, jimp);
                     });
                 },
-                read: function read(file, callback) {
-                    print('Image:read', 'Reading file: ' + file.buffer);
-                    Jimp.read(file, callback);
+                read: function read(file, type, callback) {
+                    print('Image:read', 'Reading file: ' + file.buffer + ' with type ' + type);
+
+                    function readFile(file) {
+                        Jimp.read(file, callback);
+                    }
+
+                    if (type == 'svg') {
+                        svg2png(file, { width: 512, height: 512 })
+                            .then(readFile)
+                            .catch(callback);
+                    } else {
+                        readFile(file);
+                    }
                 },
                 resize: function resize(image, properties, offset, callback) {
                     print('Images:resize', 'Resizing image to contain in ' + properties.width + 'x' + properties.height + ' with offset ' + offset);

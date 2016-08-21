@@ -55,7 +55,7 @@ const _ = require('underscore'),
 
                 async.waterfall([
                     (cb) =>
-                        µ.Images.read(icon.file, cb),
+                        µ.Images.read(icon.file, icon.size.type, cb),
                     (buffer, cb) =>
                         µ.Images.resize(buffer, properties, offset, cb),
                     (resizedBuffer, cb) =>
