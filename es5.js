@@ -25,7 +25,7 @@ var _ = require('underscore'),
             µ = helpers(options),
             background = µ.General.background(options.background);
 
-        function createFavicon(sourceset, properties, name, callback) {
+        function createFavicon(sourceset, properties, name, platformOptions, callback) {
             if (path.extname(name) === '.ico') {
                 async.map(properties.sizes, function (sizeProperties, cb) {
                     var newProperties = clone(properties);
@@ -35,7 +35,7 @@ var _ = require('underscore'),
 
                     var tempName = 'favicon-temp-' + newProperties.width + 'x' + newProperties.height + '.png';
 
-                    createFavicon(sourceset, newProperties, tempName, cb);
+                    createFavicon(sourceset, newProperties, tempName, platformOptions, cb);
                 }, function (error, results) {
                     var files = [];
 
@@ -49,21 +49,21 @@ var _ = require('underscore'),
                 });
             } else {
                 (function () {
-                    var minimum = Math.min(properties.width, properties.height),
-                        icon = _.min(sourceset, function (ico) {
-                        return ico.size >= minimum;
-                    });
+                    var maximum = Math.max(properties.width, properties.height),
+                        offset = Math.round(maximum / 100 * platformOptions.offset) || 0;
 
                     async.waterfall([function (cb) {
-                        return µ.Images.read(icon.file, cb);
+                        return µ.Images.nearest(sourceset, properties);
+                    }, function (nearest, cb) {
+                        return µ.Images.read(nearest.file, cb);
                     }, function (buffer, cb) {
-                        return µ.Images.resize(buffer, minimum, cb);
+                        return µ.Images.resize(buffer, properties, offset, cb);
                     }, function (resizedBuffer, cb) {
                         return µ.Images.create(properties, background, function (error, canvas) {
                             return cb(error, resizedBuffer, canvas);
                         });
                     }, function (resizedBuffer, canvas, cb) {
-                        return µ.Images.composite(canvas, resizedBuffer, properties, minimum, cb);
+                        return µ.Images.composite(canvas, resizedBuffer, properties, maximum - offset, cb);
                     }, function (composite, cb) {
                         µ.Images.getBuffer(composite, cb);
                     }], function (error, buffer) {
@@ -97,11 +97,11 @@ var _ = require('underscore'),
             });
         }
 
-        function createFavicons(sourceset, platform, callback) {
+        function createFavicons(sourceset, platform, platformOptions, callback) {
             var images = [];
 
             async.forEachOf(config.icons[platform], function (properties, name, cb) {
-                return createFavicon(sourceset, properties, name, function (error, image) {
+                return createFavicon(sourceset, properties, name, platformOptions, function (error, image) {
                     return cb(images.push(image) && error);
                 });
             }, function (error) {
@@ -109,9 +109,9 @@ var _ = require('underscore'),
             });
         }
 
-        function createPlatform(sourceset, platform, callback) {
+        function createPlatform(sourceset, platform, platformOptions, callback) {
             async.parallel([function (cb) {
-                return createFavicons(sourceset, platform, cb);
+                return createFavicons(sourceset, platform, platformOptions, cb);
             }, function (cb) {
                 return createFiles(platform, cb);
             }, function (cb) {
@@ -125,8 +125,10 @@ var _ = require('underscore'),
             var response = { images: [], files: [], html: [] };
 
             async.forEachOf(options.icons, function (enabled, platform, cb) {
+                var platformOptions = (typeof enabled === 'undefined' ? 'undefined' : _typeof(enabled)) == "object" ? enabled : {};
+
                 if (enabled) {
-                    createPlatform(sourceset, platform, function (error, images, files, html) {
+                    createPlatform(sourceset, platform, platformOptions, function (error, images, files, html) {
                         response.images = response.images.concat(images);
                         response.files = response.files.concat(files);
                         response.html = response.html.concat(html);

@@ -95,23 +95,31 @@ var path = require('path'),
                         return callback('No source provided');
                     } else if (Buffer.isBuffer(_source)) {
                         sourceset = [{ size: sizeOf(_source), file: _source }];
-                        return callback(sourceset.length ? null : 'Favicons source is invalid', sourceset);
-                    } else if ((typeof _source === 'undefined' ? 'undefined' : _typeof(_source)) === 'object') {
-                        async.each(_source, function (file, size, cb) {
+                        callback(null, sourceset);
+                    } else if (Array.isArray(_source)) {
+                        async.each(_source, function (file, cb) {
                             return readFile(file, function (error, buffer) {
+                                if (error) {
+                                    return cb(error);
+                                }
+
                                 sourceset.push({
-                                    size: { width: size, height: size, type: 'png' },
+                                    size: sizeOf(buffer),
                                     file: buffer
                                 });
-                                return cb(error);
+                                cb(null);
                             });
                         }, function (error) {
-                            return callback(error || sourceset.length ? null : 'Favicons source is invalid');
-                        }, sourceset);
+                            return callback(error || sourceset.length ? null : 'Favicons source is invalid', sourceset);
+                        });
                     } else if (typeof _source === 'string') {
                         readFile(_source, function (error, buffer) {
+                            if (error) {
+                                return callback(error);
+                            }
+
                             sourceset = [{ size: sizeOf(buffer), file: buffer }];
-                            return callback(error || (sourceset.length ? null : 'Favicons source is invalid'), sourceset);
+                            callback(null, sourceset);
                         });
                     } else {
                         return callback('Invalid source type provided');
@@ -213,19 +221,40 @@ var path = require('path'),
                         return callback(error, canvas, jimp);
                     });
                 },
-                read: function read(file, type, callback) {
-                    print('Image:read', 'Reading file: ' + file.buffer + ' with type ' + type);
+                read: function read(file, callback) {
+                    print('Image:read', 'Reading file: ' + file.buffer);
+                    return Jimp.read(file, callback);
+                },
+                nearest: function nearest(sourceset, properties, callback) {
+                    print('Image:nearest', 'Find nearest icon to ' + properties.width + 'x' + properties.height);
+                    var sideSize = Math.max(properties.width, properties.height),
+                        nearestIcon = sourceset[0],
+                        nearestSideSize = Math.max(nearestIcon.size.width, nearestIcon.size.height),
+                        svgSource = _.find(sourceset, function (source) {
+                        return source.size.type == 'svg';
+                    });
 
-                    function readFile(file) {
-                        Jimp.read(file, callback);
-                    }
-
-                    if (type == 'svg') {
-                        svg2png(file, { width: 512, height: 512 })
-                            .then(readFile)
-                            .catch(callback);
+                    if (svgSource) {
+                        print('Image:nearest', 'SVG source will be saved as ' + properties.width + 'x' + properties.height);
+                        svg2png(svgSource.file, { height: properties.height, width: properties.width }).then(function (resizedBuffer) {
+                            return callback(null, {
+                                size: sizeOf(resizedBuffer),
+                                file: resizedBuffer
+                            });
+                        }).catch(function (err) {
+                            console.error(err);callback(err);
+                        });
                     } else {
-                        readFile(file);
+                        _.each(sourceset, function (icon) {
+                            var max = Math.max(icon.size.width, icon.size.height);
+
+                            if ((nearestSideSize > max || nearestSideSize < sideSzie) && max >= sideSzie) {
+                                nearestIcon = icon;
+                                nearestSideSize = max;
+                            }
+                        });
+
+                        callback(null, nearestIcon);
                     }
                 },
                 resize: function resize(image, properties, offset, callback) {
@@ -235,7 +264,7 @@ var path = require('path'),
                     if (offset) {
                         image.resize(properties.width - offset, properties.height - offset);
                     }
-                    
+
                     return callback(null, image);
                 },
                 composite: function composite(canvas, image, properties, maximum, callback) {

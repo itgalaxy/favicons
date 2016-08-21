@@ -48,14 +48,14 @@ const _ = require('underscore'),
                     }
                 );
             } else {
-                const minimum = Math.min(properties.width, properties.height),
-                    maximum = Math.max(properties.width, properties.height),
-                    icon = _.min(sourceset, (ico) => ico.size >= minimum),
+                const maximum = Math.max(properties.width, properties.height),
                     offset = Math.round(maximum / 100 * platformOptions.offset) || 0;
 
                 async.waterfall([
                     (cb) =>
-                        µ.Images.read(icon.file, icon.size.type, cb),
+                        µ.Images.nearest(sourceset, properties, cb),
+                    (nearest, cb) =>
+                        µ.Images.read(nearest.file, cb),
                     (buffer, cb) =>
                         µ.Images.resize(buffer, properties, offset, cb),
                     (resizedBuffer, cb) =>

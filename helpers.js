@@ -11,6 +11,7 @@ const path = require('path'),
     async = require('async'),
     mkdirp = require('mkdirp'),
     Jimp = require('jimp'),
+    svg2png = require('svg2png'),
     File = require('vinyl'),
     Reflect = require('harmony-reflect'),
     NRC = require('node-rest-client').Client;
@@ -90,22 +91,31 @@ const path = require('path'),
                         return callback('No source provided');
                     } else if (Buffer.isBuffer(source)) {
                         sourceset = [{ size: sizeOf(source), file: source }];
-                        return callback(sourceset.length ? null : 'Favicons source is invalid', sourceset);
-                    } else if (typeof source === 'object') {
-                        async.each(source, (file, size, cb) =>
+                        callback(null, sourceset);
+                    } else if (Array.isArray(source)) {
+                        async.each(source, (file, cb) =>
                             readFile(file, (error, buffer) => {
+                                if (error) {
+                                    return cb(error);
+                                }
+
                                 sourceset.push({
-                                    size: { width: size, height: size, type: 'png' },
+                                    size: sizeOf(buffer),
                                     file: buffer
                                 });
-                                return cb(error);
+                                cb(null);
                             }),
-                        (error) =>
-                            callback(error || sourceset.length ? null : 'Favicons source is invalid'), sourceset);
+                            (error) =>
+                                callback(error || sourceset.length ? null : 'Favicons source is invalid', sourceset)
+                        );
                     } else if (typeof source === 'string') {
                         readFile(source, (error, buffer) => {
+                            if (error) {
+                                return callback(error);
+                            }
+
                             sourceset = [{ size: sizeOf(buffer), file: buffer }];
-                            return callback(error || (sourceset.length ? null : 'Favicons source is invalid'), sourceset);
+                            callback(null, sourceset);
                         });
                     } else {
                         return callback('Invalid source type provided');
@@ -202,7 +212,35 @@ const path = require('path'),
                 },
                 read: (file, callback) => {
                     print('Image:read', `Reading file: ${ file.buffer }`);
-                    Jimp.read(file, callback);
+                    return Jimp.read(file, callback);
+                },
+                nearest: (sourceset, properties, callback) => {
+                    print('Image:nearest', `Find nearest icon to ${ properties.width }x${ properties.height }`);
+                    let sideSize = Math.max(properties.width, properties.height),
+                        nearestIcon = sourceset[0],
+                        nearestSideSize = Math.max(nearestIcon.size.width, nearestIcon.size.height),
+                        svgSource = _.find(sourceset, (source) => source.size.type == 'svg');
+
+                    if (svgSource) {
+                            print('Image:nearest', `SVG source will be saved as ${ properties.width }x${ properties.height }`);
+                            svg2png(svgSource.file, { height: properties.height, width: properties.width })
+                                .then((resizedBuffer) => callback(null, {
+                                    size: sizeOf(resizedBuffer),
+                                    file: resizedBuffer
+                                }))
+                                .catch(callback);
+                    } else {
+                        _.each(sourceset, (icon) => {
+                            let max = Math.max(icon.size.width, icon.size.height);
+
+                            if ((nearestSideSize > max || nearestSideSize < sideSzie) && max >= sideSzie) {
+                                nearestIcon = icon;
+                                nearestSideSize = max;
+                            }
+                        });
+
+                        callback(null, nearestIcon);
+                    }
                 },
                 resize: (image, properties, offset, callback) => {
                     print('Images:resize', `Resizing image to contain in ${ properties.width }x${ properties.height } with offset ${ offset }`);

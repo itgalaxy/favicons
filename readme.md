@@ -20,7 +20,7 @@ Please note: Favicons is written in ES6, meaning you need Node 4.x or above.
 
 ```js
 var favicons = require('favicons'),
-    source = 'test/logo.png',           // Source image(s). `string`, `buffer` or array of `{ size: filepath }`
+    source = 'test/logo.png',           // Source image(s). `string`, `buffer` or array of `string`
     configuration = {
         appName: null,                  // Your application's name. `string`
         appDescription: null,           // Your application's description. `string`
