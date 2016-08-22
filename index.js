@@ -36,15 +36,17 @@ const _ = require('underscore'),
                         createFavicon(sourceset, newProperties, tempName, platformOptions, cb);
                     },
                     (error, results) => {
+                        if (error) {
+                            return callback(error);
+                        }
+
                         const files = [];
 
-                        results.forEach((icoImage) => {
-                            files.push(icoImage.contents);
-                        });
+                        results.forEach((icoImage) => files.push(icoImage.contents));
 
-                        toIco(files).then((buffer) => {
-                            callback(error, { name, contents: buffer });
-                        });
+                        toIco(files)
+                            .then((buffer) => callback(null, { name, contents: buffer }))
+                            .catch(callback);
                     }
                 );
             } else {

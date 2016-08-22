@@ -37,15 +37,19 @@ var _ = require('underscore'),
 
                     createFavicon(sourceset, newProperties, tempName, platformOptions, cb);
                 }, function (error, results) {
+                    if (error) {
+                        return callback(error);
+                    }
+
                     var files = [];
 
                     results.forEach(function (icoImage) {
-                        files.push(icoImage.contents);
+                        return files.push(icoImage.contents);
                     });
 
                     toIco(files).then(function (buffer) {
-                        callback(error, { name: name, contents: buffer });
-                    });
+                        return callback(null, { name: name, contents: buffer });
+                    }).catch(callback);
                 });
             } else {
                 (function () {
