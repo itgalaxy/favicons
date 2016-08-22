@@ -253,7 +253,7 @@ var path = require('path'),
                     return Jimp.read(file, callback);
                 },
                 nearest: function nearest(sourceset, properties, offset, callback) {
-                    print('Image:nearest', 'Find nearest icon to ' + properties.width + 'x' + properties.height + ' with offset ' + offset + '%');
+                    print('Image:nearest', 'Find nearest icon to ' + properties.width + 'x' + properties.height + ' with offset ' + offset);
 
                     var offsetSize = offset * 2,
                         width = properties.width - offsetSize,
@@ -288,7 +288,7 @@ var path = require('path'),
                     }
                 },
                 resize: function resize(image, properties, offset, callback) {
-                    print('Images:resize', 'Resizing image to contain in ' + properties.width + 'x' + properties.height + ' with offset ' + offset + '%');
+                    print('Images:resize', 'Resizing image to contain in ' + properties.width + 'x' + properties.height + ' with offset ' + offset);
                     var offsetSize = offset * 2;
                     image.contain(properties.width - offsetSize, properties.height - offsetSize, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE);
                     return callback(null, image);
@@ -307,7 +307,7 @@ var path = require('path'),
                     }
 
                     var compositeIcon = function compositeIcon() {
-                        print('Images:composite', 'Compositing ' + maximum + 'x' + maximum + ' favicon on ' + properties.width + 'x' + properties.height + ' canvas with offset ' + offset + '%');
+                        print('Images:composite', 'Compositing ' + maximum + 'x' + maximum + ' favicon on ' + properties.width + 'x' + properties.height + ' canvas with offset ' + offset);
                         canvas.composite(image, offsetWidth, offsetHeight);
                     };
 
