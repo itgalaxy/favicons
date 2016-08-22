@@ -41,10 +41,8 @@ var _ = require('underscore'),
                         return callback(error);
                     }
 
-                    var files = [];
-
-                    results.forEach(function (icoImage) {
-                        return files.push(icoImage.contents);
+                    var files = results.map(function (icoImage) {
+                        return icoImage.contents;
                     });
 
                     toIco(files).then(function (buffer) {

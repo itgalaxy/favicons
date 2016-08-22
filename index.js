@@ -40,9 +40,7 @@ const _ = require('underscore'),
                             return callback(error);
                         }
 
-                        const files = [];
-
-                        results.forEach((icoImage) => files.push(icoImage.contents));
+                        const files = results.map((icoImage) => icoImage.contents);
 
                         toIco(files)
                             .then((buffer) => callback(null, { name, contents: buffer }))
