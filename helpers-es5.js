@@ -15,9 +15,11 @@ var path = require('path'),
     async = require('async'),
     mkdirp = require('mkdirp'),
     Jimp = require('jimp'),
+    svg2png = require('svg2png'),
     File = require('vinyl'),
     Reflect = require('harmony-reflect'),
-    NRC = require('node-rest-client').Client;
+    NRC = require('node-rest-client').Client,
+    PLATFORM_OPTIONS = require('./config/platform-options.json');
 
 (function () {
 
@@ -77,9 +79,35 @@ var path = require('path'),
             });
         }
 
+        function preparePlatformOptions(platform, options) {
+            if ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) != 'object') {
+                options = {};
+            }
+
+            _.each(options, function (value, key) {
+                var platformOptionsRef = PLATFORM_OPTIONS[key];
+
+                if (typeof platformOptionsRef == 'undefined' || platformOptionsRef.platforms.indexOf(platform) == -1) {
+                    return Reflect.deleteProperty(options, key);
+                }
+            });
+
+            _.each(PLATFORM_OPTIONS, function (_ref, key) {
+                var platforms = _ref.platforms;
+                var defaultTo = _ref.defaultTo;
+
+                if (typeof options[key] == 'undefined' && platforms.indexOf(platform) != -1) {
+                    options[key] = defaultTo;
+                }
+            });
+
+            return options;
+        }
+
         return {
 
             General: {
+                preparePlatformOptions: preparePlatformOptions,
                 background: function background(hex) {
                     print('General:background', 'Parsing colour ' + hex);
                     var rgba = color(hex).toRgb();
@@ -94,23 +122,31 @@ var path = require('path'),
                         return callback('No source provided');
                     } else if (Buffer.isBuffer(_source)) {
                         sourceset = [{ size: sizeOf(_source), file: _source }];
-                        return callback(sourceset.length ? null : 'Favicons source is invalid', sourceset);
-                    } else if ((typeof _source === 'undefined' ? 'undefined' : _typeof(_source)) === 'object') {
-                        async.each(_source, function (file, size, cb) {
+                        callback(null, sourceset);
+                    } else if (Array.isArray(_source)) {
+                        async.each(_source, function (file, cb) {
                             return readFile(file, function (error, buffer) {
+                                if (error) {
+                                    return cb(error);
+                                }
+
                                 sourceset.push({
-                                    size: { width: size, height: size, type: 'png' },
+                                    size: sizeOf(buffer),
                                     file: buffer
                                 });
-                                return cb(error);
+                                cb(null);
                             });
                         }, function (error) {
-                            return callback(error || sourceset.length ? null : 'Favicons source is invalid');
-                        }, sourceset);
+                            return callback(error || sourceset.length ? null : 'Favicons source is invalid', sourceset);
+                        });
                     } else if (typeof _source === 'string') {
                         readFile(_source, function (error, buffer) {
+                            if (error) {
+                                return callback(error);
+                            }
+
                             sourceset = [{ size: sizeOf(buffer), file: buffer }];
-                            return callback(error || (sourceset.length ? null : 'Favicons source is invalid'), sourceset);
+                            callback(null, sourceset);
                         });
                     } else {
                         return callback('Invalid source type provided');
@@ -214,21 +250,54 @@ var path = require('path'),
                 },
                 read: function read(file, callback) {
                     print('Image:read', 'Reading file: ' + file.buffer);
-                    Jimp.read(file, callback);
+                    return Jimp.read(file, callback);
+                },
+                nearest: function nearest(sourceset, properties, offset, callback) {
+                    print('Image:nearest', 'Find nearest icon to ' + properties.width + 'x' + properties.height + ' with offset ' + offset);
+
+                    var offsetSize = offset * 2,
+                        width = properties.width - offsetSize,
+                        height = properties.height - offsetSize,
+                        sideSize = Math.max(width, height),
+                        svgSource = _.find(sourceset, function (source) {
+                        return source.size.type == 'svg';
+                    });
+
+                    var nearestIcon = sourceset[0],
+                        nearestSideSize = Math.max(nearestIcon.size.width, nearestIcon.size.height);
+
+                    if (svgSource) {
+                        print('Image:nearest', 'SVG source will be saved as ' + width + 'x' + height);
+                        svg2png(svgSource.file, { height: height, width: width }).then(function (resizedBuffer) {
+                            return callback(null, {
+                                size: sizeOf(resizedBuffer),
+                                file: resizedBuffer
+                            });
+                        }).catch(callback);
+                    } else {
+                        _.each(sourceset, function (icon) {
+                            var max = Math.max(icon.size.width, icon.size.height);
+
+                            if ((nearestSideSize > max || nearestSideSize < sideSize) && max >= sideSize) {
+                                nearestIcon = icon;
+                                nearestSideSize = max;
+                            }
+                        });
+
+                        callback(null, nearestIcon);
+                    }
                 },
                 resize: function resize(image, properties, offset, callback) {
                     print('Images:resize', 'Resizing image to contain in ' + properties.width + 'x' + properties.height + ' with offset ' + offset);
-                    image.contain(properties.width, properties.height, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE);
-
-                    if (offset) {
-                        image.resize(properties.width - offset, properties.height - offset);
-                    }
-                    
+                    var offsetSize = offset * 2;
+                    image.contain(properties.width - offsetSize, properties.height - offsetSize, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE);
                     return callback(null, image);
                 },
-                composite: function composite(canvas, image, properties, maximum, callback) {
-                    var offsetHeight = properties.height - maximum > 0 ? (properties.height - maximum) / 2 : 0,
-                        offsetWidth = properties.width - maximum > 0 ? (properties.width - maximum) / 2 : 0,
+                composite: function composite(canvas, image, properties, offset, maximum, callback) {
+                    var offsetSize = offset * 2,
+                        maximumWithOffset = maximum - offsetSize,
+                        offsetHeight = properties.height - maximumWithOffset > 0 ? (properties.height - maximumWithOffset) / 2 : 0,
+                        offsetWidth = properties.width - maximumWithOffset > 0 ? (properties.width - maximumWithOffset) / 2 : 0,
                         circle = path.join(__dirname, 'mask.png'),
                         overlay = path.join(__dirname, 'overlay.png');
 
@@ -237,8 +306,10 @@ var path = require('path'),
                         image.rotate(ROTATE_DEGREES);
                     }
 
-                    print('Images:composite', 'Compositing ' + maximum + 'x' + maximum + ' favicon on ' + properties.width + 'x' + properties.height + ' canvas');
-                    canvas.composite(image, offsetWidth, offsetHeight);
+                    var compositeIcon = function compositeIcon() {
+                        print('Images:composite', 'Compositing ' + maximum + 'x' + maximum + ' favicon on ' + properties.width + 'x' + properties.height + ' canvas with offset ' + offset);
+                        canvas.composite(image, offsetWidth, offsetHeight);
+                    };
 
                     if (properties.mask) {
                         print('Images:composite', 'Masking composite image on circle');
@@ -251,9 +322,11 @@ var path = require('path'),
                             images[1].resize(maximum, Jimp.AUTO);
                             canvas.mask(images[0], 0, 0);
                             canvas.composite(images[1], 0, 0);
+                            compositeIcon();
                             return callback(error, canvas);
                         });
                     } else {
+                        compositeIcon();
                         return callback(null, canvas);
                     }
                 },
@@ -266,22 +339,31 @@ var path = require('path'),
             RFG: {
                 configure: function configure(sourceset, request, callback) {
                     print('RFG:configure', 'Configuring RFG API request');
-                    request.master_picture.content = _.max(sourceset, function (image) {
-                        return image.size.width;
-                    }).file.toString('base64');
+                    var svgSource = _.find(sourceset, function (source) {
+                        return source.size.type == 'svg';
+                    });
+                    options.background = '#' + color(options.background).toHex();
+                    request.master_picture.content = (svgSource || _.max(sourceset, function (_ref2) {
+                        var _ref2$size = _ref2.size;
+                        var width = _ref2$size.width;
+                        var height = _ref2$size.height;
+                        return Math.max(width, height);
+                    })).file.toString('base64');
                     request.files_location.path = options.path;
 
                     if (options.icons.android) {
+                        request.favicon_design.android_chrome.theme_color = options.background;
                         request.favicon_design.android_chrome.manifest.name = options.appName;
                         request.favicon_design.android_chrome.manifest.display = options.display;
                         request.favicon_design.android_chrome.manifest.orientation = options.orientation;
-                        request.favicon_design.android_chrome.theme_color = options.background;
                     } else {
                         Reflect.deleteProperty(request.favicon_design, 'android_chrome');
                     }
 
                     if (options.icons.appleIcon) {
+                        var appleIconOptions = preparePlatformOptions('appleIcon', options.icons.appleIcon);
                         request.favicon_design.ios.background_color = options.background;
+                        request.favicon_design.ios.margin = Math.round(57 / 100 * appleIconOptions.offset);
                     } else {
                         Reflect.deleteProperty(request.favicon_design, 'ios');
                     }
@@ -293,7 +375,9 @@ var path = require('path'),
                     }
 
                     if (options.icons.coast) {
+                        var coastOptions = preparePlatformOptions('coast', options.icons.coast);
                         request.favicon_design.coast.background_color = options.background;
+                        request.favicon_design.coast.margin = Math.round(228 / 100 * coastOptions.offset);
                     } else {
                         Reflect.deleteProperty(request.favicon_design, 'coast');
                     }
@@ -303,7 +387,9 @@ var path = require('path'),
                     }
 
                     if (options.icons.firefox) {
+                        var firefoxOptions = preparePlatformOptions('firefox', options.icons.firefox);
                         request.favicon_design.firefox_app.background_color = options.background;
+                        request.favicon_design.firefox_app.margin = Math.round(60 / 100 * firefoxOptions.offset);
                         request.favicon_design.firefox_app.manifest.app_name = options.appName;
                         request.favicon_design.firefox_app.manifest.app_description = options.appDescription;
                         request.favicon_design.firefox_app.manifest.developer_name = options.developerName;

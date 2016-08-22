@@ -20,7 +20,7 @@ Please note: Favicons is written in ES6, meaning you need Node 4.x or above.
 
 ```js
 var favicons = require('favicons'),
-    source = 'test/logo.png',           // Source image(s). `string`, `buffer` or array of `{ size: filepath }`
+    source = 'test/logo.png',           // Source image(s). `string`, `buffer` or array of `string`
     configuration = {
         appName: null,                  // Your application's name. `string`
         appDescription: null,           // Your application's description. `string`
@@ -34,15 +34,16 @@ var favicons = require('favicons'),
         version: "1.0",                 // Your application's version number. `number`
         logging: false,                 // Print logs to console? `boolean`
         online: false,                  // Use RealFaviconGenerator to create favicons? `boolean`
+        preferOnline: false,            // Use offline generation, if online generation has failed. `boolean`
         icons: {
-            android: true,              // Create Android homescreen icon. `boolean` or `{ offset: offsetInPercentage }`
+            android: true,              // Create Android homescreen icon. `boolean`
             appleIcon: true,            // Create Apple touch icons. `boolean` or `{ offset: offsetInPercentage }`
-            appleStartup: true,         // Create Apple startup images. `boolean` or `{ offset: offsetInPercentage }`
+            appleStartup: true,         // Create Apple startup images. `boolean`
             coast: { offset: 25 },      // Create Opera Coast icon with offset 25%. `boolean` or `{ offset: offsetInPercentage }`
-            favicons: true,             // Create regular favicons. `boolean` or `{ offset: offsetInPercentage }`
+            favicons: true,             // Create regular favicons. `boolean`
             firefox: true,              // Create Firefox OS icons. `boolean` or `{ offset: offsetInPercentage }`
-            windows: true,              // Create Windows 8 tile icons. `boolean` or `{ offset: offsetInPercentage }`
-            yandex: true                // Create Yandex browser icon. `boolean` or `{ offset: offsetInPercentage }`
+            windows: true,              // Create Windows 8 tile icons. `boolean`
+            yandex: true                // Create Yandex browser icon. `boolean`
         }
     },
     callback = function (error, response) {
