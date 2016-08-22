@@ -12,6 +12,7 @@
   "version": "1.0",
   "logging": false,
   "online": false,
+  "preferOnline": false,
   "pipeHTML": false,
   "icons": {
     "android": true,

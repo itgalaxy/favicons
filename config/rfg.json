@@ -12,7 +12,7 @@
 		"desktop_browser": {},
 		"ios": {
 			"picture_aspect": "background_and_margin",
-			"margin": "4",
+			"margin": "0",
 			"background_color": "#FFFFFF",
 			"startup_image": {
 				"background_color": "#FFFFFF"
@@ -25,7 +25,8 @@
 		"firefox_app": {
 			"picture_aspect": "circle",
 			"keep_picture_in_circle": "true",
-			"circle_inner_margin": "5",
+			"circle_inner_margin": "0",
+			"margin": "0",
 			"background_color": "#FFFFFF",
 			"manifest": {
 				"app_name": "Favicons",
@@ -35,7 +36,7 @@
 			}
 		},
 		"android_chrome": {
-			"picture_aspect": "shadow",
+			"picture_aspect": "no_change",
 			"manifest": {
 				"name": "Favicons",
 				"display": "standalone",
@@ -46,7 +47,7 @@
 		"coast": {
 			"picture_aspect": "background_and_margin",
 			"background_color": "#FFFFFF",
-			"margin": "12%"
+			"margin": "0"
 		},
 		"yandex_browser": {
 			"background_color": "#FFFFFF",

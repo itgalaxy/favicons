@@ -48,21 +48,21 @@ const _ = require('underscore'),
                     }
                 );
             } else {
-                const minimum = Math.min(properties.width, properties.height),
-                    maximum = Math.max(properties.width, properties.height),
-                    icon = _.min(sourceset, (ico) => ico.size >= minimum),
+                const maximum = Math.max(properties.width, properties.height),
                     offset = Math.round(maximum / 100 * platformOptions.offset) || 0;
 
                 async.waterfall([
                     (cb) =>
-                        µ.Images.read(icon.file, cb),
+                        µ.Images.nearest(sourceset, properties, offset, cb),
+                    (nearest, cb) =>
+                        µ.Images.read(nearest.file, cb),
                     (buffer, cb) =>
                         µ.Images.resize(buffer, properties, offset, cb),
                     (resizedBuffer, cb) =>
                         µ.Images.create(properties, background, (error, canvas) =>
                             cb(error, resizedBuffer, canvas)),
                     (resizedBuffer, canvas, cb) =>
-                        µ.Images.composite(canvas, resizedBuffer, properties, maximum - offset, cb),
+                        µ.Images.composite(canvas, resizedBuffer, properties, offset, maximum, cb),
                     (composite, cb) => {
                         µ.Images.getBuffer(composite, cb);
                     }
@@ -118,7 +118,7 @@ const _ = require('underscore'),
             const response = { images: [], files: [], html: [] };
 
             async.forEachOf(options.icons, (enabled, platform, cb) => {
-                const platformOptions = typeof enabled == "object" ? enabled : {};
+                const platformOptions = µ.General.preparePlatformOptions(platform, enabled);
 
                 if (enabled) {
                     createPlatform(sourceset, platform, platformOptions, (error, images, files, html) => {
@@ -135,7 +135,7 @@ const _ = require('underscore'),
         }
 
         function unpack (pack, callback) {
-            const response = { images: [], files: [], html: pack.html.split(',') };
+            const response = { images: [], files: [], html: pack.html.split('\n') };
 
             async.each(pack.files, (url, cb) =>
                 µ.RFG.fetch(url, (error, box) =>
@@ -152,12 +152,17 @@ const _ = require('underscore'),
                     µ.RFG.request(request, cb),
                 (pack, cb) =>
                     unpack(pack, cb)
-            ], (error, results) =>
-                callback(error, results));
+            ], (error, results) => {
+                if (error && options.preferOnline) {
+                    createOffline(sourceset, callback)
+                } else {
+                    callback(error, results);
+                }
+            });
         }
 
         function create (sourceset, callback) {
-            options.online ? createOnline(sourceset, callback) : createOffline(sourceset, callback);
+            options.online || options.preferOnline ? createOnline(sourceset, callback) : createOffline(sourceset, callback);
         }
 
         async.waterfall([
