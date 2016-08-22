@@ -342,6 +342,7 @@ var path = require('path'),
                     var svgSource = _.find(sourceset, function (source) {
                         return source.size.type == 'svg';
                     });
+                    options.background = '#' + color(options.background).toHex();
                     request.master_picture.content = (svgSource || _.max(sourceset, function (_ref2) {
                         var _ref2$size = _ref2.size;
                         var width = _ref2$size.width;

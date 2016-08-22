@@ -323,6 +323,7 @@ const path = require('path'),
                 configure: (sourceset, request, callback) => {
                     print('RFG:configure', 'Configuring RFG API request');
                     const svgSource = _.find(sourceset, (source) => source.size.type == 'svg');
+                    options.background = `#${ color(options.background).toHex() }`;
                     request.master_picture.content = (svgSource || _.max(sourceset, ({ size: { width, height }}) => Math.max(width, height))).file.toString('base64');
                     request.files_location.path = options.path;
 
