@@ -8,7 +8,8 @@
     "url": "https://github.com/haydenbleasel/favicons.git"
   },
   "scripts": {
-    "test": "cd test && node test.js && gulp"
+    "test": "cd test && node test.js && gulp",
+    "prepublish": "gulp"
   },
   "keywords": [
     "favicon",
