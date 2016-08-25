@@ -191,9 +191,14 @@ const path = require('path'),
                     if (name === 'manifest.json') {
                         properties.name = options.appName;
                         properties.short_name = options.appName;
+                        properties.description = options.appDescription;
+                        properties.dir = options.dir;
+                        properties.lang = options.lang;
                         properties.display = options.display;
                         properties.orientation = options.orientation;
                         properties.start_url = options.start_url;
+                        properties.background_color = options.background;
+                        properties.theme_color = options.theme_color;
                         _.map(properties.icons, (icon) => (icon.src = relative(icon.src)));
                         properties = JSON.stringify(properties, null, 2);
                     } else if (name === 'manifest.webapp') {
@@ -240,7 +245,7 @@ const path = require('path'),
                 },
                 nearest: (sourceset, properties, offset, callback) => {
                     print('Image:nearest', `Find nearest icon to ${ properties.width }x${ properties.height } with offset ${ offset }`);
-                    
+
                     const offsetSize = offset * 2,
                         width = properties.width - offsetSize,
                         height = properties.height - offsetSize,
@@ -274,7 +279,7 @@ const path = require('path'),
                 resize: (image, properties, offset, callback) => {
                     print('Images:resize', `Resizing image to contain in ${ properties.width }x${ properties.height } with offset ${ offset }`);
                     let offsetSize = offset * 2;
-                    image.contain(properties.width - offsetSize, properties.height - offsetSize, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE);                    
+                    image.contain(properties.width - offsetSize, properties.height - offsetSize, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE);
                     return callback(null, image);
                 },
                 composite: (canvas, image, properties, offset, maximum, callback) => {

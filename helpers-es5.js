@@ -200,9 +200,14 @@ var path = require('path'),
                     if (name === 'manifest.json') {
                         properties.name = options.appName;
                         properties.short_name = options.appName;
+                        properties.description = options.appDescription;
+                        properties.dir = options.dir;
+                        properties.lang = options.lang;
                         properties.display = options.display;
                         properties.orientation = options.orientation;
                         properties.start_url = options.start_url;
+                        properties.background_color = options.background;
+                        properties.theme_color = options.theme_color;
                         _.map(properties.icons, function (icon) {
                             return icon.src = relative(icon.src);
                         });
