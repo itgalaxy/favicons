@@ -246,20 +246,6 @@
       "rotate": false,
       "mask": false
     },
-    "favicon-96x96.png": {
-      "width": 96,
-      "height": 96,
-      "transparent": true,
-      "rotate": false,
-      "mask": false
-    },
-    "favicon-230x230.png": {
-      "width": 230,
-      "height": 230,
-      "transparent": true,
-      "rotate": false,
-      "mask": false
-    },
     "favicon.ico": {
       "sizes": [{
         "width": 16,
