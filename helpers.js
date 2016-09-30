@@ -192,6 +192,7 @@ const path = require('path'),
                         properties.name = options.appName;
                         properties.short_name = options.appName;
                         properties.description = options.appDescription;
+                        properties.version = options.version || 1;
                         properties.dir = options.dir;
                         properties.lang = options.lang;
                         properties.display = options.display;
