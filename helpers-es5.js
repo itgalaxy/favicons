@@ -12,6 +12,7 @@ var path = require('path'),
     colors = require('colors'),
     jsonxml = require('jsontoxml'),
     sizeOf = require('image-size'),
+    xml2js = require('xml2js'),
     async = require('async'),
     mkdirp = require('mkdirp'),
     Jimp = require('jimp'),
@@ -153,9 +154,19 @@ var path = require('path'),
                     }
                 },
                 vinyl: function vinyl(object) {
+                    var contents;
+                    if (object.name.endsWith('.xml')) {
+                        var builder = new xml2js.Builder();
+                        var xml = builder.buildObject(object.contents);
+                        contents = xml;
+                    } else if (object.name.endsWith('.json')) {
+                        contents = JSON.stringify(object.contents);
+                    } else {
+                        contents = object.contents;
+                    }
                     return new File({
                         path: object.name,
-                        contents: Buffer.isBuffer(object.contents) ? object.contents : new Buffer(object.contents)
+                        contents: Buffer.isBuffer(contents) ? contents : new Buffer(contents)
                     });
                 }
             },
