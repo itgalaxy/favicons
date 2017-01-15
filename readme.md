@@ -51,6 +51,7 @@ var favicons = require('favicons'),
             console.log(error.status);  // HTTP error code (e.g. `200`) or `null`
             console.log(error.name);    // Error name e.g. "API Error"
             console.log(error.message); // Error description e.g. "An unknown error has occurred"
+            return;
         }
         console.log(response.images);   // Array of { name: string, contents: <buffer> }
         console.log(response.files);    // Array of { name: string, contents: <string> }
