@@ -1,6 +1,6 @@
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 /* eslint camelcase: 0, no-shadow: 0 */
 
@@ -12,7 +12,6 @@ var path = require('path'),
     colors = require('colors'),
     jsonxml = require('jsontoxml'),
     sizeOf = require('image-size'),
-    xml2js = require('xml2js'),
     async = require('async'),
     mkdirp = require('mkdirp'),
     Jimp = require('jimp'),
@@ -94,8 +93,8 @@ var path = require('path'),
             });
 
             _.each(PLATFORM_OPTIONS, function (_ref, key) {
-                var platforms = _ref.platforms;
-                var defaultTo = _ref.defaultTo;
+                var platforms = _ref.platforms,
+                    defaultTo = _ref.defaultTo;
 
                 if (typeof options[key] == 'undefined' && platforms.indexOf(platform) != -1) {
                     options[key] = defaultTo;
@@ -154,19 +153,9 @@ var path = require('path'),
                     }
                 },
                 vinyl: function vinyl(object) {
-                    var contents;
-                    if (object.name.endsWith('.xml')) {
-                        var builder = new xml2js.Builder();
-                        var xml = builder.buildObject(object.contents);
-                        contents = xml;
-                    } else if (object.name.endsWith('.json')) {
-                        contents = JSON.stringify(object.contents);
-                    } else {
-                        contents = object.contents;
-                    }
                     return new File({
                         path: object.name,
-                        contents: Buffer.isBuffer(contents) ? contents : new Buffer(contents)
+                        contents: Buffer.isBuffer(object.contents) ? object.contents : new Buffer(object.contents)
                     });
                 }
             },
@@ -306,6 +295,12 @@ var path = require('path'),
                 resize: function resize(image, properties, offset, callback) {
                     print('Images:resize', 'Resizing image to contain in ' + properties.width + 'x' + properties.height + ' with offset ' + offset);
                     var offsetSize = offset * 2;
+
+                    if (properties.rotate) {
+                        print('Images:resize', 'Rotating image by ' + ROTATE_DEGREES);
+                        image.rotate(ROTATE_DEGREES);
+                    }
+
                     image.contain(properties.width - offsetSize, properties.height - offsetSize, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE);
                     return callback(null, image);
                 },
@@ -316,11 +311,6 @@ var path = require('path'),
                         offsetWidth = properties.width - maximumWithOffset > 0 ? (properties.width - maximumWithOffset) / 2 : 0,
                         circle = path.join(__dirname, 'mask.png'),
                         overlay = path.join(__dirname, 'overlay.png');
-
-                    if (properties.rotate) {
-                        print('Images:composite', 'Rotating image by ' + ROTATE_DEGREES);
-                        image.rotate(ROTATE_DEGREES);
-                    }
 
                     var compositeIcon = function compositeIcon() {
                         print('Images:composite', 'Compositing ' + maximum + 'x' + maximum + ' favicon on ' + properties.width + 'x' + properties.height + ' canvas with offset ' + offset);
@@ -360,9 +350,9 @@ var path = require('path'),
                     });
                     options.background = '#' + color(options.background).toHex();
                     request.master_picture.content = (svgSource || _.max(sourceset, function (_ref2) {
-                        var _ref2$size = _ref2.size;
-                        var width = _ref2$size.width;
-                        var height = _ref2$size.height;
+                        var _ref2$size = _ref2.size,
+                            width = _ref2$size.width,
+                            height = _ref2$size.height;
                         return Math.max(width, height);
                     })).file.toString('base64');
                     request.files_location.path = options.path;

@@ -279,6 +279,12 @@ const path = require('path'),
                 resize: (image, properties, offset, callback) => {
                     print('Images:resize', `Resizing image to contain in ${ properties.width }x${ properties.height } with offset ${ offset }`);
                     let offsetSize = offset * 2;
+
+                    if (properties.rotate) {
+                        print('Images:resize', `Rotating image by ${ROTATE_DEGREES}`);
+                        image.rotate(ROTATE_DEGREES);
+                    }
+
                     image.contain(properties.width - offsetSize, properties.height - offsetSize, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE);
                     return callback(null, image);
                 },
@@ -289,11 +295,6 @@ const path = require('path'),
                         offsetWidth = properties.width - maximumWithOffset > 0 ? (properties.width - maximumWithOffset) / 2 : 0,
                         circle = path.join(__dirname, 'mask.png'),
                         overlay = path.join(__dirname, 'overlay.png');
-
-                    if (properties.rotate) {
-                        print('Images:composite', `Rotating image by ${ROTATE_DEGREES}`);
-                        image.rotate(ROTATE_DEGREES);
-                    }
 
                     const compositeIcon = () => {
                         print('Images:composite', `Compositing ${ maximum }x${ maximum } favicon on ${ properties.width }x${ properties.height } canvas with offset ${ offset }`);
