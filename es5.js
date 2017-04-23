@@ -1,6 +1,6 @@
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _ = require('underscore'),
     async = require('async'),
@@ -50,28 +50,26 @@ var _ = require('underscore'),
                     }).catch(callback);
                 });
             } else {
-                (function () {
-                    var maximum = Math.max(properties.width, properties.height),
-                        offset = Math.round(maximum / 100 * platformOptions.offset) || 0;
+                var maximum = Math.max(properties.width, properties.height),
+                    offset = Math.round(maximum / 100 * platformOptions.offset) || 0;
 
-                    async.waterfall([function (cb) {
-                        return µ.Images.nearest(sourceset, properties, offset, cb);
-                    }, function (nearest, cb) {
-                        return µ.Images.read(nearest.file, cb);
-                    }, function (buffer, cb) {
-                        return µ.Images.resize(buffer, properties, offset, cb);
-                    }, function (resizedBuffer, cb) {
-                        return µ.Images.create(properties, background, function (error, canvas) {
-                            return cb(error, resizedBuffer, canvas);
-                        });
-                    }, function (resizedBuffer, canvas, cb) {
-                        return µ.Images.composite(canvas, resizedBuffer, properties, offset, maximum, cb);
-                    }, function (composite, cb) {
-                        µ.Images.getBuffer(composite, cb);
-                    }], function (error, buffer) {
-                        return callback(error, { name: name, contents: buffer });
+                async.waterfall([function (cb) {
+                    return µ.Images.nearest(sourceset, properties, offset, cb);
+                }, function (nearest, cb) {
+                    return µ.Images.read(nearest.file, cb);
+                }, function (buffer, cb) {
+                    return µ.Images.resize(buffer, properties, offset, cb);
+                }, function (resizedBuffer, cb) {
+                    return µ.Images.create(properties, background, function (error, canvas) {
+                        return cb(error, resizedBuffer, canvas);
                     });
-                })();
+                }, function (resizedBuffer, canvas, cb) {
+                    return µ.Images.composite(canvas, resizedBuffer, properties, offset, maximum, cb);
+                }, function (composite, cb) {
+                    µ.Images.getBuffer(composite, cb);
+                }], function (error, buffer) {
+                    return callback(error, { name: name, contents: buffer });
+                });
             }
         }
 
