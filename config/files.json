@@ -3,9 +3,14 @@
     "manifest.json": {
     	"name": "Favicons",
     	"short_name": "Favicons",
+      "description": "Favicons",
+      "dir": "auto",
+      "lang": "en-US",
       "display": "standalone",
     	"orientation": "portrait",
-    	"start_url": "/?homescreen=1",
+    	"start_url": "./?utm_source=web_app_manifest",
+      "background_color": "#FFFFFF",
+      "theme_color": "#FFFFFF",
     	"icons": [
     		{
     			"src": "android-chrome-36x36.png",

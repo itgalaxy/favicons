@@ -121,6 +121,13 @@
       "rotate": false,
       "mask": false
     },
+    "apple-touch-icon-167x167.png": {
+      "width": 167,
+      "height": 167,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
+    },
     "apple-touch-icon-180x180.png": {
       "width": 180,
       "height": 180,
@@ -235,20 +242,6 @@
     "favicon-32x32.png": {
       "width": 32,
       "height": 32,
-      "transparent": true,
-      "rotate": false,
-      "mask": false
-    },
-    "favicon-96x96.png": {
-      "width": 96,
-      "height": 96,
-      "transparent": true,
-      "rotate": false,
-      "mask": false
-    },
-    "favicon-230x230.png": {
-      "width": 230,
-      "height": 230,
       "transparent": true,
       "rotate": false,
       "mask": false
