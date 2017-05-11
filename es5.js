@@ -1,6 +1,6 @@
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _ = require('underscore'),
     async = require('async'),
@@ -22,8 +22,7 @@ var _ = require('underscore'),
 
         var config = clone(configDefaults),
             options = _.mergeDefaults(parameters || {}, config.defaults),
-            µ = helpers(options),
-            background = µ.General.background(options.background);
+            µ = helpers(options);
 
         function createFavicon(sourceset, properties, name, platformOptions, callback) {
             if (path.extname(name) === '.ico') {
@@ -50,28 +49,31 @@ var _ = require('underscore'),
                     }).catch(callback);
                 });
             } else {
-                (function () {
-                    var maximum = Math.max(properties.width, properties.height),
-                        offset = Math.round(maximum / 100 * platformOptions.offset) || 0;
+                var maximum = Math.max(properties.width, properties.height),
+                    offset = Math.round(maximum / 100 * platformOptions.offset) || 0,
+                    background = µ.General.background(platformOptions.background);
 
-                    async.waterfall([function (cb) {
-                        return µ.Images.nearest(sourceset, properties, offset, cb);
-                    }, function (nearest, cb) {
-                        return µ.Images.read(nearest.file, cb);
-                    }, function (buffer, cb) {
-                        return µ.Images.resize(buffer, properties, offset, cb);
-                    }, function (resizedBuffer, cb) {
-                        return µ.Images.create(properties, background, function (error, canvas) {
-                            return cb(error, resizedBuffer, canvas);
-                        });
-                    }, function (resizedBuffer, canvas, cb) {
-                        return µ.Images.composite(canvas, resizedBuffer, properties, offset, maximum, cb);
-                    }, function (composite, cb) {
-                        µ.Images.getBuffer(composite, cb);
-                    }], function (error, buffer) {
-                        return callback(error, { name: name, contents: buffer });
+                if (platformOptions.disableTransparency) {
+                    properties.transparent = false;
+                }
+
+                async.waterfall([function (cb) {
+                    return µ.Images.nearest(sourceset, properties, offset, cb);
+                }, function (nearest, cb) {
+                    return µ.Images.read(nearest.file, cb);
+                }, function (buffer, cb) {
+                    return µ.Images.resize(buffer, properties, offset, cb);
+                }, function (resizedBuffer, cb) {
+                    return µ.Images.create(properties, background, function (error, canvas) {
+                        return cb(error, resizedBuffer, canvas);
                     });
-                })();
+                }, function (resizedBuffer, canvas, cb) {
+                    return µ.Images.composite(canvas, resizedBuffer, properties, offset, maximum, cb);
+                }, function (composite, cb) {
+                    µ.Images.getBuffer(composite, cb);
+                }], function (error, buffer) {
+                    return callback(error, { name: name, contents: buffer });
+                });
             }
         }
 
@@ -87,11 +89,11 @@ var _ = require('underscore'),
             });
         }
 
-        function createFiles(platform, callback) {
+        function createFiles(platform, platformOptions, callback) {
             var files = [];
 
             async.forEachOf(config.files[platform], function (properties, name, cb) {
-                return µ.Files.create(properties, name, function (error, file) {
+                return µ.Files.create(properties, name, platformOptions, function (error, file) {
                     return cb(files.push(file) && error);
                 });
             }, function (error) {
@@ -115,7 +117,7 @@ var _ = require('underscore'),
             async.parallel([function (cb) {
                 return createFavicons(sourceset, platform, platformOptions, cb);
             }, function (cb) {
-                return createFiles(platform, cb);
+                return createFiles(platform, platformOptions, cb);
             }, function (cb) {
                 return createHTML(platform, cb);
             }], function (error, results) {
@@ -127,7 +129,7 @@ var _ = require('underscore'),
             var response = { images: [], files: [], html: [] };
 
             async.forEachOf(options.icons, function (enabled, platform, cb) {
-                var platformOptions = µ.General.preparePlatformOptions(platform, enabled);
+                var platformOptions = µ.General.preparePlatformOptions(platform, enabled, options);
 
                 if (enabled) {
                     createPlatform(sourceset, platform, platformOptions, function (error, images, files, html) {
@@ -167,7 +169,7 @@ var _ = require('underscore'),
                 if (error && options.preferOnline) {
                     createOffline(sourceset, callback);
                 } else {
-                    callback(error, results);
+                    return callback(error, results);
                 }
             });
         }
@@ -227,7 +229,7 @@ var _ = require('underscore'),
                 return favicons(file.contents, params, cb);
             }, function (response, cb) {
                 return async.each(response.images.concat(response.files), function (image, c) {
-                    that.push(µ.General.vinyl(image));
+                    that.push(µ.General.vinyl(image, file));
                     c();
                 }, function (error) {
                     return cb(error, response);

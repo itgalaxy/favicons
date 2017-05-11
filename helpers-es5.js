@@ -1,6 +1,6 @@
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 /* eslint camelcase: 0, no-shadow: 0 */
 
@@ -12,7 +12,6 @@ var path = require('path'),
     colors = require('colors'),
     jsonxml = require('jsontoxml'),
     sizeOf = require('image-size'),
-    xml2js = require('xml2js'),
     async = require('async'),
     mkdirp = require('mkdirp'),
     Jimp = require('jimp'),
@@ -20,7 +19,12 @@ var path = require('path'),
     File = require('vinyl'),
     Reflect = require('harmony-reflect'),
     NRC = require('node-rest-client').Client,
-    PLATFORM_OPTIONS = require('./config/platform-options.json');
+    PLATFORM_OPTIONS = require('./config/platform-options.json'),
+    ANDROID_BASE_SIZE = 36,
+    IOS_BASE_SIZE = 57,
+    IOS_STARTUP_BASE_SIZE = 320,
+    COAST_BASE_SIZE = 228,
+    FIREFOX_BASE_SIZE = 60;
 
 (function () {
 
@@ -80,27 +84,40 @@ var path = require('path'),
             });
         }
 
-        function preparePlatformOptions(platform, options) {
-            if ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) != 'object') {
+        function preparePlatformOptions(platform, options, baseOptions) {
+            if ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) !== 'object') {
                 options = {};
             }
 
             _.each(options, function (value, key) {
                 var platformOptionsRef = PLATFORM_OPTIONS[key];
 
-                if (typeof platformOptionsRef == 'undefined' || platformOptionsRef.platforms.indexOf(platform) == -1) {
+                if (typeof platformOptionsRef === 'undefined' || platformOptionsRef.platforms.indexOf(platform) === -1) {
                     return Reflect.deleteProperty(options, key);
                 }
             });
 
             _.each(PLATFORM_OPTIONS, function (_ref, key) {
-                var platforms = _ref.platforms;
-                var defaultTo = _ref.defaultTo;
+                var platforms = _ref.platforms,
+                    defaultTo = _ref.defaultTo;
 
-                if (typeof options[key] == 'undefined' && platforms.indexOf(platform) != -1) {
+                if (typeof options[key] === 'undefined' && platforms.indexOf(platform) !== -1) {
                     options[key] = defaultTo;
                 }
             });
+
+            if (typeof options.background === 'boolean') {
+
+                if (platform === 'android' && !options.background) {
+                    options.background = 'transparent';
+                } else {
+                    options.background = baseOptions.background;
+                }
+            }
+
+            if (platform === 'android' && options.background !== 'transparent') {
+                options.disableTransparency = true;
+            }
 
             return options;
         }
@@ -123,7 +140,7 @@ var path = require('path'),
                         return callback('No source provided');
                     } else if (Buffer.isBuffer(_source)) {
                         sourceset = [{ size: sizeOf(_source), file: _source }];
-                        callback(null, sourceset);
+                        return callback(null, sourceset);
                     } else if (Array.isArray(_source)) {
                         async.each(_source, function (file, cb) {
                             return readFile(file, function (error, buffer) {
@@ -147,27 +164,25 @@ var path = require('path'),
                             }
 
                             sourceset = [{ size: sizeOf(buffer), file: buffer }];
-                            callback(null, sourceset);
+                            return callback(null, sourceset);
                         });
                     } else {
                         return callback('Invalid source type provided');
                     }
                 },
-                vinyl: function vinyl(object) {
-                    var contents;
-                    if (object.name.endsWith('.xml')) {
-                        var builder = new xml2js.Builder();
-                        var xml = builder.buildObject(object.contents);
-                        contents = xml;
-                    } else if (object.name.endsWith('.json')) {
-                        contents = JSON.stringify(object.contents);
-                    } else {
-                        contents = object.contents;
-                    }
-                    return new File({
+                /* eslint no-underscore-dangle: 0 */
+                vinyl: function vinyl(object, input) {
+                    var output = new File({
                         path: object.name,
-                        contents: Buffer.isBuffer(contents) ? contents : new Buffer(contents)
+                        contents: Buffer.isBuffer(object.contents) ? object.contents : new Buffer(object.contents)
                     });
+
+                    // gulp-cache support
+                    if (typeof input._cachedKey !== 'undefined') {
+                        output._cachedKey = input._cachedKey;
+                    }
+
+                    return output;
                 }
             },
 
@@ -206,7 +221,7 @@ var path = require('path'),
             },
 
             Files: {
-                create: function create(properties, name, callback) {
+                create: function create(properties, name, platformOptions, callback) {
                     print('Files:create', 'Creating file: ' + name);
                     if (name === 'manifest.json') {
                         properties.name = options.appName;
@@ -236,7 +251,7 @@ var path = require('path'),
                     } else if (name === 'browserconfig.xml') {
                         _.map(properties[0].children[0].children[0].children, function (property) {
                             if (property.name === 'TileColor') {
-                                property.text = options.background;
+                                property.text = platformOptions.background;
                             } else {
                                 property.attrs.src = relative(property.attrs.src);
                             }
@@ -246,7 +261,7 @@ var path = require('path'),
                         properties.version = options.version;
                         properties.api_version = 1;
                         properties.layout.logo = relative(properties.layout.logo);
-                        properties.layout.color = options.background;
+                        properties.layout.color = platformOptions.background;
                         properties = JSON.stringify(properties, null, 2);
                     } else if (/\.html$/.test(name)) {
                         properties = properties.join('\n');
@@ -276,7 +291,7 @@ var path = require('path'),
                         height = properties.height - offsetSize,
                         sideSize = Math.max(width, height),
                         svgSource = _.find(sourceset, function (source) {
-                        return source.size.type == 'svg';
+                        return source.size.type === 'svg';
                     });
 
                     var nearestIcon = sourceset[0],
@@ -300,32 +315,29 @@ var path = require('path'),
                             }
                         });
 
-                        callback(null, nearestIcon);
+                        return callback(null, nearestIcon);
                     }
                 },
                 resize: function resize(image, properties, offset, callback) {
                     print('Images:resize', 'Resizing image to contain in ' + properties.width + 'x' + properties.height + ' with offset ' + offset);
                     var offsetSize = offset * 2;
+
+                    if (properties.rotate) {
+                        print('Images:resize', 'Rotating image by ' + ROTATE_DEGREES);
+                        image.rotate(ROTATE_DEGREES, false);
+                    }
+
                     image.contain(properties.width - offsetSize, properties.height - offsetSize, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE);
                     return callback(null, image);
                 },
                 composite: function composite(canvas, image, properties, offset, maximum, callback) {
-                    var offsetSize = offset * 2,
-                        maximumWithOffset = maximum - offsetSize,
-                        offsetHeight = properties.height - maximumWithOffset > 0 ? (properties.height - maximumWithOffset) / 2 : 0,
-                        offsetWidth = properties.width - maximumWithOffset > 0 ? (properties.width - maximumWithOffset) / 2 : 0,
-                        circle = path.join(__dirname, 'mask.png'),
+                    var circle = path.join(__dirname, 'mask.png'),
                         overlay = path.join(__dirname, 'overlay.png');
 
-                    if (properties.rotate) {
-                        print('Images:composite', 'Rotating image by ' + ROTATE_DEGREES);
-                        image.rotate(ROTATE_DEGREES);
+                    function compositeIcon() {
+                        print('Images:composite', 'Compositing favicon on ' + properties.width + 'x' + properties.height + ' canvas with offset ' + offset);
+                        canvas.composite(image, offset, offset);
                     }
-
-                    var compositeIcon = function compositeIcon() {
-                        print('Images:composite', 'Compositing ' + maximum + 'x' + maximum + ' favicon on ' + properties.width + 'x' + properties.height + ' canvas with offset ' + offset);
-                        canvas.composite(image, offsetWidth, offsetHeight);
-                    };
 
                     if (properties.mask) {
                         print('Images:composite', 'Masking composite image on circle');
@@ -356,44 +368,60 @@ var path = require('path'),
                 configure: function configure(sourceset, request, callback) {
                     print('RFG:configure', 'Configuring RFG API request');
                     var svgSource = _.find(sourceset, function (source) {
-                        return source.size.type == 'svg';
+                        return source.size.type === 'svg';
                     });
+
                     options.background = '#' + color(options.background).toHex();
                     request.master_picture.content = (svgSource || _.max(sourceset, function (_ref2) {
-                        var _ref2$size = _ref2.size;
-                        var width = _ref2$size.width;
-                        var height = _ref2$size.height;
+                        var _ref2$size = _ref2.size,
+                            width = _ref2$size.width,
+                            height = _ref2$size.height;
                         return Math.max(width, height);
                     })).file.toString('base64');
                     request.files_location.path = options.path;
 
                     if (options.icons.android) {
+                        var androidOptions = preparePlatformOptions('android', options.icons.android, options);
+
                         request.favicon_design.android_chrome.theme_color = options.background;
                         request.favicon_design.android_chrome.manifest.name = options.appName;
                         request.favicon_design.android_chrome.manifest.display = options.display;
                         request.favicon_design.android_chrome.manifest.orientation = options.orientation;
+
+                        if (androidOptions.shadow) {
+                            request.favicon_design.android_chrome.picture_aspect = 'shadow';
+                        } else if (androidOptions.offset > 0 && androidOptions.background) {
+                            request.favicon_design.android_chrome.picture_aspect = 'background_and_margin';
+                            request.favicon_design.android_chrome.background_color = androidOptions.background;
+                            request.favicon_design.android_chrome.margin = Math.round(ANDROID_BASE_SIZE / 100 * androidOptions.offset);
+                        }
                     } else {
                         Reflect.deleteProperty(request.favicon_design, 'android_chrome');
                     }
 
                     if (options.icons.appleIcon) {
-                        var appleIconOptions = preparePlatformOptions('appleIcon', options.icons.appleIcon);
-                        request.favicon_design.ios.background_color = options.background;
-                        request.favicon_design.ios.margin = Math.round(57 / 100 * appleIconOptions.offset);
+                        var appleIconOptions = preparePlatformOptions('appleIcon', options.icons.appleIcon, options);
+
+                        request.favicon_design.ios.background_color = appleIconOptions.background;
+                        request.favicon_design.ios.margin = Math.round(IOS_BASE_SIZE / 100 * appleIconOptions.offset);
                     } else {
                         Reflect.deleteProperty(request.favicon_design, 'ios');
                     }
 
-                    if (options.icons.appleStartup) {
-                        request.favicon_design.ios.startup_image.background_color = options.background;
+                    if (options.icons.appleIcon && options.icons.appleStartup) {
+                        var appleStartupOptions = preparePlatformOptions('appleStartup', options.icons.appleStartup, options);
+
+                        request.favicon_design.ios.startup_image.background_color = appleStartupOptions.background;
+                        request.favicon_design.ios.startup_image.margin = Math.round(IOS_STARTUP_BASE_SIZE / 100 * appleStartupOptions.offset);
                     } else if (request.favicon_design.ios) {
                         Reflect.deleteProperty(request.favicon_design.ios, 'startup_image');
                     }
 
                     if (options.icons.coast) {
-                        var coastOptions = preparePlatformOptions('coast', options.icons.coast);
-                        request.favicon_design.coast.background_color = options.background;
-                        request.favicon_design.coast.margin = Math.round(228 / 100 * coastOptions.offset);
+                        var coastOptions = preparePlatformOptions('coast', options.icons.coast, options);
+
+                        request.favicon_design.coast.background_color = coastOptions.background;
+                        request.favicon_design.coast.margin = Math.round(COAST_BASE_SIZE / 100 * coastOptions.offset);
                     } else {
                         Reflect.deleteProperty(request.favicon_design, 'coast');
                     }
@@ -403,9 +431,10 @@ var path = require('path'),
                     }
 
                     if (options.icons.firefox) {
-                        var firefoxOptions = preparePlatformOptions('firefox', options.icons.firefox);
-                        request.favicon_design.firefox_app.background_color = options.background;
-                        request.favicon_design.firefox_app.margin = Math.round(60 / 100 * firefoxOptions.offset);
+                        var firefoxOptions = preparePlatformOptions('firefox', options.icons.firefox, options);
+
+                        request.favicon_design.firefox_app.background_color = firefoxOptions.background;
+                        request.favicon_design.firefox_app.margin = Math.round(FIREFOX_BASE_SIZE / 100 * firefoxOptions.offset);
                         request.favicon_design.firefox_app.manifest.app_name = options.appName;
                         request.favicon_design.firefox_app.manifest.app_description = options.appDescription;
                         request.favicon_design.firefox_app.manifest.developer_name = options.developerName;
@@ -415,13 +444,17 @@ var path = require('path'),
                     }
 
                     if (options.icons.windows) {
-                        request.favicon_design.windows.background_color = options.background;
+                        var windowsOptions = preparePlatformOptions('windows', options.icons.windows, options);
+
+                        request.favicon_design.windows.background_color = windowsOptions.background;
                     } else {
                         Reflect.deleteProperty(request.favicon_design, 'windows');
                     }
 
                     if (options.icons.yandex) {
-                        request.favicon_design.yandex_browser.background_color = options.background;
+                        var yandexOptions = preparePlatformOptions('yandex', options.icons.yandex, options);
+
+                        request.favicon_design.yandex_browser.background_color = yandexOptions.background;
                         request.favicon_design.yandex_browser.manifest.version = options.version;
                     } else {
                         Reflect.deleteProperty(request.favicon_design, 'yandex_browser');
