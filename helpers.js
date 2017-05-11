@@ -310,23 +310,18 @@ const path = require('path'),
                     if (properties.rotate) {
                         print('Images:resize', `Rotating image by ${ROTATE_DEGREES}`);
                         image.rotate(ROTATE_DEGREES, false);
-                        image.autocrop();
                     }
 
                     image.contain(properties.width - offsetSize, properties.height - offsetSize, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE);
                     return callback(null, image);
                 },
                 composite: (canvas, image, properties, offset, maximum, callback) => {
-                    const offsetSize = offset * 2,
-                        maximumWithOffset = maximum - offsetSize,
-                        offsetWidth = properties.width - maximumWithOffset > 0 ? (properties.width - maximumWithOffset) / 2 : (properties.height - maximumWithOffset) / 2,
-                        offsetHeight = properties.height - maximumWithOffset > 0 ? (properties.height - maximumWithOffset) / 2 : (properties.width - maximumWithOffset) / 2,
-                        circle = path.join(__dirname, 'mask.png'),
+                    const circle = path.join(__dirname, 'mask.png'),
                         overlay = path.join(__dirname, 'overlay.png');
 
                     function compositeIcon () {
-                        print('Images:composite', `Compositing ${ maximum }x${ maximum } favicon on ${ properties.width }x${ properties.height } canvas with offset ${ offset }`);
-                        canvas.composite(image, offsetWidth, offsetHeight);
+                        print('Images:composite', `Compositing favicon on ${ properties.width }x${ properties.height } canvas with offset ${ offset }`);
+                        canvas.composite(image, offset, offset);
                     }
 
                     if (properties.mask) {

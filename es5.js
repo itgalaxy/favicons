@@ -169,7 +169,7 @@ var _ = require('underscore'),
                 if (error && options.preferOnline) {
                     createOffline(sourceset, callback);
                 } else {
-                    callback(error, results);
+                    return callback(error, results);
                 }
             });
         }
@@ -229,7 +229,7 @@ var _ = require('underscore'),
                 return favicons(file.contents, params, cb);
             }, function (response, cb) {
                 return async.each(response.images.concat(response.files), function (image, c) {
-                    that.push(µ.General.vinyl(image));
+                    that.push(µ.General.vinyl(image, file));
                     c();
                 }, function (error) {
                     return cb(error, response);

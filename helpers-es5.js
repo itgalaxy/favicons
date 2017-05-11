@@ -19,7 +19,12 @@ var path = require('path'),
     File = require('vinyl'),
     Reflect = require('harmony-reflect'),
     NRC = require('node-rest-client').Client,
-    PLATFORM_OPTIONS = require('./config/platform-options.json');
+    PLATFORM_OPTIONS = require('./config/platform-options.json'),
+    ANDROID_BASE_SIZE = 36,
+    IOS_BASE_SIZE = 57,
+    IOS_STARTUP_BASE_SIZE = 320,
+    COAST_BASE_SIZE = 228,
+    FIREFOX_BASE_SIZE = 60;
 
 (function () {
 
@@ -80,14 +85,14 @@ var path = require('path'),
         }
 
         function preparePlatformOptions(platform, options, baseOptions) {
-            if ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) != 'object') {
+            if ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) !== 'object') {
                 options = {};
             }
 
             _.each(options, function (value, key) {
                 var platformOptionsRef = PLATFORM_OPTIONS[key];
 
-                if (typeof platformOptionsRef == 'undefined' || platformOptionsRef.platforms.indexOf(platform) == -1) {
+                if (typeof platformOptionsRef === 'undefined' || platformOptionsRef.platforms.indexOf(platform) === -1) {
                     return Reflect.deleteProperty(options, key);
                 }
             });
@@ -96,21 +101,21 @@ var path = require('path'),
                 var platforms = _ref.platforms,
                     defaultTo = _ref.defaultTo;
 
-                if (typeof options[key] == 'undefined' && platforms.indexOf(platform) != -1) {
+                if (typeof options[key] === 'undefined' && platforms.indexOf(platform) !== -1) {
                     options[key] = defaultTo;
                 }
             });
 
-            if (typeof options.background == 'boolean') {
+            if (typeof options.background === 'boolean') {
 
-                if (platform == 'android' && !options.background) {
+                if (platform === 'android' && !options.background) {
                     options.background = 'transparent';
                 } else {
                     options.background = baseOptions.background;
                 }
             }
 
-            if (platform == 'android' && options.background !== 'transparent') {
+            if (platform === 'android' && options.background !== 'transparent') {
                 options.disableTransparency = true;
             }
 
@@ -135,7 +140,7 @@ var path = require('path'),
                         return callback('No source provided');
                     } else if (Buffer.isBuffer(_source)) {
                         sourceset = [{ size: sizeOf(_source), file: _source }];
-                        callback(null, sourceset);
+                        return callback(null, sourceset);
                     } else if (Array.isArray(_source)) {
                         async.each(_source, function (file, cb) {
                             return readFile(file, function (error, buffer) {
@@ -159,17 +164,25 @@ var path = require('path'),
                             }
 
                             sourceset = [{ size: sizeOf(buffer), file: buffer }];
-                            callback(null, sourceset);
+                            return callback(null, sourceset);
                         });
                     } else {
                         return callback('Invalid source type provided');
                     }
                 },
-                vinyl: function vinyl(object) {
-                    return new File({
+                /* eslint no-underscore-dangle: 0 */
+                vinyl: function vinyl(object, input) {
+                    var output = new File({
                         path: object.name,
                         contents: Buffer.isBuffer(object.contents) ? object.contents : new Buffer(object.contents)
                     });
+
+                    // gulp-cache support
+                    if (typeof input._cachedKey !== 'undefined') {
+                        output._cachedKey = input._cachedKey;
+                    }
+
+                    return output;
                 }
             },
 
@@ -278,7 +291,7 @@ var path = require('path'),
                         height = properties.height - offsetSize,
                         sideSize = Math.max(width, height),
                         svgSource = _.find(sourceset, function (source) {
-                        return source.size.type == 'svg';
+                        return source.size.type === 'svg';
                     });
 
                     var nearestIcon = sourceset[0],
@@ -302,7 +315,7 @@ var path = require('path'),
                             }
                         });
 
-                        callback(null, nearestIcon);
+                        return callback(null, nearestIcon);
                     }
                 },
                 resize: function resize(image, properties, offset, callback) {
@@ -312,24 +325,19 @@ var path = require('path'),
                     if (properties.rotate) {
                         print('Images:resize', 'Rotating image by ' + ROTATE_DEGREES);
                         image.rotate(ROTATE_DEGREES, false);
-                        image.autocrop();
                     }
 
                     image.contain(properties.width - offsetSize, properties.height - offsetSize, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE);
                     return callback(null, image);
                 },
                 composite: function composite(canvas, image, properties, offset, maximum, callback) {
-                    var offsetSize = offset * 2,
-                        maximumWithOffset = maximum - offsetSize,
-                        offsetWidth = properties.width - maximumWithOffset > 0 ? (properties.width - maximumWithOffset) / 2 : (properties.height - maximumWithOffset) / 2,
-                        offsetHeight = properties.height - maximumWithOffset > 0 ? (properties.height - maximumWithOffset) / 2 : (properties.width - maximumWithOffset) / 2,
-                        circle = path.join(__dirname, 'mask.png'),
+                    var circle = path.join(__dirname, 'mask.png'),
                         overlay = path.join(__dirname, 'overlay.png');
 
-                    var compositeIcon = function compositeIcon() {
-                        print('Images:composite', 'Compositing ' + maximum + 'x' + maximum + ' favicon on ' + properties.width + 'x' + properties.height + ' canvas with offset ' + offset);
-                        canvas.composite(image, offsetWidth, offsetHeight);
-                    };
+                    function compositeIcon() {
+                        print('Images:composite', 'Compositing favicon on ' + properties.width + 'x' + properties.height + ' canvas with offset ' + offset);
+                        canvas.composite(image, offset, offset);
+                    }
 
                     if (properties.mask) {
                         print('Images:composite', 'Masking composite image on circle');
@@ -360,8 +368,9 @@ var path = require('path'),
                 configure: function configure(sourceset, request, callback) {
                     print('RFG:configure', 'Configuring RFG API request');
                     var svgSource = _.find(sourceset, function (source) {
-                        return source.size.type == 'svg';
+                        return source.size.type === 'svg';
                     });
+
                     options.background = '#' + color(options.background).toHex();
                     request.master_picture.content = (svgSource || _.max(sourceset, function (_ref2) {
                         var _ref2$size = _ref2.size,
@@ -373,6 +382,7 @@ var path = require('path'),
 
                     if (options.icons.android) {
                         var androidOptions = preparePlatformOptions('android', options.icons.android, options);
+
                         request.favicon_design.android_chrome.theme_color = options.background;
                         request.favicon_design.android_chrome.manifest.name = options.appName;
                         request.favicon_design.android_chrome.manifest.display = options.display;
@@ -383,7 +393,7 @@ var path = require('path'),
                         } else if (androidOptions.offset > 0 && androidOptions.background) {
                             request.favicon_design.android_chrome.picture_aspect = 'background_and_margin';
                             request.favicon_design.android_chrome.background_color = androidOptions.background;
-                            request.favicon_design.android_chrome.margin = Math.round(36 / 100 * androidOptions.offset);
+                            request.favicon_design.android_chrome.margin = Math.round(ANDROID_BASE_SIZE / 100 * androidOptions.offset);
                         }
                     } else {
                         Reflect.deleteProperty(request.favicon_design, 'android_chrome');
@@ -391,24 +401,27 @@ var path = require('path'),
 
                     if (options.icons.appleIcon) {
                         var appleIconOptions = preparePlatformOptions('appleIcon', options.icons.appleIcon, options);
+
                         request.favicon_design.ios.background_color = appleIconOptions.background;
-                        request.favicon_design.ios.margin = Math.round(57 / 100 * appleIconOptions.offset);
+                        request.favicon_design.ios.margin = Math.round(IOS_BASE_SIZE / 100 * appleIconOptions.offset);
                     } else {
                         Reflect.deleteProperty(request.favicon_design, 'ios');
                     }
 
                     if (options.icons.appleIcon && options.icons.appleStartup) {
                         var appleStartupOptions = preparePlatformOptions('appleStartup', options.icons.appleStartup, options);
+
                         request.favicon_design.ios.startup_image.background_color = appleStartupOptions.background;
-                        request.favicon_design.ios.startup_image.margin = Math.round(320 / 100 * appleStartupOptions.offset);
+                        request.favicon_design.ios.startup_image.margin = Math.round(IOS_STARTUP_BASE_SIZE / 100 * appleStartupOptions.offset);
                     } else if (request.favicon_design.ios) {
                         Reflect.deleteProperty(request.favicon_design.ios, 'startup_image');
                     }
 
                     if (options.icons.coast) {
                         var coastOptions = preparePlatformOptions('coast', options.icons.coast, options);
+
                         request.favicon_design.coast.background_color = coastOptions.background;
-                        request.favicon_design.coast.margin = Math.round(228 / 100 * coastOptions.offset);
+                        request.favicon_design.coast.margin = Math.round(COAST_BASE_SIZE / 100 * coastOptions.offset);
                     } else {
                         Reflect.deleteProperty(request.favicon_design, 'coast');
                     }
@@ -419,8 +432,9 @@ var path = require('path'),
 
                     if (options.icons.firefox) {
                         var firefoxOptions = preparePlatformOptions('firefox', options.icons.firefox, options);
+
                         request.favicon_design.firefox_app.background_color = firefoxOptions.background;
-                        request.favicon_design.firefox_app.margin = Math.round(60 / 100 * firefoxOptions.offset);
+                        request.favicon_design.firefox_app.margin = Math.round(FIREFOX_BASE_SIZE / 100 * firefoxOptions.offset);
                         request.favicon_design.firefox_app.manifest.app_name = options.appName;
                         request.favicon_design.firefox_app.manifest.app_description = options.appDescription;
                         request.favicon_design.firefox_app.manifest.developer_name = options.developerName;
@@ -431,6 +445,7 @@ var path = require('path'),
 
                     if (options.icons.windows) {
                         var windowsOptions = preparePlatformOptions('windows', options.icons.windows, options);
+
                         request.favicon_design.windows.background_color = windowsOptions.background;
                     } else {
                         Reflect.deleteProperty(request.favicon_design, 'windows');
@@ -438,6 +453,7 @@ var path = require('path'),
 
                     if (options.icons.yandex) {
                         var yandexOptions = preparePlatformOptions('yandex', options.icons.yandex, options);
+
                         request.favicon_design.yandex_browser.background_color = yandexOptions.background;
                         request.favicon_design.yandex_browser.manifest.version = options.version;
                     } else {
