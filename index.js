@@ -18,8 +18,7 @@ const _ = require('underscore'),
 
         const config = clone(configDefaults),
             options = _.mergeDefaults(parameters || {}, config.defaults),
-            µ = helpers(options),
-            background = µ.General.background(options.background);
+            µ = helpers(options);
 
         function createFavicon (sourceset, properties, name, platformOptions, callback) {
             if (path.extname(name) === '.ico') {
@@ -49,7 +48,12 @@ const _ = require('underscore'),
                 );
             } else {
                 const maximum = Math.max(properties.width, properties.height),
-                    offset = Math.round(maximum / 100 * platformOptions.offset) || 0;
+                    offset = Math.round(maximum / 100 * platformOptions.offset) || 0,
+                    background = µ.General.background(platformOptions.background);
+
+                if (platformOptions.disableTransparency) {
+                    properties.transparent = false;
+                }
 
                 async.waterfall([
                     (cb) =>
@@ -82,11 +86,11 @@ const _ = require('underscore'),
                 callback(error, html));
         }
 
-        function createFiles (platform, callback) {
+        function createFiles (platform, platformOptions, callback) {
             const files = [];
 
             async.forEachOf(config.files[platform], (properties, name, cb) =>
-                µ.Files.create(properties, name, (error, file) =>
+                µ.Files.create(properties, name, platformOptions, (error, file) =>
                     cb(files.push(file) && error)),
             (error) =>
                 callback(error, files));
@@ -107,7 +111,7 @@ const _ = require('underscore'),
                 (cb) =>
                     createFavicons(sourceset, platform, platformOptions, cb),
                 (cb) =>
-                    createFiles(platform, cb),
+                    createFiles(platform, platformOptions, cb),
                 (cb) =>
                     createHTML(platform, cb)
             ], (error, results) =>
@@ -118,7 +122,7 @@ const _ = require('underscore'),
             const response = { images: [], files: [], html: [] };
 
             async.forEachOf(options.icons, (enabled, platform, cb) => {
-                const platformOptions = µ.General.preparePlatformOptions(platform, enabled);
+                const platformOptions = µ.General.preparePlatformOptions(platform, enabled, options);
 
                 if (enabled) {
                     createPlatform(sourceset, platform, platformOptions, (error, images, files, html) => {
@@ -154,9 +158,9 @@ const _ = require('underscore'),
                     unpack(pack, cb)
             ], (error, results) => {
                 if (error && options.preferOnline) {
-                    createOffline(sourceset, callback)
+                    createOffline(sourceset, callback);
                 } else {
-                    callback(error, results);
+                    return callback(error, results);
                 }
             });
         }
@@ -217,7 +221,7 @@ const _ = require('underscore'),
                     favicons(file.contents, params, cb),
                 (response, cb) =>
                     async.each(response.images.concat(response.files), (image, c) => {
-                        that.push(µ.General.vinyl(image));
+                        that.push(µ.General.vinyl(image, file));
                         c();
                     }, (error) =>
                         cb(error, response)),
