@@ -25,6 +25,7 @@ const gulp = require('gulp'),
                     coast: false
                 },
                 html: 'stream.html',
+                pipeHTML: true,
                 replace: false
             }))
             .on('error', gutil.log)

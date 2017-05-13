@@ -184,7 +184,7 @@ var _ = require('underscore'),
             return create(sourceset, callback);
         }, function (response, callback) {
             if (options.pipeHTML) {
-                µ.Files.create(response.html, options.html, function (error, file) {
+                µ.Files.create(response.html, options.html, false, function (error, file) {
                     response.files = response.files.concat([file]);
                     return callback(error, response);
                 });
