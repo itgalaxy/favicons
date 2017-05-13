@@ -176,7 +176,7 @@ const _ = require('underscore'),
                 create(sourceset, callback),
             (response, callback) => {
                 if (options.pipeHTML) {
-                    µ.Files.create(response.html, options.html, (error, file) => {
+                    µ.Files.create(response.html, options.html, false,(error, file) => {
                         response.files = response.files.concat([file]);
                         return callback(error, response);
                     });
