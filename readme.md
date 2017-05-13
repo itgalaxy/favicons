@@ -27,6 +27,7 @@ var favicons = require('favicons'),
         developerName: null,            // Your (or your developer's) name. `string`
         developerURL: null,             // Your (or your developer's) URL. `string`
         background: "#fff",             // Background colour for flattened icons. `string`
+        theme_color: "#fff",            // Theme color for browser chrome. `string`
         path: "/",                      // Path for overriding default icons path. `string`
         display: "standalone",          // Android display: "browser" or "standalone". `string`
         orientation: "portrait",        // Android orientation: "portrait" or "landscape". `string`
