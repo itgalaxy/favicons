@@ -1,4 +1,6 @@
-# Favicons [![Build Status](https://travis-ci.org/haydenbleasel/favicons.svg?branch=master)](https://travis-ci.org/haydenbleasel/favicons)
+# Favicons 
+
+[![Build Status](https://travis-ci.org/evilebottnawi/favicons.svg?branch=master)](https://travis-ci.org/evilebottnawi/favicons)
 
 A Node.js module for generating favicons and their associated files. Originally built for [Google's Web Starter Kit](https://github.com/google/web-starter-kit) and [Catalyst](https://github.com/haydenbleasel/catalyst). Requires Node 4+. Installed through NPM with:
 
