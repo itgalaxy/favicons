@@ -2,6 +2,7 @@
 
 const path = require('path'),
     fs = require('fs'),
+    url = require('url'),
     _ = require('underscore'),
     color = require('tinycolor2'),
     cheerio = require('cheerio'),
@@ -42,7 +43,9 @@ const path = require('path'),
         }
 
         function relative (directory) {
-            return path.join(options.path, directory).replace(/\\/g, '/');
+            const basePath = options.path + (options.path[options.path.length - 1] === '/' ? '' : '/');
+
+            return url.resolve(basePath, directory);
         }
 
         function print (context, message) {

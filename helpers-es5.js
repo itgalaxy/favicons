@@ -6,6 +6,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var path = require('path'),
     fs = require('fs'),
+    url = require('url'),
     _ = require('underscore'),
     color = require('tinycolor2'),
     cheerio = require('cheerio'),
@@ -46,7 +47,9 @@ var path = require('path'),
         }
 
         function relative(directory) {
-            return path.join(options.path, directory).replace(/\\/g, '/');
+            var basePath = options.path + (options.path[options.path.length - 1] === '/' ? '' : '/');
+
+            return url.resolve(basePath, directory);
         }
 
         function print(context, message) {
