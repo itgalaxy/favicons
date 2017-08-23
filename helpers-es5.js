@@ -464,7 +464,7 @@ var path = require('path'),
                 },
                 request: function request(_request, callback) {
                     print('RFG:request', 'Posting a request to the RFG API');
-                    client.post('http://realfavicongenerator.net/api/favicon', {
+                    client.post('https://realfavicongenerator.net/api/favicon', {
                         data: { favicon_generation: _request },
                         headers: { 'Content-Type': 'application/json' }
                     }, function (data, response) {
