@@ -12,6 +12,7 @@ const path = require('path'),
     mkdirp = require('mkdirp'),
     Jimp = require('jimp'),
     svg2png = require('svg2png'),
+    url = require('url'),
     File = require('vinyl'),
     Reflect = require('harmony-reflect'),
     NRC = require('node-rest-client').Client,
@@ -42,7 +43,7 @@ const path = require('path'),
         }
 
         function relative (directory) {
-            return path.join(options.path, directory).replace(/\\/g, '/');
+            return url.resolve(options.path, directory).replace(/\\/g, '/');
         }
 
         function print (context, message) {
