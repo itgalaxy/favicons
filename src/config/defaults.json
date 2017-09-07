@@ -15,6 +15,7 @@
   "version": "1.0",
   "logging": false,
   "pipeHTML": false,
+  "pixel_art": false,
   "icons": {
     "android": true,
     "appleIcon": true,
