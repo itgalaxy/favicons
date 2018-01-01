@@ -143,7 +143,15 @@ var path = require('path'),
                         return callback(null, sourceset);
                     } else if (Array.isArray(_source)) {
                         async.each(_source, function (file, cb) {
-                            return readFile(file, function (error, buffer) {
+                            if (Buffer.isBuffer(file)) {
+                                sourceset.push({
+                                    size: sizeOf(file),
+                                    file: file
+                                });
+                                return cb(null);
+                            }
+
+                            readFile(file, function (error, buffer) {
                                 if (error) {
                                     return cb(error);
                                 }
