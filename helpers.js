@@ -135,7 +135,15 @@ const path = require('path'),
                         sourceset = [{ size: sizeOf(source), file: source }];
                         return callback(null, sourceset);
                     } else if (Array.isArray(source)) {
-                        async.each(source, (file, cb) =>
+                        async.each(source, (file, cb) => {
+                            if (Buffer.isBuffer(file)) {
+                                sourceset.push({
+                                    size: sizeOf(file),
+                                    file
+                                });
+                                return cb(null);
+                            }
+                            
                             readFile(file, (error, buffer) => {
                                 if (error) {
                                     return cb(error);
@@ -146,9 +154,9 @@ const path = require('path'),
                                     file: buffer
                                 });
                                 cb(null);
-                            }),
-                            (error) =>
-                                callback(error || sourceset.length ? null : 'Favicons source is invalid', sourceset)
+                            });
+                        }, (error) =>
+                            callback(error || sourceset.length ? null : 'Favicons source is invalid', sourceset)
                         );
                     } else if (typeof source === 'string') {
                         readFile(source, (error, buffer) => {
