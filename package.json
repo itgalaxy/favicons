@@ -48,11 +48,12 @@
     "vinyl": "^1.1.0"
   },
   "devDependencies": {
-    "babel-preset-es2015": "^6.1.18",
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
     "dir-compare": "^1.4.0",
     "eslint": "^2.3.0",
-    "gulp": "^3.9.0",
-    "gulp-babel": "^6.1.1",
+    "gulp": "^4.0.0",
+    "gulp-babel": "^7.0.1",
     "gutil": "^1.6.4"
   }
 }
