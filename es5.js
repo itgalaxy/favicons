@@ -142,6 +142,7 @@ var _ = require('underscore'),
                     return cb(null);
                 }
             }, function (error) {
+                response.html.sort();
                 return callback(error, response);
             });
         }

@@ -134,8 +134,11 @@ const _ = require('underscore'),
                 } else {
                     return cb(null);
                 }
-            }, (error) =>
-                callback(error, response));
+            }, (error) => {
+                response.html.sort();
+                return callback(error, response);
+            })
+
         }
 
         async.waterfall([

@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.1.18",
+    "dir-compare": "^1.4.0",
     "eslint": "^2.3.0",
     "gulp": "^3.9.0",
     "gulp-babel": "^6.1.1",
