@@ -2,13 +2,16 @@
   "name": "favicons",
   "version": "4.8.6",
   "description": "Favicon generator for Node.js",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "files": [
+    "dist/"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/haydenbleasel/favicons.git"
   },
   "scripts": {
-    "test": "cd test && node test.js && gulp",
+    "test": "gulp && cd test && node test.js && gulp",
     "prepublish": "gulp"
   },
   "keywords": [
@@ -50,8 +53,6 @@
     "eslint": "^2.3.0",
     "gulp": "^3.9.0",
     "gulp-babel": "^6.1.1",
-    "gulp-if": "^2.0.0",
-    "gulp-rename": "^1.2.2",
     "gutil": "^1.6.4"
   }
 }
