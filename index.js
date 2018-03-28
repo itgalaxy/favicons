@@ -4,7 +4,7 @@ const _ = require('underscore'),
     clone = require('clone'),
     mergeDefaults = require('merge-defaults'),
     configDefaults = require('require-directory')(module, 'config'),
-    helpers = require('./helpers-es5.js'),
+    helpers = require('./helpers.js'),
     path = require('path'),
     toIco = require('to-ico');
 
