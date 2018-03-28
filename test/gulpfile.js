@@ -20,7 +20,6 @@ const gulp = require('gulp'),
                 orientation: 'landscape',
                 version: '1.0',
                 logging: true,
-                online: false,
                 icons: {
                     coast: false
                 },

@@ -36,7 +36,6 @@
     "jsontoxml": "0.0.11",
     "merge-defaults": "^0.2.1",
     "mkdirp": "^0.5.1",
-    "node-rest-client": "^1.5.1",
     "require-directory": "^2.1.1",
     "svg2png": "~3.0.1",
     "through2": "^2.0.0",

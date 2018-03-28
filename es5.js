@@ -125,7 +125,7 @@ var _ = require('underscore'),
             });
         }
 
-        function createOffline(sourceset, callback) {
+        function create(sourceset, callback) {
             var response = { images: [], files: [], html: [] };
 
             async.forEachOf(options.icons, function (enabled, platform, cb) {
@@ -144,38 +144,6 @@ var _ = require('underscore'),
             }, function (error) {
                 return callback(error, response);
             });
-        }
-
-        function unpack(pack, callback) {
-            var response = { images: [], files: [], html: pack.html.split('\n') };
-
-            async.each(pack.files, function (url, cb) {
-                return µ.RFG.fetch(url, function (error, box) {
-                    return cb(response.images.push(box.image) && response.files.push(box.file) && error);
-                });
-            }, function (error) {
-                return callback(error, response);
-            });
-        }
-
-        function createOnline(sourceset, callback) {
-            async.waterfall([function (cb) {
-                return µ.RFG.configure(sourceset, config.rfg, cb);
-            }, function (request, cb) {
-                return µ.RFG.request(request, cb);
-            }, function (pack, cb) {
-                return unpack(pack, cb);
-            }], function (error, results) {
-                if (error && options.preferOnline) {
-                    createOffline(sourceset, callback);
-                } else {
-                    return callback(error, results);
-                }
-            });
-        }
-
-        function create(sourceset, callback) {
-            options.online || options.preferOnline ? createOnline(sourceset, callback) : createOffline(sourceset, callback);
         }
 
         async.waterfall([function (callback) {
