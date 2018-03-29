@@ -81,12 +81,6 @@ $RECYCLE.BIN/
 
 
 ### Custom ###
-test/test.html
-test/stream.html
-test/rfg.html
+dist/
 test/output/
-test/files-offline
-test/files-online
-test/images-offline
-test/images-online
 test/stream

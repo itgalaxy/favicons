@@ -1,14 +1,25 @@
 var gulp   = require('gulp'),
-	gulpif = require('gulp-if'),
-    babel  = require('gulp-babel'),
-    rename = require("gulp-rename");
+    babel  = require('gulp-babel');
 
-gulp.task('default', () => {
-    return gulp.src(['index.js', 'helpers.js'])
+gulp.task('default', () => Promise.all([
+    gulp.src(['src/index.js', 'src/helpers.js'])
     .pipe(babel({
-        presets: ['es2015']
+        presets: [
+            ['env', {
+                targets: {
+                    node: "4"
+                },
+                exclude: [
+                    'transform-regenerator'
+                ]
+            }]
+        ]
     }))
-    .pipe(gulpif(/^index\.js$/, rename('es5.js')))
-    .pipe(gulpif(/^helpers\.js$/, rename('helpers-es5.js')))
-    .pipe(gulp.dest('.'));
-});
+    .pipe(gulp.dest('dist/')),
+
+    gulp.src(['src/mask.png', 'src/overlay.png'])
+    .pipe(gulp.dest('dist/')),
+
+    gulp.src(['src/config/*'])
+    .pipe(gulp.dest('dist/config/')),
+]));

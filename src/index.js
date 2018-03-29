@@ -4,7 +4,7 @@ const _ = require('underscore'),
     clone = require('clone'),
     mergeDefaults = require('merge-defaults'),
     configDefaults = require('require-directory')(module, 'config'),
-    helpers = require('./helpers-es5.js'),
+    helpers = require('./helpers.js'),
     path = require('path'),
     toIco = require('to-ico');
 
@@ -118,7 +118,7 @@ const _ = require('underscore'),
                 callback(error, results[0], results[1], results[2]));
         }
 
-        function createOffline (sourceset, callback) {
+        function create (sourceset, callback) {
             const response = { images: [], files: [], html: [] };
 
             async.forEachOf(options.icons, (enabled, platform, cb) => {
@@ -134,39 +134,11 @@ const _ = require('underscore'),
                 } else {
                     return cb(null);
                 }
-            }, (error) =>
-                callback(error, response));
-        }
+            }, (error) => {
+                response.html.sort();
+                return callback(error, response);
+            })
 
-        function unpack (pack, callback) {
-            const response = { images: [], files: [], html: pack.html.split('\n') };
-
-            async.each(pack.files, (url, cb) =>
-                µ.RFG.fetch(url, (error, box) =>
-                    cb(response.images.push(box.image) && response.files.push(box.file) && error)),
-            (error) =>
-                callback(error, response));
-        }
-
-        function createOnline (sourceset, callback) {
-            async.waterfall([
-                (cb) =>
-                    µ.RFG.configure(sourceset, config.rfg, cb),
-                (request, cb) =>
-                    µ.RFG.request(request, cb),
-                (pack, cb) =>
-                    unpack(pack, cb)
-            ], (error, results) => {
-                if (error && options.preferOnline) {
-                    createOffline(sourceset, callback);
-                } else {
-                    return callback(error, results);
-                }
-            });
-        }
-
-        function create (sourceset, callback) {
-            options.online || options.preferOnline ? createOnline(sourceset, callback) : createOffline(sourceset, callback);
         }
 
         async.waterfall([

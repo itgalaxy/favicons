@@ -1,4 +1,4 @@
-# Favicons 
+# Favicons
 
 [![Build Status](https://travis-ci.org/evilebottnawi/favicons.svg?branch=master)](https://travis-ci.org/evilebottnawi/favicons)
 
@@ -16,9 +16,9 @@ To use Favicons, require the appropriate module and call it, optionally specifyi
 
 The Gulp / Grunt wrapper modules have a few extra properties. You can also configure and use Favicons from the terminal with dot syntax.
 
-Favicons generates its icons locally using pure Javascript with no external dependencies. However, due to extensive collaboration with RealFaviconGenerator, you can opt to have your favicons generated using their online API.
+Favicons generates its icons locally using pure Javascript with no external dependencies.
 
-Please note: Favicons is written in ES6, meaning you need Node 4.x or above.
+Please note: Favicons is tested on Node 4.x and above.
 
 ```js
 var favicons = require('favicons'),
@@ -36,8 +36,6 @@ var favicons = require('favicons'),
         start_url: "/?homescreen=1",    // Android start application's URL. `string`
         version: "1.0",                 // Your application's version number. `number`
         logging: false,                 // Print logs to console? `boolean`
-        online: false,                  // Use RealFaviconGenerator to create favicons? `boolean`
-        preferOnline: false,            // Use offline generation, if online generation has failed. `boolean`
         icons: {
             // Platform Options:
             // - offset - offset in percentage
@@ -59,8 +57,6 @@ var favicons = require('favicons'),
     },
     callback = function (error, response) {
         if (error) {
-            console.log(error.status);  // HTTP error code (e.g. `200`) or `null`
-            console.log(error.name);    // Error name e.g. "API Error"
             console.log(error.message); // Error description e.g. "An unknown error has occurred"
             return;
         }
@@ -72,12 +68,6 @@ var favicons = require('favicons'),
 favicons(source, configuration, callback);
 ```
 
-If you need an ES5 build for legacy purposes, just require the ES5 file:
-
-```js
-var favicons = require('favicons/es5');
-```
-
 You can programmatically access Favicons configuration (icon filenames, HTML, manifest files, etc) with:
 
 ```js
@@ -86,10 +76,10 @@ var config = require('favicons').config;
 
 ### Gulp
 
-To use Favicons with Gulp, require the `gulp-favicons` wrapper and use it as follows:
+To use Favicons with Gulp, do as follows:
 
 ```js
-var favicons = require("gulp-favicons"),
+var favicons = require("favicons").stream,
     gutil = require("gulp-util");
 
 gulp.task("default", function () {
@@ -106,7 +96,6 @@ gulp.task("default", function () {
         start_url: "/?homescreen=1",
         version: 1.0,
         logging: false,
-        online: false,
         html: "index.html",
         pipeHTML: true,
         replace: true
@@ -116,29 +105,11 @@ gulp.task("default", function () {
 });
 ```
 
-If you need an ES5 build for legacy purposes, just require the ES5 file:
-
-```js
-var favicons = require('gulp-favicons/es5');
-```
-
 ## Output
 
 For the full list of files, check `config/files.json`. For the full HTML code, check `config/html.json`. Finally, for the full list of icons, check `config/icons.json`.
 
-## Contributing
-
-To build the ES5 version for Node.js:
-
-```sh
-gulp
-```
-
 ## Questions
-
-> What's the difference between offline and online?
-
-Offline uses pure Javascript image manipulation (JIMP) in Node.js to create your Favicons. Online uses the [RealFaviconGenerator API](https://realfavicongenerator.net/) to generate a Favicons package and then we download it. When using offline, generating favicons is a lot faster and doesn't require an internet connection, however we're missing a few features from RFG at the moment.
 
 > Why are you missing certain favicons?
 

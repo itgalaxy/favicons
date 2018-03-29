@@ -14,7 +14,6 @@ const path = require('path'),
     svg2png = require('svg2png'),
     File = require('vinyl'),
     Reflect = require('harmony-reflect'),
-    NRC = require('node-rest-client').Client,
     PLATFORM_OPTIONS = require('./config/platform-options.json'),
     ANDROID_BASE_SIZE = 36,
     IOS_BASE_SIZE = 57,
@@ -27,19 +26,11 @@ const path = require('path'),
     'use strict';
 
     const xmlconfig = { prettyPrint: true, xmlHeader: true, indent: '  ' },
-        client = new NRC(),
         HEX_MAX = 255,
         NON_EXISTANT = -1,
-        ROTATE_DEGREES = 90,
-        HTTP_SUCCESS = 200;
-
-    client.setMaxListeners(0);
+        ROTATE_DEGREES = 90;
 
     function helpers (options) {
-
-        function contains (array, element) {
-            return array.indexOf(element.toLowerCase()) > NON_EXISTANT;
-        }
 
         function relative (directory) {
             return path.join(options.path, directory).replace(/\\/g, '/');
@@ -347,128 +338,6 @@ const path = require('path'),
                     canvas.getBuffer(Jimp.MIME_PNG, callback);
                 }
             },
-
-            RFG: {
-                configure: (sourceset, request, callback) => {
-                    print('RFG:configure', 'Configuring RFG API request');
-                    const svgSource = _.find(sourceset, (source) => source.size.type === 'svg');
-
-                    options.background = `#${ color(options.background).toHex() }`;
-                    request.master_picture.content = (svgSource || _.max(sourceset, ({ size: { width, height } }) => Math.max(width, height))).file.toString('base64');
-                    request.files_location.path = options.path;
-
-                    if (options.icons.android) {
-                        const androidOptions = preparePlatformOptions('android', options.icons.android, options);
-
-                        request.favicon_design.android_chrome.theme_color = options.background;
-                        request.favicon_design.android_chrome.manifest.name = options.appName;
-                        request.favicon_design.android_chrome.manifest.display = options.display;
-                        request.favicon_design.android_chrome.manifest.orientation = options.orientation;
-
-                        if (androidOptions.shadow) {
-                            request.favicon_design.android_chrome.picture_aspect = 'shadow';
-                        } else if (androidOptions.offset > 0 && androidOptions.background) {
-                            request.favicon_design.android_chrome.picture_aspect = 'background_and_margin';
-                            request.favicon_design.android_chrome.background_color = androidOptions.background;
-                            request.favicon_design.android_chrome.margin = Math.round(ANDROID_BASE_SIZE / 100 * androidOptions.offset);
-                        }
-
-                    } else {
-                        Reflect.deleteProperty(request.favicon_design, 'android_chrome');
-                    }
-
-                    if (options.icons.appleIcon) {
-                        const appleIconOptions = preparePlatformOptions('appleIcon', options.icons.appleIcon, options);
-
-                        request.favicon_design.ios.background_color = appleIconOptions.background;
-                        request.favicon_design.ios.margin = Math.round(IOS_BASE_SIZE / 100 * appleIconOptions.offset);
-                    } else {
-                        Reflect.deleteProperty(request.favicon_design, 'ios');
-                    }
-
-                    if (options.icons.appleIcon && options.icons.appleStartup) {
-                        const appleStartupOptions = preparePlatformOptions('appleStartup', options.icons.appleStartup, options);
-
-                        request.favicon_design.ios.startup_image.background_color = appleStartupOptions.background;
-                        request.favicon_design.ios.startup_image.margin = Math.round(IOS_STARTUP_BASE_SIZE / 100 * appleStartupOptions.offset);
-                    } else if (request.favicon_design.ios) {
-                        Reflect.deleteProperty(request.favicon_design.ios, 'startup_image');
-                    }
-
-                    if (options.icons.coast) {
-                        const coastOptions = preparePlatformOptions('coast', options.icons.coast, options);
-
-                        request.favicon_design.coast.background_color = coastOptions.background;
-                        request.favicon_design.coast.margin = Math.round(COAST_BASE_SIZE / 100 * coastOptions.offset);
-                    } else {
-                        Reflect.deleteProperty(request.favicon_design, 'coast');
-                    }
-
-                    if (!options.icons.favicons) {
-                        Reflect.deleteProperty(request.favicon_design, 'desktop_browser');
-                    }
-
-                    if (options.icons.firefox) {
-                        const firefoxOptions = preparePlatformOptions('firefox', options.icons.firefox, options);
-
-                        request.favicon_design.firefox_app.background_color = firefoxOptions.background;
-                        request.favicon_design.firefox_app.margin = Math.round(FIREFOX_BASE_SIZE / 100 * firefoxOptions.offset);
-                        request.favicon_design.firefox_app.manifest.app_name = options.appName;
-                        request.favicon_design.firefox_app.manifest.app_description = options.appDescription;
-                        request.favicon_design.firefox_app.manifest.developer_name = options.developerName;
-                        request.favicon_design.firefox_app.manifest.developer_url = options.developerURL;
-                    } else {
-                        Reflect.deleteProperty(request.favicon_design, 'firefox_app');
-                    }
-
-                    if (options.icons.windows) {
-                        const windowsOptions = preparePlatformOptions('windows', options.icons.windows, options);
-
-                        request.favicon_design.windows.background_color = windowsOptions.background;
-                    } else {
-                        Reflect.deleteProperty(request.favicon_design, 'windows');
-                    }
-
-                    if (options.icons.yandex) {
-                        const yandexOptions = preparePlatformOptions('yandex', options.icons.yandex, options);
-
-                        request.favicon_design.yandex_browser.background_color = yandexOptions.background;
-                        request.favicon_design.yandex_browser.manifest.version = options.version;
-                    } else {
-                        Reflect.deleteProperty(request.favicon_design, 'yandex_browser');
-                    }
-
-                    return callback(null, request);
-                },
-                request: (request, callback) => {
-                    print('RFG:request', 'Posting a request to the RFG API');
-                    client.post('http://realfavicongenerator.net/api/favicon', {
-                        data: { favicon_generation: request },
-                        headers: { 'Content-Type': 'application/json' }
-                    }, (data, response) => {
-                        const result = data.favicon_generation_result;
-
-                        return result && response.statusCode === HTTP_SUCCESS ? callback(null, {
-                            files: result.favicon.files_urls,
-                            html: result.favicon.html_code
-                        }) : callback(result.result.error_message);
-                    });
-                },
-                fetch: (address, callback) => {
-                    const name = path.basename(address),
-                        image = contains(['.png', '.jpg', '.bmp', '.ico', '.svg'], path.extname(name));
-
-                    print('RFG:fetch', `Fetching ${ image ? 'image' : 'file' } from RFG: ${ address }`);
-                    client.get(address, (buffer, response) => {
-                        const success = buffer && response.statusCode === HTTP_SUCCESS;
-
-                        return success ? callback(null, {
-                            file: image ? null : { name, contents: buffer },
-                            image: image ? { name, contents: buffer } : null
-                        }) : callback(`Could not fetch URL: ${ address }`);
-                    });
-                }
-            }
 
         };
 
