@@ -1,16 +1,14 @@
-/* eslint no-sync: 0 */
-
-const favicons = require('../'),
+const favicons = require('../src/'),
+    test = require('ava'),
     fs = require('fs'),
     path = require('path'),
     mkdirp = require('mkdirp'),
     dircompare = require('dir-compare');
 
-(() => {
+test.cb('should generate the expected default result', t => {
+    t.plan(1);
 
-    'use strict';
-
-    favicons('./logo.png', {
+    favicons(path.join(__dirname, 'logo.png'), {
         appName: 'Favicons',
         appDescription: 'Testing suite for Favicons',
         developerName: 'Hayden Bleasel',
@@ -56,11 +54,9 @@ const favicons = require('../'),
                 .filter(result => result.state !== 'equal')
                 .map(result => `${path.join(result.path1 || '', result.name1 + '')} ≠ ${path.join(result.path2 || '', result.name2 + '')}`);
 
-            if (failed.length) {
-                console.log(failed.join('\n'));
-                process.exit(failed.length);
-            }
+            t.deepEqual(failed, []);
+            t.end();
         });
     });
 
-})();
+});
