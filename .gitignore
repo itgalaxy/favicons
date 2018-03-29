@@ -82,5 +82,3 @@ $RECYCLE.BIN/
 
 ### Custom ###
 dist/
-test/output/
-test/stream

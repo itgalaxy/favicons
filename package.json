@@ -55,7 +55,6 @@
     "dir-compare": "^1.4.0",
     "eslint": "^2.3.0",
     "gulp": "^4.0.0",
-    "gulp-babel": "^8.0.0-beta.2",
-    "gutil": "^1.6.4"
+    "gulp-babel": "^8.0.0-beta.2"
   }
 }
