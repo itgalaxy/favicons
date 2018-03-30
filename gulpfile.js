@@ -3,18 +3,7 @@ var gulp   = require('gulp'),
 
 gulp.task('default', () => Promise.all([
     gulp.src(['src/index.js', 'src/helpers.js'])
-    .pipe(babel({
-        presets: [
-            ['env', {
-                targets: {
-                    node: "4"
-                },
-                exclude: [
-                    'transform-regenerator'
-                ]
-            }]
-        ]
-    }))
+    .pipe(babel())
     .pipe(gulp.dest('dist/')),
 
     gulp.src(['src/mask.png', 'src/overlay.png'])

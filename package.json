@@ -11,7 +11,8 @@
     "url": "https://github.com/haydenbleasel/favicons.git"
   },
   "scripts": {
-    "test": "gulp && cd test && node test.js && gulp",
+    "test": "ava --require @babel/register test/**/*.test.js",
+    "coverage": "nyc npm test",
     "prepublish": "gulp"
   },
   "keywords": [
@@ -48,12 +49,14 @@
     "vinyl": "^2.1.0"
   },
   "devDependencies": {
-    "babel-core": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
+    "@babel/core": "^7.0.0-beta.42",
+    "@babel/preset-env": "^7.0.0-beta.42",
+    "@babel/register": "^7.0.0-beta.42",
+    "ava": "^1.0.0-beta.3",
     "dir-compare": "^1.4.0",
     "eslint": "^2.3.0",
     "gulp": "^4.0.0",
-    "gulp-babel": "^7.0.1",
-    "gutil": "^1.6.4"
+    "gulp-babel": "^8.0.0-beta.2",
+    "nyc": "^11.6.0"
   }
 }

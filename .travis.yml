@@ -12,3 +12,16 @@ node_js:
 os:
 - linux
 - osx
+
+jobs:
+  include:
+  - stage: test
+    os: linux
+    node_js: node
+    script: travis_retry npm run coverage
+    after_success:
+    - travis_retry npm install coveralls
+    - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+
+before_install:
+- travis_retry npm install -g npm@latest
