@@ -23,3 +23,5 @@ jobs:
     - travis_retry npm install coveralls
     - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 
+before_install:
+- travis_retry npm install -g npm@latest
