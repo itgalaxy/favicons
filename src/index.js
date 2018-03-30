@@ -137,7 +137,7 @@ const _ = require('underscore'),
             }, (error) => {
                 response.html.sort();
                 return callback(error, response);
-            })
+            });
 
         }
 

@@ -1,8 +1,12 @@
 var gulp   = require('gulp'),
-    babel  = require('gulp-babel');
+    babel  = require('gulp-babel'),
+    eslint = require('gulp-eslint');
 
 gulp.task('default', () => Promise.all([
     gulp.src(['src/index.js', 'src/helpers.js'])
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError())
     .pipe(babel())
     .pipe(gulp.dest('dist/')),
 

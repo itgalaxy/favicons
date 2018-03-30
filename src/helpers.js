@@ -1,4 +1,4 @@
-/* eslint camelcase: 0, no-shadow: 0 */
+/* eslint no-shadow: 0 */
 
 const path = require('path'),
     fs = require('fs'),
@@ -14,12 +14,7 @@ const path = require('path'),
     svg2png = require('svg2png'),
     File = require('vinyl'),
     Reflect = require('harmony-reflect'),
-    PLATFORM_OPTIONS = require('./config/platform-options.json'),
-    ANDROID_BASE_SIZE = 36,
-    IOS_BASE_SIZE = 57,
-    IOS_STARTUP_BASE_SIZE = 320,
-    COAST_BASE_SIZE = 228,
-    FIREFOX_BASE_SIZE = 60;
+    PLATFORM_OPTIONS = require('./config/platform-options.json');
 
 (() => {
 
@@ -337,7 +332,7 @@ const path = require('path'),
                     print('Images:getBuffer', 'Collecting image buffer from canvas');
                     canvas.getBuffer(Jimp.MIME_PNG, callback);
                 }
-            },
+            }
 
         };
 
