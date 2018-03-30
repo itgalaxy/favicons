@@ -1,5 +1,3 @@
-/* eslint no-shadow: 0 */
-
 const path = require('path'),
     fs = require('fs'),
     _ = require('underscore'),
