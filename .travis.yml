@@ -12,3 +12,10 @@ node_js:
 os:
 - linux
 - osx
+
+jobs:
+  include:
+  - stage: test
+    os: linux
+    node_js: node
+    script: travis_retry npm run coverage
