@@ -2,6 +2,7 @@ const _ = require("underscore"),
   async = require("async"),
   through2 = require("through2"),
   clone = require("clone"),
+  promisify = require("util.promisify"),
   mergeDefaults = require("merge-defaults"),
   configDefaults = require("require-directory")(module, "config"),
   helpers = require("./helpers.js"),
@@ -270,7 +271,7 @@ const _ = require("underscore"),
     });
   }
 
-  module.exports = favicons;
+  module.exports = promisify(favicons);
   module.exports.config = configDefaults;
   module.exports.stream = stream;
 })();
