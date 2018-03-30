@@ -19,3 +19,7 @@ jobs:
     os: linux
     node_js: node
     script: travis_retry npm run coverage
+    after_success:
+    - travis_retry npm install coveralls
+    - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+
