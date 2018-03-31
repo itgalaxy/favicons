@@ -1,18 +1,17 @@
-const favicons = require('../src');
-const test = require('ava');
+const favicons = require("../src");
+const test = require("ava");
 
-const {logo, normalize} = require('./util');
+const { logo, normalize } = require("./util");
 
-test.cb('should generate the expected default result', t => {
-    t.plan(1);
+test.cb("should generate the expected default result", t => {
+  t.plan(1);
 
-    favicons(logo, {}, (error, result) => {
+  favicons(logo, {}, (error, result) => {
+    if (error) {
+      throw error;
+    }
 
-        if (error) {
-            throw error;
-        }
-
-        t.snapshot(normalize(result));
-        t.end();
-    });
+    t.snapshot(normalize(result));
+    t.end();
+  });
 });
