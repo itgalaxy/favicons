@@ -1,4 +1,5 @@
 {
+  "path": "/",
   "appName": null,
   "appDescription": null,
   "developerName": null,
@@ -6,8 +7,6 @@
   "background": "#fff",
   "dir": "auto",
   "lang": "en-US",
-  "path": "/",
-  "url": "/",
   "display": "standalone",
   "orientation": "any",
   "start_url": "/?homescreen=1",
