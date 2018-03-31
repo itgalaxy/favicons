@@ -1,22 +1,17 @@
-const favicons = require('../src');
-const test = require('ava');
-const path = require('path');
+const favicons = require("../src");
+const test = require("ava");
 
-test.cb('should generate the expected default result', t => {
-    t.plan(1);
+const { logo, normalize } = require("./util");
 
-    favicons(path.join(__dirname, 'logo.png'), {}, (error, response) => {
+test.cb("should generate the expected default result", t => {
+  t.plan(1);
 
-        if (error) {
-            throw error;
-        }
+  favicons(logo, {}, (error, result) => {
+    if (error) {
+      throw error;
+    }
 
-        const result = [...response.files, ...response.images].reduce(
-            (obj, {name, contents}) => Object.assign(obj, {[name]: contents}),
-            {'index.html': response.html}
-        );
-
-        t.snapshot(result);
-        t.end();
-    });
+    t.snapshot(normalize(result));
+    t.end();
+  });
 });

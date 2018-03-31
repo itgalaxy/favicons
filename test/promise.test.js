@@ -1,16 +1,12 @@
-const favicons = require('../src');
-const test = require('ava');
-const path = require('path');
+const favicons = require("../src");
+const test = require("ava");
 
-test('should return a promise if callback is undefined', t => {
-    t.plan(1);
+const { logo, normalize } = require("./util");
 
-    return favicons(path.join(__dirname, 'logo.png'), {}).then(response => {
-        const result = [...response.files, ...response.images].reduce(
-            (obj, {name, contents}) => Object.assign(obj, {[name]: contents}),
-            {'index.html': response.html}
-        );
+test("should return a promise if callback is undefined", t => {
+  t.plan(1);
 
-        t.snapshot(result);
-    });
+  return favicons(logo, {}).then(result => {
+    t.snapshot(normalize(result));
+  });
 });

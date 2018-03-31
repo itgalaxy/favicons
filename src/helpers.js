@@ -1,4 +1,5 @@
 const path = require("path"),
+  url = require("url"),
   fs = require("fs"),
   _ = require("underscore"),
   color = require("tinycolor2"),
@@ -23,8 +24,12 @@ const path = require("path"),
     ROTATE_DEGREES = 90;
 
   function helpers(options) {
-    function relative(directory) {
-      return path.join(options.path, directory).replace(/\\/g, "/");
+    function directory(path) {
+      return path.substr(-1) === "/" ? path : `${path}/`;
+    }
+
+    function relative(path) {
+      return url.resolve(options.path && directory(options.path), path);
     }
 
     function print(context, message) {
