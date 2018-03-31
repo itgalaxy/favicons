@@ -1,12 +1,12 @@
 const favicons = require('../src');
 const test = require('ava');
 
-const {logo, normalize} = require('./util');
+const {logo_png, normalize} = require('./util');
 
 test('should allow specifying metadata', async t => {
     t.plan(1);
 
-    const result = await favicons(logo, {
+    const result = await favicons(logo_png, {
       appName: "PWA",
       appDescription: "Progressive Web App",
       developerName: "John Doe",
