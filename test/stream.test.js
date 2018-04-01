@@ -11,7 +11,7 @@ test.cb("should provide stream interface", t => {
 
   gulp
     .src(logo_png)
-    .pipe(favicons({ html: "index.html", pipeHTML: true }))
+    .pipe(favicons({}, html => (result["index.html"] = html)))
     .on("data", chunk => (result[chunk.path] = chunk.contents))
     .on("end", () => {
       t.snapshot(result);
