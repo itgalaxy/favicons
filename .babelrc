@@ -8,5 +8,12 @@
         "transform-regenerator"
       ]
     }]
-  ]
+  ],
+  "env": {
+    "test": {
+      "plugins": [
+        "istanbul"
+      ]
+    }
+  }
 }
