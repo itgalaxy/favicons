@@ -85,22 +85,22 @@ const _ = require("underscore"),
       );
     }
 
-    function createFavicons(sourceset, platform, platformOptions, callback) {
-      const images = [];
-
-      async.forEachOf(
-        config.icons[platform],
-        (properties, name, cb) =>
-          createFavicon(sourceset, properties, name, platformOptions)
-            .then(image => cb(images.push(image) && null))
-            .catch(cb),
-        error => callback(error, images)
+    function createFavicons(sourceset, platform, platformOptions) {
+      return Promise.all(
+        Object.keys(config.icons[platform] || {}).map(name =>
+          createFavicon(
+            sourceset,
+            config.icons[platform][name],
+            name,
+            platformOptions
+          )
+        )
       );
     }
 
     function createPlatform(sourceset, platform, platformOptions) {
       return Promise.all([
-        promisify(createFavicons)(sourceset, platform, platformOptions),
+        createFavicons(sourceset, platform, platformOptions),
         promisify(createFiles)(platform, platformOptions),
         promisify(createHTML)(platform)
       ]);
