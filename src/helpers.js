@@ -296,7 +296,7 @@ const path = require("path"),
           return Jimp.read(file);
         },
 
-        nearest(sourceset, properties, offset, callback) {
+        nearest(sourceset, properties, offset) {
           print(
             "Image:nearest",
             `Find nearest icon to ${properties.width}x${
@@ -307,29 +307,28 @@ const path = require("path"),
           const offsetSize = offset * 2,
             width = properties.width - offsetSize,
             height = properties.height - offsetSize,
-            sideSize = Math.max(width, height),
             svgSource = _.find(sourceset, source => source.size.type === "svg");
-
-          let nearestIcon = sourceset[0],
-            nearestSideSize = Math.max(
-              nearestIcon.size.width,
-              nearestIcon.size.height
-            );
 
           if (svgSource) {
             print(
               "Image:nearest",
               `SVG source will be saved as ${width}x${height}`
             );
-            svg2png(svgSource.file, { height, width })
-              .then(resizedBuffer =>
-                callback(null, {
-                  size: sizeOf(resizedBuffer),
-                  file: resizedBuffer
-                })
-              )
-              .catch(callback);
-          } else {
+            return svg2png(svgSource.file, { height, width }).then(
+              resizedBuffer => ({
+                size: sizeOf(resizedBuffer),
+                file: resizedBuffer
+              })
+            );
+          }
+          return new Promise(resolve => {
+            const sideSize = Math.max(width, height);
+            let nearestIcon = sourceset[0],
+              nearestSideSize = Math.max(
+                nearestIcon.size.width,
+                nearestIcon.size.height
+              );
+
             _.each(sourceset, icon => {
               const max = Math.max(icon.size.width, icon.size.height);
 
@@ -342,8 +341,8 @@ const path = require("path"),
               }
             });
 
-            return callback(null, nearestIcon);
-          }
+            resolve(nearestIcon);
+          });
         },
 
         resize(image, properties, offset) {

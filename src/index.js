@@ -70,7 +70,10 @@ const _ = require("underscore"),
 
         async.waterfall(
           [
-            cb => µ.Images.nearest(sourceset, properties, offset, cb),
+            cb =>
+              µ.Images.nearest(sourceset, properties, offset)
+                .then(result => cb(null, result))
+                .catch(cb),
             (nearest, cb) =>
               µ.Images.read(nearest.file)
                 .then(result => cb(null, result))
