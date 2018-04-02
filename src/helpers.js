@@ -47,10 +47,6 @@ const path = require("path"),
       }
     }
 
-    function readFile(filepath, callback) {
-      fs.readFile(filepath, callback);
-    }
-
     function updateDocument(document, code, tags, next) {
       const $ = cheerio.load(document, { decodeEntities: false }),
         target = $("head").length > 0 ? $("head") : $.root(),
@@ -119,59 +115,51 @@ const path = require("path"),
       return options;
     }
 
+    function source(src, callback) {
+      if (Buffer.isBuffer(src)) {
+        try {
+          return callback(null, [{ size: sizeOf(src), file: src }]);
+        } catch (error) {
+          return callback(new Error("Invalid image buffer"));
+        }
+      } else if (typeof src === "string") {
+        fs.readFile(src, (error, buffer) => {
+          if (error) {
+            return callback(error);
+          }
+
+          return source(buffer, callback);
+        });
+      } else if (Array.isArray(src) && !src.some(Array.isArray)) {
+        if (!src.length) {
+          return callback(new Error("No source provided"));
+        }
+
+        async.map(src, source, (error, results) => {
+          if (error) {
+            return callback(error);
+          }
+
+          // flatten
+          return callback(null, [].concat(...results));
+        });
+      } else {
+        return callback(new Error("Invalid source type provided"));
+      }
+    }
+
     return {
       General: {
+        source: (src, callback) => {
+          print("General:source", `Source type is ${typeof src}`);
+          source(src, callback);
+        },
         preparePlatformOptions,
         background: hex => {
           print("General:background", `Parsing colour ${hex}`);
           const rgba = color(hex).toRgb();
 
           return Jimp.rgbaToInt(rgba.r, rgba.g, rgba.b, rgba.a * HEX_MAX);
-        },
-        source: (source, callback) => {
-          let sourceset = [];
-
-          print("General:source", `Source type is ${typeof source}`);
-          if (!source || !source.length) {
-            return callback("No source provided");
-          } else if (Buffer.isBuffer(source)) {
-            sourceset = [{ size: sizeOf(source), file: source }];
-            return callback(null, sourceset);
-          } else if (Array.isArray(source)) {
-            async.each(
-              source,
-              (file, cb) =>
-                readFile(file, (error, buffer) => {
-                  if (error) {
-                    return cb(error);
-                  }
-
-                  sourceset.push({
-                    size: sizeOf(buffer),
-                    file: buffer
-                  });
-                  cb(null);
-                }),
-              error =>
-                callback(
-                  error || sourceset.length
-                    ? null
-                    : "Favicons source is invalid",
-                  sourceset
-                )
-            );
-          } else if (typeof source === "string") {
-            readFile(source, (error, buffer) => {
-              if (error) {
-                return callback(error);
-              }
-
-              sourceset = [{ size: sizeOf(buffer), file: buffer }];
-              return callback(null, sourceset);
-            });
-          } else {
-            return callback("Invalid source type provided");
-          }
         },
         /* eslint no-underscore-dangle: 0 */
         vinyl: (object, input) => {
