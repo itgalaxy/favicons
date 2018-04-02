@@ -19,91 +19,44 @@ const _ = require("underscore"),
       options = _.mergeDefaults(parameters || {}, config.defaults),
       µ = helpers(options);
 
-    function createFavicon(
-      sourceset,
-      properties,
-      name,
-      platformOptions,
-      callback
-    ) {
+    function createFavicon(sourceset, properties, name, platformOptions) {
       if (path.extname(name) === ".ico") {
-        async.map(
-          properties.sizes,
-          (sizeProperties, cb) => {
-            const newProperties = clone(properties);
-
-            newProperties.width = sizeProperties.width;
-            newProperties.height = sizeProperties.height;
-
-            const tempName = `favicon-temp-${newProperties.width}x${
-              newProperties.height
-            }.png`;
-
+        return Promise.all(
+          properties.sizes.map(({ width, height }) =>
             createFavicon(
               sourceset,
-              newProperties,
-              tempName,
-              platformOptions,
-              cb
-            );
-          },
-          (error, results) => {
-            if (error) {
-              return callback(error);
-            }
-
-            const files = results.map(icoImage => icoImage.contents);
-
-            toIco(files)
-              .then(buffer => callback(null, { name, contents: buffer }))
-              .catch(callback);
-          }
-        );
-      } else {
-        const maximum = Math.max(properties.width, properties.height),
-          offset = Math.round(maximum / 100 * platformOptions.offset) || 0,
-          background = µ.General.background(platformOptions.background);
-
-        if (platformOptions.disableTransparency) {
-          properties.transparent = false;
-        }
-
-        async.waterfall(
-          [
-            cb =>
-              µ.Images.nearest(sourceset, properties, offset)
-                .then(result => cb(null, result))
-                .catch(cb),
-            (nearest, cb) =>
-              µ.Images.read(nearest.file)
-                .then(result => cb(null, result))
-                .catch(cb),
-            (buffer, cb) =>
-              µ.Images.resize(buffer, properties, offset)
-                .then(result => cb(null, result))
-                .catch(cb),
-            (resizedBuffer, cb) =>
-              µ.Images.create(properties, background)
-                .then(canvas => cb(null, resizedBuffer, canvas))
-                .catch(cb),
-            (resizedBuffer, canvas, cb) =>
-              µ.Images.composite(
-                canvas,
-                resizedBuffer,
-                properties,
-                offset,
-                maximum
-              )
-                .then(result => cb(null, result))
-                .catch(cb),
-            (composite, cb) =>
-              µ.Images.getBuffer(composite, cb)
-                .then(result => cb(null, result))
-                .catch(cb)
-          ],
-          (error, buffer) => callback(error, { name, contents: buffer })
+              Object.assign({}, properties, { width, height }),
+              `${width}x${height}.png`,
+              platformOptions
+            )
+          )
+        ).then(results =>
+          toIco(results.map(({ contents }) => contents)).then(buffer => ({
+            name,
+            contents: buffer
+          }))
         );
       }
+
+      const maximum = Math.max(properties.width, properties.height),
+        offset = Math.round(maximum / 100 * platformOptions.offset) || 0,
+        background = µ.General.background(platformOptions.background);
+
+      if (platformOptions.disableTransparency) {
+        properties.transparent = false;
+      }
+
+      return Promise.all([
+        µ.Images.create(properties, background),
+        µ.Images.nearest(sourceset, properties, offset)
+          .then(nearest => µ.Images.read(nearest.file))
+          .then(buffer => µ.Images.resize(buffer, properties, offset))
+      ])
+        .then(([canvas, buffer]) =>
+          µ.Images.composite(canvas, buffer, properties, offset, maximum)
+        )
+        .then(µ.Images.getBuffer)
+        .then(contents => ({ name, contents }));
     }
 
     function createHTML(platform, callback) {
@@ -138,13 +91,9 @@ const _ = require("underscore"),
       async.forEachOf(
         config.icons[platform],
         (properties, name, cb) =>
-          createFavicon(
-            sourceset,
-            properties,
-            name,
-            platformOptions,
-            (error, image) => cb(images.push(image) && error)
-          ),
+          createFavicon(sourceset, properties, name, platformOptions)
+            .then(image => cb(images.push(image) && null))
+            .catch(cb),
         error => callback(error, images)
       );
     }
