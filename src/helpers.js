@@ -1,6 +1,7 @@
 const path = require("path"),
   url = require("url"),
   fs = require("fs"),
+  promisify = require("util.promisify"),
   _ = require("underscore"),
   color = require("tinycolor2"),
   cheerio = require("cheerio"),
@@ -77,38 +78,27 @@ const path = require("path"),
 
     return {
       General: {
-        source(src, callback) {
+        source(src) {
           print("General:source", `Source type is ${typeof src}`);
 
           if (Buffer.isBuffer(src)) {
             try {
-              return callback(null, [{ size: sizeOf(src), file: src }]);
+              return Promise.resolve([{ size: sizeOf(src), file: src }]);
             } catch (error) {
-              return callback(new Error("Invalid image buffer"));
+              return Promise.reject(new Error("Invalid image buffer"));
             }
           } else if (typeof src === "string") {
-            fs.readFile(src, (error, buffer) => {
-              if (error) {
-                return callback(error);
-              }
-
-              return this.source(buffer, callback);
-            });
+            return promisify(fs.readFile)(src).then(this.source.bind(this));
           } else if (Array.isArray(src) && !src.some(Array.isArray)) {
             if (!src.length) {
-              return callback(new Error("No source provided"));
+              return Promise.reject(new Error("No source provided"));
             }
 
-            async.map(src, this.source.bind(this), (error, results) => {
-              if (error) {
-                return callback(error);
-              }
-
-              // flatten
-              return callback(null, [].concat(...results));
-            });
+            return Promise.all(src.map(this.source.bind(this))).then(results =>
+              [].concat(...results)
+            );
           } else {
-            return callback(new Error("Invalid source type provided"));
+            return Promise.reject(new Error("Invalid source type provided"));
           }
         },
 

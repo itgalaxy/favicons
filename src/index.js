@@ -186,7 +186,10 @@ const _ = require("underscore"),
 
     async.waterfall(
       [
-        callback => µ.General.source(source, callback),
+        callback =>
+          µ.General.source(source)
+            .then(result => callback(null, result))
+            .catch(callback),
         (sourceset, callback) => create(sourceset, callback),
         (response, callback) => {
           if (options.pipeHTML) {
