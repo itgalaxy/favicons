@@ -93,9 +93,10 @@ const _ = require("underscore"),
               )
                 .then(result => cb(null, result))
                 .catch(cb),
-            (composite, cb) => {
-              µ.Images.getBuffer(composite, cb);
-            }
+            (composite, cb) =>
+              µ.Images.getBuffer(composite, cb)
+                .then(result => cb(null, result))
+                .catch(cb)
           ],
           (error, buffer) => callback(error, { name, contents: buffer })
         );

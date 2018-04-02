@@ -402,9 +402,9 @@ const path = require("path"),
           return Promise.resolve(compositeIcon());
         },
 
-        getBuffer(canvas, callback) {
+        getBuffer(canvas) {
           print("Images:getBuffer", "Collecting image buffer from canvas");
-          canvas.getBuffer(Jimp.MIME_PNG, callback);
+          return promisify(canvas.getBuffer).bind(canvas)(Jimp.MIME_PNG);
         }
       }
     };
