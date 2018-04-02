@@ -146,36 +146,26 @@ const _ = require("underscore"),
       ]);
     }
 
-    function create(sourceset, callback) {
-      const response = { images: [], files: [], html: [] };
-
-      async.forEachOf(
-        options.icons,
-        (enabled, platform, cb) => {
-          const platformOptions = µ.General.preparePlatformOptions(
-            platform,
-            enabled,
-            options
-          );
-
-          if (enabled) {
-            createPlatform(sourceset, platform, platformOptions)
-              .then(([images, files, html]) => {
-                response.images = response.images.concat(images);
-                response.files = response.files.concat(files);
-                response.html = response.html.concat(html);
-                cb(null);
-              })
-              .catch(cb);
-          } else {
-            return cb(null);
-          }
-        },
-        error => {
-          response.html.sort();
-          return callback(error, response);
-        }
-      );
+    function create(sourceset) {
+      return Promise.all(
+        Object.keys(options.icons)
+          .filter(platform => options.icons[platform])
+          .map(platform =>
+            createPlatform(
+              sourceset,
+              platform,
+              µ.General.preparePlatformOptions(
+                platform,
+                options.icons[platform],
+                options
+              )
+            )
+          )
+      ).then(responses => ({
+        images: [].concat(...responses.map(r => r[0])),
+        files: [].concat(...responses.map(r => r[1])),
+        html: [].concat(...responses.map(r => r[2])).sort()
+      }));
     }
 
     async.waterfall(
@@ -184,7 +174,10 @@ const _ = require("underscore"),
           µ.General.source(source)
             .then(result => callback(null, result))
             .catch(callback),
-        (sourceset, callback) => create(sourceset, callback),
+        (sourceset, callback) =>
+          create(sourceset)
+            .then(result => callback(null, result))
+            .catch(callback),
         (response, callback) => {
           if (options.pipeHTML) {
             µ.Files.create(
