@@ -75,7 +75,10 @@ const _ = require("underscore"),
               µ.Images.read(nearest.file)
                 .then(result => cb(null, result))
                 .catch(cb),
-            (buffer, cb) => µ.Images.resize(buffer, properties, offset, cb),
+            (buffer, cb) =>
+              µ.Images.resize(buffer, properties, offset)
+                .then(result => cb(null, result))
+                .catch(cb),
             (resizedBuffer, cb) =>
               µ.Images.create(properties, background, (error, canvas) =>
                 cb(error, resizedBuffer, canvas)

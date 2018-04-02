@@ -345,26 +345,29 @@ const path = require("path"),
           }
         },
 
-        resize(image, properties, offset, callback) {
-          print(
-            "Images:resize",
-            `Resizing image to contain in ${properties.width}x${
-              properties.height
-            } with offset ${offset}`
-          );
-          const offsetSize = offset * 2;
+        resize(image, properties, offset) {
+          return new Promise(resolve => {
+            print(
+              "Images:resize",
+              `Resizing image to contain in ${properties.width}x${
+                properties.height
+              } with offset ${offset}`
+            );
+            const offsetSize = offset * 2;
 
-          if (properties.rotate) {
-            print("Images:resize", `Rotating image by ${ROTATE_DEGREES}`);
-            image.rotate(ROTATE_DEGREES, false);
-          }
+            if (properties.rotate) {
+              print("Images:resize", `Rotating image by ${ROTATE_DEGREES}`);
+              image.rotate(ROTATE_DEGREES, false);
+            }
 
-          image.contain(
-            properties.width - offsetSize,
-            properties.height - offsetSize,
-            Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE
-          );
-          return callback(null, image);
+            image.contain(
+              properties.width - offsetSize,
+              properties.height - offsetSize,
+              Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE
+            );
+
+            return resolve(image);
+          });
         },
 
         composite(canvas, image, properties, offset, maximum, callback) {
