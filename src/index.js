@@ -72,16 +72,11 @@ const _ = require("underscore"),
       );
     }
 
-    function createFiles(platform, platformOptions, callback) {
-      const files = [];
-
-      async.forEachOf(
-        config.files[platform],
-        (properties, name, cb) =>
-          µ.Files.create(properties, name, platformOptions)
-            .then(file => cb(files.push(file) && null))
-            .catch(cb),
-        error => callback(error, files)
+    function createFiles(platform, platformOptions) {
+      return Promise.all(
+        Object.keys(config.files[platform] || {}).map(name =>
+          µ.Files.create(config.files[platform][name], name, platformOptions)
+        )
       );
     }
 
@@ -101,7 +96,7 @@ const _ = require("underscore"),
     function createPlatform(sourceset, platform, platformOptions) {
       return Promise.all([
         createFavicons(sourceset, platform, platformOptions),
-        promisify(createFiles)(platform, platformOptions),
+        createFiles(platform, platformOptions),
         promisify(createHTML)(platform)
       ]);
     }
