@@ -1,8 +1,5 @@
-const _ = require("underscore"),
-  async = require("async"),
-  through2 = require("through2"),
+const through2 = require("through2"),
   clone = require("clone"),
-  promisify = require("util.promisify"),
   mergeDefaults = require("merge-defaults"),
   configDefaults = require("require-directory")(module, "config"),
   helpers = require("./helpers.js"),
@@ -12,11 +9,15 @@ const _ = require("underscore"),
 (() => {
   "use strict";
 
-  _.mergeDefaults = mergeDefaults;
-
   function favicons(source, parameters, next) {
+    if (next) {
+      return favicons(source, parameters)
+        .then(response => next(null, response))
+        .catch(next);
+    }
+
     const config = clone(configDefaults),
-      options = _.mergeDefaults(parameters || {}, config.defaults),
+      options = mergeDefaults(parameters || {}, config.defaults),
       µ = helpers(options);
 
     function createFavicon(sourceset, properties, name, platformOptions) {
@@ -116,39 +117,15 @@ const _ = require("underscore"),
       }));
     }
 
-    async.waterfall(
-      [
-        callback =>
-          µ.General.source(source)
-            .then(result => callback(null, result))
-            .catch(callback),
-        (sourceset, callback) =>
-          create(sourceset)
-            .then(result => callback(null, result))
-            .catch(callback),
-        (response, callback) => {
-          if (options.pipeHTML) {
-            µ.Files.create(response.html, options.html, false)
-              .then(file => {
-                response.files = [...response.files, file];
-                return response;
-              })
-              .then(result => callback(null, result))
-              .catch(callback);
-          } else {
-            return callback(null, response);
-          }
-        }
-      ],
-      (error, response) =>
-        error
-          ? next(error)
-          : next(null, {
-              images: _.compact(response.images),
-              files: _.compact(response.files),
-              html: _.compact(response.html)
-            })
-    );
+    const result = µ.General.source(source).then(create);
+
+    return options.pipeHTML
+      ? result.then(response =>
+          µ.Files.create(response.html, options.html, false).then(file =>
+            Object.assign(response, { files: [...response.files, file] })
+          )
+        )
+      : result;
   }
 
   function stream(params, handleHtml) {
@@ -156,8 +133,6 @@ const _ = require("underscore"),
 
     /* eslint func-names: 0, no-invalid-this: 0 */
     return through2.obj(function(file, encoding, callback) {
-      const that = this;
-
       if (file.isNull()) {
         return callback(null, file);
       }
@@ -166,33 +141,23 @@ const _ = require("underscore"),
         return callback(new Error("[gulp-favicons] Streaming not supported"));
       }
 
-      async.waterfall(
-        [
-          cb => favicons(file.contents, params, cb),
-          (response, cb) =>
-            async.each(
-              response.images.concat(response.files),
-              (image, c) => {
-                that.push(µ.General.vinyl(image, file));
-                c();
-              },
-              error => cb(error, response)
-            ),
-          (response, cb) => {
-            if (handleHtml) {
-              handleHtml(response.html);
-              return cb(null);
-            }
-
-            return cb(null);
+      favicons(file.contents, params)
+        .then(({ images, files, html }) => {
+          for (const asset of [...images, ...files]) {
+            this.push(µ.General.vinyl(asset, file));
           }
-        ],
-        error => callback(error)
-      );
+
+          if (handleHtml) {
+            handleHtml(html);
+          }
+
+          callback(null);
+        })
+        .catch(callback);
     });
   }
 
-  module.exports = promisify(favicons);
+  module.exports = favicons;
   module.exports.config = configDefaults;
   module.exports.stream = stream;
 })();
