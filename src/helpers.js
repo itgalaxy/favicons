@@ -290,9 +290,9 @@ const path = require("path"),
           );
         },
 
-        read(file, callback) {
+        read(file) {
           print("Image:read", `Reading file: ${file.buffer}`);
-          return Jimp.read(file, callback);
+          return Jimp.read(file);
         },
 
         nearest(sourceset, properties, offset, callback) {
