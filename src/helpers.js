@@ -271,23 +271,24 @@ const path = require("path"),
       },
 
       Images: {
-        create(properties, background, callback) {
-          let jimp = null;
+        create(properties, background) {
+          return new Promise((resolve, reject) => {
+            print(
+              "Image:create",
+              `Creating empty ${properties.width}x${
+                properties.height
+              } canvas with ${
+                properties.transparent ? "transparent" : background
+              } background`
+            );
 
-          print(
-            "Image:create",
-            `Creating empty ${properties.width}x${
-              properties.height
-            } canvas with ${
-              properties.transparent ? "transparent" : background
-            } background`
-          );
-          jimp = new Jimp(
-            properties.width,
-            properties.height,
-            properties.transparent ? 0x00000000 : background,
-            (error, canvas) => callback(error, canvas, jimp)
-          );
+            this.jimp = new Jimp(
+              properties.width,
+              properties.height,
+              properties.transparent ? 0x00000000 : background,
+              (error, canvas) => (error ? reject(error) : resolve(canvas))
+            );
+          });
         },
 
         read(file) {

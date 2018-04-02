@@ -80,9 +80,9 @@ const _ = require("underscore"),
                 .then(result => cb(null, result))
                 .catch(cb),
             (resizedBuffer, cb) =>
-              µ.Images.create(properties, background, (error, canvas) =>
-                cb(error, resizedBuffer, canvas)
-              ),
+              µ.Images.create(properties, background)
+                .then(canvas => cb(null, resizedBuffer, canvas))
+                .catch(cb),
             (resizedBuffer, canvas, cb) =>
               µ.Images.composite(
                 canvas,
