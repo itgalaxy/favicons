@@ -114,9 +114,9 @@ const _ = require("underscore"),
       async.forEachOf(
         config.files[platform],
         (properties, name, cb) =>
-          µ.Files.create(properties, name, platformOptions, (error, file) =>
-            cb(files.push(file) && error)
-          ),
+          µ.Files.create(properties, name, platformOptions)
+            .then(file => cb(files.push(file) && null))
+            .catch(cb),
         error => callback(error, files)
       );
     }
@@ -180,15 +180,13 @@ const _ = require("underscore"),
             .catch(callback),
         (response, callback) => {
           if (options.pipeHTML) {
-            µ.Files.create(
-              response.html,
-              options.html,
-              false,
-              (error, file) => {
-                response.files = response.files.concat([file]);
-                return callback(error, response);
-              }
-            );
+            µ.Files.create(response.html, options.html, false)
+              .then(file => {
+                response.files = [...response.files, file];
+                return response;
+              })
+              .then(result => callback(null, result))
+              .catch(callback);
           } else {
             return callback(null, response);
           }
