@@ -59,16 +59,9 @@ const _ = require("underscore"),
         .then(contents => ({ name, contents }));
     }
 
-    function createHTML(platform, callback) {
-      const html = [];
-
-      async.forEachOf(
-        config.html[platform],
-        (tag, selector, cb) =>
-          µ.HTML.parse(tag)
-            .then(metadata => cb(html.push(metadata) && null))
-            .catch(cb),
-        error => callback(error, html)
+    function createHTML(platform) {
+      return Promise.all(
+        Object.values(config.html[platform] || {}).map(µ.HTML.parse)
       );
     }
 
@@ -97,7 +90,7 @@ const _ = require("underscore"),
       return Promise.all([
         createFavicons(sourceset, platform, platformOptions),
         createFiles(platform, platformOptions),
-        promisify(createHTML)(platform)
+        createHTML(platform)
       ]);
     }
 
