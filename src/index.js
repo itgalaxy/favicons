@@ -65,9 +65,9 @@ const _ = require("underscore"),
       async.forEachOf(
         config.html[platform],
         (tag, selector, cb) =>
-          µ.HTML.parse(tag, (error, metadata) =>
-            cb(html.push(metadata) && error)
-          ),
+          µ.HTML.parse(tag)
+            .then(metadata => cb(html.push(metadata) && null))
+            .catch(cb),
         error => callback(error, html)
       );
     }

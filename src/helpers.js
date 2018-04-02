@@ -168,32 +168,34 @@ const path = require("path"),
       },
 
       HTML: {
-        parse(html, callback) {
-          print("HTML:parse", "HTML found, parsing and modifying source");
-          const $ = cheerio.load(html),
-            link = $("*").is("link"),
-            attribute = link ? "href" : "content",
-            value = $("*")
-              .first()
-              .attr(attribute);
+        parse(html) {
+          return new Promise(resolve => {
+            print("HTML:parse", "HTML found, parsing and modifying source");
+            const $ = cheerio.load(html),
+              link = $("*").is("link"),
+              attribute = link ? "href" : "content",
+              value = $("*")
+                .first()
+                .attr(attribute);
 
-          if (path.extname(value)) {
-            $("*")
-              .first()
-              .attr(attribute, relative(value));
-          } else if (value.slice(0, 1) === "#") {
-            $("*")
-              .first()
-              .attr(attribute, options.background);
-          } else if (
-            html.indexOf("application-name") !== NON_EXISTANT ||
-            html.indexOf("apple-mobile-web-app-title") !== NON_EXISTANT
-          ) {
-            $("*")
-              .first()
-              .attr(attribute, options.appName);
-          }
-          return callback(null, $.html());
+            if (path.extname(value)) {
+              $("*")
+                .first()
+                .attr(attribute, relative(value));
+            } else if (value.slice(0, 1) === "#") {
+              $("*")
+                .first()
+                .attr(attribute, options.background);
+            } else if (
+              html.indexOf("application-name") !== NON_EXISTANT ||
+              html.indexOf("apple-mobile-web-app-title") !== NON_EXISTANT
+            ) {
+              $("*")
+                .first()
+                .attr(attribute, options.appName);
+            }
+            return resolve($.html());
+          });
         },
 
         update(document, code, tags, callback) {
