@@ -138,15 +138,12 @@ const _ = require("underscore"),
       );
     }
 
-    function createPlatform(sourceset, platform, platformOptions, callback) {
-      async.parallel(
-        [
-          cb => createFavicons(sourceset, platform, platformOptions, cb),
-          cb => createFiles(platform, platformOptions, cb),
-          cb => createHTML(platform, cb)
-        ],
-        (error, results) => callback(error, results[0], results[1], results[2])
-      );
+    function createPlatform(sourceset, platform, platformOptions) {
+      return Promise.all([
+        promisify(createFavicons)(sourceset, platform, platformOptions),
+        promisify(createFiles)(platform, platformOptions),
+        promisify(createHTML)(platform)
+      ]);
     }
 
     function create(sourceset, callback) {
@@ -162,17 +159,14 @@ const _ = require("underscore"),
           );
 
           if (enabled) {
-            createPlatform(
-              sourceset,
-              platform,
-              platformOptions,
-              (error, images, files, html) => {
+            createPlatform(sourceset, platform, platformOptions)
+              .then(([images, files, html]) => {
                 response.images = response.images.concat(images);
                 response.files = response.files.concat(files);
                 response.html = response.html.concat(html);
-                cb(error);
-              }
-            );
+                cb(null);
+              })
+              .catch(cb);
           } else {
             return cb(null);
           }
