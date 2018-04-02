@@ -75,94 +75,92 @@ const path = require("path"),
       );
     }
 
-    function preparePlatformOptions(platform, options, baseOptions) {
-      if (typeof options !== "object") {
-        options = {};
-      }
-
-      _.each(options, (value, key) => {
-        const platformOptionsRef = PLATFORM_OPTIONS[key];
-
-        if (
-          typeof platformOptionsRef === "undefined" ||
-          platformOptionsRef.platforms.indexOf(platform) === -1
-        ) {
-          return Reflect.deleteProperty(options, key);
-        }
-      });
-
-      _.each(PLATFORM_OPTIONS, ({ platforms, defaultTo }, key) => {
-        if (
-          typeof options[key] === "undefined" &&
-          platforms.indexOf(platform) !== -1
-        ) {
-          options[key] = defaultTo;
-        }
-      });
-
-      if (typeof options.background === "boolean") {
-        if (platform === "android" && !options.background) {
-          options.background = "transparent";
-        } else {
-          options.background = baseOptions.background;
-        }
-      }
-
-      if (platform === "android" && options.background !== "transparent") {
-        options.disableTransparency = true;
-      }
-
-      return options;
-    }
-
-    function source(src, callback) {
-      if (Buffer.isBuffer(src)) {
-        try {
-          return callback(null, [{ size: sizeOf(src), file: src }]);
-        } catch (error) {
-          return callback(new Error("Invalid image buffer"));
-        }
-      } else if (typeof src === "string") {
-        fs.readFile(src, (error, buffer) => {
-          if (error) {
-            return callback(error);
-          }
-
-          return source(buffer, callback);
-        });
-      } else if (Array.isArray(src) && !src.some(Array.isArray)) {
-        if (!src.length) {
-          return callback(new Error("No source provided"));
-        }
-
-        async.map(src, source, (error, results) => {
-          if (error) {
-            return callback(error);
-          }
-
-          // flatten
-          return callback(null, [].concat(...results));
-        });
-      } else {
-        return callback(new Error("Invalid source type provided"));
-      }
-    }
-
     return {
       General: {
-        source: (src, callback) => {
+        source(src, callback) {
           print("General:source", `Source type is ${typeof src}`);
-          source(src, callback);
+
+          if (Buffer.isBuffer(src)) {
+            try {
+              return callback(null, [{ size: sizeOf(src), file: src }]);
+            } catch (error) {
+              return callback(new Error("Invalid image buffer"));
+            }
+          } else if (typeof src === "string") {
+            fs.readFile(src, (error, buffer) => {
+              if (error) {
+                return callback(error);
+              }
+
+              return this.source(buffer, callback);
+            });
+          } else if (Array.isArray(src) && !src.some(Array.isArray)) {
+            if (!src.length) {
+              return callback(new Error("No source provided"));
+            }
+
+            async.map(src, this.source.bind(this), (error, results) => {
+              if (error) {
+                return callback(error);
+              }
+
+              // flatten
+              return callback(null, [].concat(...results));
+            });
+          } else {
+            return callback(new Error("Invalid source type provided"));
+          }
         },
-        preparePlatformOptions,
-        background: hex => {
+
+        preparePlatformOptions(platform, options, baseOptions) {
+          if (typeof options !== "object") {
+            options = {};
+          }
+
+          _.each(options, (value, key) => {
+            const platformOptionsRef = PLATFORM_OPTIONS[key];
+
+            if (
+              typeof platformOptionsRef === "undefined" ||
+              platformOptionsRef.platforms.indexOf(platform) === -1
+            ) {
+              return Reflect.deleteProperty(options, key);
+            }
+          });
+
+          _.each(PLATFORM_OPTIONS, ({ platforms, defaultTo }, key) => {
+            if (
+              typeof options[key] === "undefined" &&
+              platforms.indexOf(platform) !== -1
+            ) {
+              options[key] = defaultTo;
+            }
+          });
+
+          if (typeof options.background === "boolean") {
+            if (platform === "android" && !options.background) {
+              options.background = "transparent";
+            } else {
+              options.background = baseOptions.background;
+            }
+          }
+
+          if (platform === "android" && options.background !== "transparent") {
+            options.disableTransparency = true;
+          }
+
+          return options;
+        },
+
+        background(hex) {
           print("General:background", `Parsing colour ${hex}`);
           const rgba = color(hex).toRgb();
 
           return Jimp.rgbaToInt(rgba.r, rgba.g, rgba.b, rgba.a * HEX_MAX);
         },
+
         /* eslint no-underscore-dangle: 0 */
-        vinyl: (object, input) => {
+        vinyl(object, input) {
           const output = new File({
             path: object.name,
             contents: Buffer.isBuffer(object.contents)
@@ -180,7 +178,7 @@ const path = require("path"),
       },
 
       HTML: {
-        parse: (html, callback) => {
+        parse(html, callback) {
           print("HTML:parse", "HTML found, parsing and modifying source");
           const $ = cheerio.load(html),
             link = $("*").is("link"),
@@ -207,7 +205,8 @@ const path = require("path"),
           }
           return callback(null, $.html());
         },
-        update: (document, code, tags, callback) => {
+
+        update(document, code, tags, callback) {
           const encoding = { encoding: "utf8" };
 
           async.waterfall(
@@ -229,7 +228,7 @@ const path = require("path"),
       },
 
       Files: {
-        create: (properties, name, platformOptions, callback) => {
+        create(properties, name, platformOptions, callback) {
           print("Files:create", `Creating file: ${name}`);
           if (name === "manifest.json") {
             properties.name = options.appName;
@@ -277,7 +276,7 @@ const path = require("path"),
       },
 
       Images: {
-        create: (properties, background, callback) => {
+        create(properties, background, callback) {
           let jimp = null;
 
           print(
@@ -295,11 +294,13 @@ const path = require("path"),
             (error, canvas) => callback(error, canvas, jimp)
           );
         },
-        read: (file, callback) => {
+
+        read(file, callback) {
           print("Image:read", `Reading file: ${file.buffer}`);
           return Jimp.read(file, callback);
         },
-        nearest: (sourceset, properties, offset, callback) => {
+
+        nearest(sourceset, properties, offset, callback) {
           print(
             "Image:nearest",
             `Find nearest icon to ${properties.width}x${
@@ -348,7 +349,8 @@ const path = require("path"),
             return callback(null, nearestIcon);
           }
         },
-        resize: (image, properties, offset, callback) => {
+
+        resize(image, properties, offset, callback) {
           print(
             "Images:resize",
             `Resizing image to contain in ${properties.width}x${
@@ -369,7 +371,8 @@ const path = require("path"),
           );
           return callback(null, image);
         },
-        composite: (canvas, image, properties, offset, maximum, callback) => {
+
+        composite(canvas, image, properties, offset, maximum, callback) {
           const circle = path.join(__dirname, "mask.png"),
             overlay = path.join(__dirname, "overlay.png");
 
@@ -401,7 +404,8 @@ const path = require("path"),
             return callback(null, canvas);
           }
         },
-        getBuffer: (canvas, callback) => {
+
+        getBuffer(canvas, callback) {
           print("Images:getBuffer", "Collecting image buffer from canvas");
           canvas.getBuffer(Jimp.MIME_PNG, callback);
         }
