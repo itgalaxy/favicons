@@ -89,9 +89,10 @@ const _ = require("underscore"),
                 resizedBuffer,
                 properties,
                 offset,
-                maximum,
-                cb
-              ),
+                maximum
+              )
+                .then(result => cb(null, result))
+                .catch(cb),
             (composite, cb) => {
               µ.Images.getBuffer(composite, cb);
             }

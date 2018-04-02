@@ -371,7 +371,7 @@ const path = require("path"),
           });
         },
 
-        composite(canvas, image, properties, offset, maximum, callback) {
+        composite(canvas, image, properties, offset, maximum) {
           const circle = path.join(__dirname, "mask.png"),
             overlay = path.join(__dirname, "overlay.png");
 
@@ -382,26 +382,24 @@ const path = require("path"),
                 properties.height
               } canvas with offset ${offset}`
             );
-            canvas.composite(image, offset, offset);
+
+            return canvas.composite(image, offset, offset);
           }
 
           if (properties.mask) {
             print("Images:composite", "Masking composite image on circle");
-            async.parallel(
-              [cb => Jimp.read(circle, cb), cb => Jimp.read(overlay, cb)],
-              (error, images) => {
+            return Promise.all([Jimp.read(circle), Jimp.read(overlay)]).then(
+              images => {
                 images[0].resize(maximum, Jimp.AUTO);
                 images[1].resize(maximum, Jimp.AUTO);
                 canvas.mask(images[0], 0, 0);
                 canvas.composite(images[1], 0, 0);
-                compositeIcon();
-                return callback(error, canvas);
+                return compositeIcon();
               }
             );
-          } else {
-            compositeIcon();
-            return callback(null, canvas);
           }
+
+          return Promise.resolve(compositeIcon());
         },
 
         getBuffer(canvas, callback) {
