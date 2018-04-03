@@ -49,9 +49,9 @@ const through2 = require("through2"),
 
       return Promise.all([
         µ.Images.create(properties, background),
-        µ.Images.nearest(sourceset, properties, offset)
-          .then(nearest => µ.Images.read(nearest.file))
-          .then(buffer => µ.Images.resize(buffer, properties, offset))
+        µ.Images.nearest(sourceset, properties, offset).then(buffer =>
+          µ.Images.resize(buffer, properties, offset)
+        )
       ])
         .then(([canvas, buffer]) =>
           µ.Images.composite(canvas, buffer, properties, offset, maximum)

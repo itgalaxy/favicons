@@ -243,11 +243,6 @@ const path = require("path"),
           });
         },
 
-        read(file) {
-          print("Image:read", `Reading file: ${file.buffer}`);
-          return Jimp.read(file);
-        },
-
         nearest(sourceset, properties, offset) {
           print(
             "Image:nearest",
@@ -266,35 +261,29 @@ const path = require("path"),
               "Image:nearest",
               `SVG source will be saved as ${width}x${height}`
             );
-            return svg2png(svgSource.file, { height, width }).then(
-              resizedBuffer => ({
-                size: sizeOf(resizedBuffer),
-                file: resizedBuffer
-              })
-            );
+            return svg2png(svgSource.file, { height, width }).then(Jimp.read);
           }
-          return new Promise(resolve => {
-            const sideSize = Math.max(width, height);
-            let nearestIcon = sourceset[0],
-              nearestSideSize = Math.max(
-                nearestIcon.size.width,
-                nearestIcon.size.height
-              );
 
-            _.each(sourceset, icon => {
-              const max = Math.max(icon.size.width, icon.size.height);
+          const sideSize = Math.max(width, height);
+          let nearestIcon = sourceset[0],
+            nearestSideSize = Math.max(
+              nearestIcon.size.width,
+              nearestIcon.size.height
+            );
 
-              if (
-                (nearestSideSize > max || nearestSideSize < sideSize) &&
-                max >= sideSize
-              ) {
-                nearestIcon = icon;
-                nearestSideSize = max;
-              }
-            });
+          _.each(sourceset, icon => {
+            const max = Math.max(icon.size.width, icon.size.height);
 
-            resolve(nearestIcon);
+            if (
+              (nearestSideSize > max || nearestSideSize < sideSize) &&
+              max >= sideSize
+            ) {
+              nearestIcon = icon;
+              nearestSideSize = max;
+            }
           });
+
+          return Jimp.read(nearestIcon.file);
         },
 
         resize(image, properties, offset) {
