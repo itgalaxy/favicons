@@ -138,7 +138,7 @@ const through2 = require("through2"),
       }
 
       if (file.isStream()) {
-        return callback(new Error("[gulp-favicons] Streaming not supported"));
+        return callback(new Error("Streaming not supported"));
       }
 
       favicons(file.contents, params)
