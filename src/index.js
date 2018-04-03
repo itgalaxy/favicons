@@ -56,7 +56,6 @@ const through2 = require("through2"),
         .then(([canvas, buffer]) =>
           µ.Images.composite(canvas, buffer, properties, offset, maximum)
         )
-        .then(µ.Images.getBuffer)
         .then(contents => ({ name, contents }));
     }
 

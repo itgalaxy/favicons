@@ -323,7 +323,14 @@ const path = require("path"),
               } canvas with offset ${offset}`
             );
 
-            return canvas.composite(image, offset, offset);
+            return new Promise((resolve, reject) =>
+              canvas
+                .composite(image, offset, offset)
+                .getBuffer(
+                  Jimp.MIME_PNG,
+                  (error, result) => (error ? reject(error) : resolve(result))
+                )
+            );
           }
 
           if (properties.mask) {
@@ -339,12 +346,7 @@ const path = require("path"),
             );
           }
 
-          return Promise.resolve(compositeIcon());
-        },
-
-        getBuffer(canvas) {
-          print("Images:getBuffer", "Collecting image buffer from canvas");
-          return promisify(canvas.getBuffer).bind(canvas)(Jimp.MIME_PNG);
+          return compositeIcon();
         }
       }
     };
