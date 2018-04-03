@@ -152,16 +152,7 @@ const _ = require("underscore"),
   }
 
   function stream(params, handleHtml) {
-    const config = clone(configDefaults),
-      µ = helpers(params);
-
-    function processDocuments(documents, html, callback) {
-      async.each(
-        documents,
-        (document, cb) => µ.HTML.update(document, html, config.html, cb),
-        error => callback(error)
-      );
-    }
+    const µ = helpers(params);
 
     /* eslint func-names: 0, no-invalid-this: 0 */
     return through2.obj(function(file, encoding, callback) {
@@ -192,14 +183,8 @@ const _ = require("underscore"),
               handleHtml(response.html);
               return cb(null);
             }
-            if (params.html && !params.pipeHTML) {
-              const documents =
-                typeof params.html === "object" ? params.html : [params.html];
 
-              processDocuments(documents, response.html, cb);
-            } else {
-              return cb(null);
-            }
+            return cb(null);
           }
         ],
         error => callback(error)

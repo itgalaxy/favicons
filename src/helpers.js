@@ -8,8 +8,6 @@ const path = require("path"),
   colors = require("colors"),
   jsonxml = require("jsontoxml"),
   sizeOf = require("image-size"),
-  async = require("async"),
-  mkdirp = require("mkdirp"),
   Jimp = require("jimp"),
   svg2png = require("svg2png"),
   File = require("vinyl"),
@@ -46,34 +44,6 @@ const path = require("path"),
           `${colors.green("[Favicons]")} ${context.yellow}:${newMessage}...`
         );
       }
-    }
-
-    function updateDocument(document, code, tags, next) {
-      const $ = cheerio.load(document, { decodeEntities: false }),
-        target = $("head").length > 0 ? $("head") : $.root(),
-        newCode = cheerio.load(code.join("\n"), { decodeEntities: false });
-
-      async.each(
-        tags,
-        (platform, callback) => {
-          async.forEachOf(
-            platform,
-            (tag, selector, cb) => {
-              if (options.replace) {
-                $(selector).remove();
-              } else if ($(selector).length) {
-                newCode(selector).remove();
-              }
-              return cb(null);
-            },
-            callback
-          );
-        },
-        error => {
-          target.append(newCode.html());
-          return next(error, $.html().replace(/^\s*$[\n\r]{1,}/gm, ""));
-        }
-      );
     }
 
     return {
@@ -196,26 +166,6 @@ const path = require("path"),
             }
             return resolve($.html());
           });
-        },
-
-        update(document, code, tags, callback) {
-          const encoding = { encoding: "utf8" };
-
-          async.waterfall(
-            [
-              cb => mkdirp(path.dirname(document), cb),
-              (made, cb) =>
-                fs.readFile(document, encoding, (error, data) =>
-                  cb(null, error ? null : data)
-                ),
-              (data, cb) =>
-                data
-                  ? updateDocument(data, code, tags, cb)
-                  : cb(null, code.join("\n")),
-              (html, cb) => fs.writeFile(document, html, options, cb)
-            ],
-            callback
-          );
         }
       },
 
