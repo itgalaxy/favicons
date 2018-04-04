@@ -311,42 +311,40 @@ const path = require("path"),
           });
         },
 
-        composite(canvas, image, properties, offset, maximum) {
-          const circle = path.join(__dirname, "mask.png"),
-            overlay = path.join(__dirname, "overlay.png");
+        mask: Jimp.read(path.join(__dirname, "mask.png")),
+        overlay: Jimp.read(path.join(__dirname, "overlay.png")),
 
-          function compositeIcon() {
-            print(
-              "Images:composite",
-              `Compositing favicon on ${properties.width}x${
-                properties.height
-              } canvas with offset ${offset}`
-            );
-
-            return new Promise((resolve, reject) =>
-              canvas
-                .composite(image, offset, offset)
-                .getBuffer(
-                  Jimp.MIME_PNG,
-                  (error, result) => (error ? reject(error) : resolve(result))
-                )
-            );
-          }
-
+        composite(canvas, image, properties, offset, max) {
           if (properties.mask) {
             print("Images:composite", "Masking composite image on circle");
-            return Promise.all([Jimp.read(circle), Jimp.read(overlay)]).then(
-              images => {
-                images[0].resize(maximum, Jimp.AUTO);
-                images[1].resize(maximum, Jimp.AUTO);
-                canvas.mask(images[0], 0, 0);
-                canvas.composite(images[1], 0, 0);
-                return compositeIcon();
+            return Promise.all([this.mask, this.overlay]).then(
+              ([mask, overlay]) => {
+                canvas.mask(mask.clone().resize(max, Jimp.AUTO), 0, 0);
+                canvas.composite(overlay.clone().resize(max, Jimp.AUTO), 0, 0);
+                const properties = Object.assign({}, properties, {
+                  mask: false
+                });
+
+                return this.composite(canvas, image, properties, offset, max);
               }
             );
           }
 
-          return compositeIcon();
+          print(
+            "Images:composite",
+            `Compositing favicon on ${properties.width}x${
+              properties.height
+            } canvas with offset ${offset}`
+          );
+
+          return new Promise((resolve, reject) =>
+            canvas
+              .composite(image, offset, offset)
+              .getBuffer(
+                Jimp.MIME_PNG,
+                (error, result) => (error ? reject(error) : resolve(result))
+              )
+          );
         }
       }
     };
