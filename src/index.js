@@ -94,26 +94,32 @@ const through2 = require("through2"),
       ]);
     }
 
-    function create(sourceset) {
-      return Promise.all(
-        Object.keys(options.icons)
-          .filter(platform => options.icons[platform])
-          .map(platform =>
-            createPlatform(
-              sourceset,
+    async function create(sourceset) {
+      const responses = [];
+
+      const platforms = Object.keys(options.icons).filter(
+        platform => options.icons[platform]
+      );
+
+      for (const platform of platforms) {
+        responses.push(
+          await createPlatform(
+            sourceset,
+            platform,
+            µ.General.preparePlatformOptions(
               platform,
-              µ.General.preparePlatformOptions(
-                platform,
-                options.icons[platform],
-                options
-              )
+              options.icons[platform],
+              options
             )
           )
-      ).then(responses => ({
+        );
+      }
+
+      return {
         images: [].concat(...responses.map(r => r[0])),
         files: [].concat(...responses.map(r => r[1])),
         html: [].concat(...responses.map(r => r[2])).sort()
-      }));
+      };
     }
 
     const result = µ.General.source(source).then(create);
