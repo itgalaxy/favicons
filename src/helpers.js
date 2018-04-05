@@ -243,9 +243,9 @@ const path = require("path"),
           });
         },
 
-        nearest(sourceset, properties, offset) {
+        render(sourceset, properties, offset) {
           print(
-            "Image:nearest",
+            "Image:render",
             `Find nearest icon to ${properties.width}x${
               properties.height
             } with offset ${offset}`
@@ -254,60 +254,53 @@ const path = require("path"),
           const offsetSize = offset * 2,
             width = properties.width - offsetSize,
             height = properties.height - offsetSize,
+            sideSize = Math.max(width, height),
             svgSource = _.find(sourceset, source => source.size.type === "svg");
 
+          let promise = null;
+
           if (svgSource) {
-            print(
-              "Image:nearest",
-              `SVG source will be saved as ${width}x${height}`
+            print("Image:render", `Rendering SVG to ${width}x${height}`);
+            promise = svg2png(svgSource.file, { height, width }).then(
+              Jimp.read
             );
-            return svg2png(svgSource.file, { height, width }).then(Jimp.read);
+          } else {
+            let nearestIcon = sourceset[0],
+              nearestSideSize = Math.max(
+                nearestIcon.size.width,
+                nearestIcon.size.height
+              );
+
+            _.each(sourceset, icon => {
+              const max = Math.max(icon.size.width, icon.size.height);
+
+              if (
+                (nearestSideSize > max || nearestSideSize < sideSize) &&
+                max >= sideSize
+              ) {
+                nearestIcon = icon;
+                nearestSideSize = max;
+              }
+            });
+
+            print("Images:render", `Resizing PNG to ${width}x${height}`);
+
+            promise = Jimp.read(nearestIcon.file).then(image =>
+              image.contain(
+                width,
+                height,
+                Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE
+              )
+            );
           }
 
-          const sideSize = Math.max(width, height);
-          let nearestIcon = sourceset[0],
-            nearestSideSize = Math.max(
-              nearestIcon.size.width,
-              nearestIcon.size.height
-            );
-
-          _.each(sourceset, icon => {
-            const max = Math.max(icon.size.width, icon.size.height);
-
-            if (
-              (nearestSideSize > max || nearestSideSize < sideSize) &&
-              max >= sideSize
-            ) {
-              nearestIcon = icon;
-              nearestSideSize = max;
-            }
-          });
-
-          return Jimp.read(nearestIcon.file);
-        },
-
-        resize(image, properties, offset) {
-          return new Promise(resolve => {
-            print(
-              "Images:resize",
-              `Resizing image to contain in ${properties.width}x${
-                properties.height
-              } with offset ${offset}`
-            );
-            const offsetSize = offset * 2;
-
+          return promise.then(image => {
             if (properties.rotate) {
-              print("Images:resize", `Rotating image by ${ROTATE_DEGREES}`);
+              print("Images:render", `Rotating image by ${ROTATE_DEGREES}`);
               image.rotate(ROTATE_DEGREES, false);
             }
 
-            image.contain(
-              properties.width - offsetSize,
-              properties.height - offsetSize,
-              Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE
-            );
-
-            return resolve(image);
+            return image;
           });
         },
 
