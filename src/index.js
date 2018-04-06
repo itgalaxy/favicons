@@ -1,8 +1,5 @@
-const _ = require("underscore"),
-  async = require("async"),
-  through2 = require("through2"),
+const through2 = require("through2"),
   clone = require("clone"),
-  promisify = require("util.promisify"),
   mergeDefaults = require("merge-defaults"),
   configDefaults = require("require-directory")(module, "config"),
   helpers = require("./helpers.js"),
@@ -12,266 +9,158 @@ const _ = require("underscore"),
 (() => {
   "use strict";
 
-  _.mergeDefaults = mergeDefaults;
-
   function favicons(source, parameters, next) {
+    if (next) {
+      return favicons(source, parameters)
+        .then(response => next(null, response))
+        .catch(next);
+    }
+
     const config = clone(configDefaults),
-      options = _.mergeDefaults(parameters || {}, config.defaults),
+      options = mergeDefaults(parameters || {}, config.defaults),
       µ = helpers(options);
 
-    function createFavicon(
-      sourceset,
-      properties,
-      name,
-      platformOptions,
-      callback
-    ) {
+    function createFavicon(sourceset, properties, name, platformOptions) {
       if (path.extname(name) === ".ico") {
-        async.map(
-          properties.sizes,
-          (sizeProperties, cb) => {
-            const newProperties = clone(properties);
-
-            newProperties.width = sizeProperties.width;
-            newProperties.height = sizeProperties.height;
-
-            const tempName = `favicon-temp-${newProperties.width}x${
-              newProperties.height
-            }.png`;
-
+        return Promise.all(
+          properties.sizes.map(({ width, height }) =>
             createFavicon(
               sourceset,
-              newProperties,
-              tempName,
-              platformOptions,
-              cb
-            );
-          },
-          (error, results) => {
-            if (error) {
-              return callback(error);
-            }
-
-            const files = results.map(icoImage => icoImage.contents);
-
-            toIco(files)
-              .then(buffer => callback(null, { name, contents: buffer }))
-              .catch(callback);
-          }
-        );
-      } else {
-        const maximum = Math.max(properties.width, properties.height),
-          offset = Math.round(maximum / 100 * platformOptions.offset) || 0,
-          background = µ.General.background(platformOptions.background);
-
-        if (platformOptions.disableTransparency) {
-          properties.transparent = false;
-        }
-
-        async.waterfall(
-          [
-            cb => µ.Images.nearest(sourceset, properties, offset, cb),
-            (nearest, cb) => µ.Images.read(nearest.file, cb),
-            (buffer, cb) => µ.Images.resize(buffer, properties, offset, cb),
-            (resizedBuffer, cb) =>
-              µ.Images.create(properties, background, (error, canvas) =>
-                cb(error, resizedBuffer, canvas)
-              ),
-            (resizedBuffer, canvas, cb) =>
-              µ.Images.composite(
-                canvas,
-                resizedBuffer,
-                properties,
-                offset,
-                maximum,
-                cb
-              ),
-            (composite, cb) => {
-              µ.Images.getBuffer(composite, cb);
-            }
-          ],
-          (error, buffer) => callback(error, { name, contents: buffer })
+              Object.assign({}, properties, { width, height }),
+              `${width}x${height}.png`,
+              platformOptions
+            )
+          )
+        ).then(results =>
+          toIco(results.map(({ contents }) => contents)).then(buffer => ({
+            name,
+            contents: buffer
+          }))
         );
       }
+
+      const maximum = Math.max(properties.width, properties.height),
+        offset = Math.round(maximum / 100 * platformOptions.offset) || 0,
+        background = µ.General.background(platformOptions.background);
+
+      if (platformOptions.disableTransparency) {
+        properties.transparent = false;
+      }
+
+      return Promise.all([
+        µ.Images.create(properties, background),
+        µ.Images.render(sourceset, properties, offset)
+      ])
+        .then(([canvas, buffer]) =>
+          µ.Images.composite(canvas, buffer, properties, offset, maximum)
+        )
+        .then(contents => ({ name, contents }));
     }
 
-    function createHTML(platform, callback) {
-      const html = [];
-
-      async.forEachOf(
-        config.html[platform],
-        (tag, selector, cb) =>
-          µ.HTML.parse(tag, (error, metadata) =>
-            cb(html.push(metadata) && error)
-          ),
-        error => callback(error, html)
+    function createHTML(platform) {
+      return Promise.all(
+        Object.values(config.html[platform] || {}).map(µ.HTML.parse)
       );
     }
 
-    function createFiles(platform, platformOptions, callback) {
-      const files = [];
-
-      async.forEachOf(
-        config.files[platform],
-        (properties, name, cb) =>
-          µ.Files.create(properties, name, platformOptions, (error, file) =>
-            cb(files.push(file) && error)
-          ),
-        error => callback(error, files)
+    function createFiles(platform, platformOptions) {
+      return Promise.all(
+        Object.keys(config.files[platform] || {}).map(name =>
+          µ.Files.create(config.files[platform][name], name, platformOptions)
+        )
       );
     }
 
-    function createFavicons(sourceset, platform, platformOptions, callback) {
-      const images = [];
-
-      async.forEachOf(
-        config.icons[platform],
-        (properties, name, cb) =>
+    function createFavicons(sourceset, platform, platformOptions) {
+      return Promise.all(
+        Object.keys(config.icons[platform] || {}).map(name =>
           createFavicon(
             sourceset,
-            properties,
+            config.icons[platform][name],
             name,
-            platformOptions,
-            (error, image) => cb(images.push(image) && error)
-          ),
-        error => callback(error, images)
+            platformOptions
+          )
+        )
       );
     }
 
-    function createPlatform(sourceset, platform, platformOptions, callback) {
-      async.parallel(
-        [
-          cb => createFavicons(sourceset, platform, platformOptions, cb),
-          cb => createFiles(platform, platformOptions, cb),
-          cb => createHTML(platform, cb)
-        ],
-        (error, results) => callback(error, results[0], results[1], results[2])
-      );
+    function createPlatform(sourceset, platform, platformOptions) {
+      return Promise.all([
+        createFavicons(sourceset, platform, platformOptions),
+        createFiles(platform, platformOptions),
+        createHTML(platform)
+      ]);
     }
 
-    function create(sourceset, callback) {
-      const response = { images: [], files: [], html: [] };
+    async function create(sourceset) {
+      const responses = [];
 
-      async.forEachOf(
-        options.icons,
-        (enabled, platform, cb) => {
-          const platformOptions = µ.General.preparePlatformOptions(
+      const platforms = Object.keys(options.icons).filter(
+        platform => options.icons[platform]
+      );
+
+      for (const platform of platforms) {
+        responses.push(
+          await createPlatform(
+            sourceset,
             platform,
-            enabled,
-            options
-          );
-
-          if (enabled) {
-            createPlatform(
-              sourceset,
+            µ.General.preparePlatformOptions(
               platform,
-              platformOptions,
-              (error, images, files, html) => {
-                response.images = response.images.concat(images);
-                response.files = response.files.concat(files);
-                response.html = response.html.concat(html);
-                cb(error);
-              }
-            );
-          } else {
-            return cb(null);
-          }
-        },
-        error => {
-          response.html.sort();
-          return callback(error, response);
-        }
-      );
+              options.icons[platform],
+              options
+            )
+          )
+        );
+      }
+
+      return {
+        images: [].concat(...responses.map(r => r[0])),
+        files: [].concat(...responses.map(r => r[1])),
+        html: [].concat(...responses.map(r => r[2])).sort()
+      };
     }
 
-    async.waterfall(
-      [
-        callback => µ.General.source(source, callback),
-        (sourceset, callback) => create(sourceset, callback),
-        (response, callback) => {
-          if (options.pipeHTML) {
-            µ.Files.create(
-              response.html,
-              options.html,
-              false,
-              (error, file) => {
-                response.files = response.files.concat([file]);
-                return callback(error, response);
-              }
-            );
-          } else {
-            return callback(null, response);
-          }
-        }
-      ],
-      (error, response) =>
-        error
-          ? next(error)
-          : next(null, {
-              images: _.compact(response.images),
-              files: _.compact(response.files),
-              html: _.compact(response.html)
-            })
-    );
+    const result = µ.General.source(source).then(create);
+
+    return options.pipeHTML
+      ? result.then(response =>
+          µ.Files.create(response.html, options.html, false).then(file =>
+            Object.assign(response, { files: [...response.files, file] })
+          )
+        )
+      : result;
   }
 
   function stream(params, handleHtml) {
-    const config = clone(configDefaults),
-      µ = helpers(params);
-
-    function processDocuments(documents, html, callback) {
-      async.each(
-        documents,
-        (document, cb) => µ.HTML.update(document, html, config.html, cb),
-        error => callback(error)
-      );
-    }
+    const µ = helpers(params);
 
     /* eslint func-names: 0, no-invalid-this: 0 */
     return through2.obj(function(file, encoding, callback) {
-      const that = this;
-
       if (file.isNull()) {
         return callback(null, file);
       }
 
       if (file.isStream()) {
-        return callback(new Error("[gulp-favicons] Streaming not supported"));
+        return callback(new Error("Streaming not supported"));
       }
 
-      async.waterfall(
-        [
-          cb => favicons(file.contents, params, cb),
-          (response, cb) =>
-            async.each(
-              response.images.concat(response.files),
-              (image, c) => {
-                that.push(µ.General.vinyl(image, file));
-                c();
-              },
-              error => cb(error, response)
-            ),
-          (response, cb) => {
-            if (handleHtml) {
-              handleHtml(response.html);
-              return cb(null);
-            }
-            if (params.html && !params.pipeHTML) {
-              const documents =
-                typeof params.html === "object" ? params.html : [params.html];
-
-              processDocuments(documents, response.html, cb);
-            } else {
-              return cb(null);
-            }
+      favicons(file.contents, params)
+        .then(({ images, files, html }) => {
+          for (const asset of [...images, ...files]) {
+            this.push(µ.General.vinyl(asset, file));
           }
-        ],
-        error => callback(error)
-      );
+
+          if (handleHtml) {
+            handleHtml(html);
+          }
+
+          callback(null);
+        })
+        .catch(callback);
     });
   }
 
-  module.exports = promisify(favicons);
+  module.exports = favicons;
   module.exports.config = configDefaults;
   module.exports.stream = stream;
 })();

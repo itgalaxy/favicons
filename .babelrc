@@ -4,6 +4,7 @@
       "targets": {
         "node": "4"
       },
+      "useBuiltIns": "usage",
       "exclude": [
         "transform-regenerator"
       ]

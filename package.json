@@ -30,7 +30,6 @@
   },
   "homepage": "https://github.com/haydenbleasel/favicons",
   "dependencies": {
-    "async": "^2.6.0",
     "cheerio": "^0.19.0",
     "clone": "^1.0.4",
     "colors": "^1.2.1",
@@ -39,7 +38,6 @@
     "jimp": "^0.2.28",
     "jsontoxml": "^1.0.0",
     "merge-defaults": "^0.2.1",
-    "mkdirp": "^0.5.1",
     "require-directory": "^2.1.1",
     "svg2png": "~3.0.1",
     "through2": "^2.0.3",
@@ -51,6 +49,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.42",
+    "@babel/polyfill": "^7.0.0-beta.42",
     "@babel/preset-env": "^7.0.0-beta.42",
     "@babel/register": "^7.0.0-beta.42",
     "ava": "^1.0.0-beta.3",

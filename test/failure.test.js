@@ -51,12 +51,12 @@ test('should fail gracefully if path to source image is invalid', async t => {
     try {
       await favicons("missing.png", {});
     } catch (err) {
-      t.is(err.message, "ENOENT: no such file or directory, open 'missing.png'");
+      t.is(err.message.split(',')[0], "ENOENT: no such file or directory");
     }
 
     try {
       await favicons(["missing.png"], {});
     } catch (err) {
-      t.is(err.message, "ENOENT: no such file or directory, open 'missing.png'");
+      t.is(err.message.split(',')[0], "ENOENT: no such file or directory");
     }
 });

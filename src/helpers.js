@@ -1,14 +1,13 @@
 const path = require("path"),
   url = require("url"),
   fs = require("fs"),
+  promisify = require("util.promisify"),
   _ = require("underscore"),
   color = require("tinycolor2"),
   cheerio = require("cheerio"),
   colors = require("colors"),
   jsonxml = require("jsontoxml"),
   sizeOf = require("image-size"),
-  async = require("async"),
-  mkdirp = require("mkdirp"),
   Jimp = require("jimp"),
   svg2png = require("svg2png"),
   File = require("vinyl"),
@@ -47,122 +46,81 @@ const path = require("path"),
       }
     }
 
-    function updateDocument(document, code, tags, next) {
-      const $ = cheerio.load(document, { decodeEntities: false }),
-        target = $("head").length > 0 ? $("head") : $.root(),
-        newCode = cheerio.load(code.join("\n"), { decodeEntities: false });
-
-      async.each(
-        tags,
-        (platform, callback) => {
-          async.forEachOf(
-            platform,
-            (tag, selector, cb) => {
-              if (options.replace) {
-                $(selector).remove();
-              } else if ($(selector).length) {
-                newCode(selector).remove();
-              }
-              return cb(null);
-            },
-            callback
-          );
-        },
-        error => {
-          target.append(newCode.html());
-          return next(error, $.html().replace(/^\s*$[\n\r]{1,}/gm, ""));
-        }
-      );
-    }
-
-    function preparePlatformOptions(platform, options, baseOptions) {
-      if (typeof options !== "object") {
-        options = {};
-      }
-
-      _.each(options, (value, key) => {
-        const platformOptionsRef = PLATFORM_OPTIONS[key];
-
-        if (
-          typeof platformOptionsRef === "undefined" ||
-          platformOptionsRef.platforms.indexOf(platform) === -1
-        ) {
-          return Reflect.deleteProperty(options, key);
-        }
-      });
-
-      _.each(PLATFORM_OPTIONS, ({ platforms, defaultTo }, key) => {
-        if (
-          typeof options[key] === "undefined" &&
-          platforms.indexOf(platform) !== -1
-        ) {
-          options[key] = defaultTo;
-        }
-      });
-
-      if (typeof options.background === "boolean") {
-        if (platform === "android" && !options.background) {
-          options.background = "transparent";
-        } else {
-          options.background = baseOptions.background;
-        }
-      }
-
-      if (platform === "android" && options.background !== "transparent") {
-        options.disableTransparency = true;
-      }
-
-      return options;
-    }
-
-    function source(src, callback) {
-      if (Buffer.isBuffer(src)) {
-        try {
-          return callback(null, [{ size: sizeOf(src), file: src }]);
-        } catch (error) {
-          return callback(new Error("Invalid image buffer"));
-        }
-      } else if (typeof src === "string") {
-        fs.readFile(src, (error, buffer) => {
-          if (error) {
-            return callback(error);
-          }
-
-          return source(buffer, callback);
-        });
-      } else if (Array.isArray(src) && !src.some(Array.isArray)) {
-        if (!src.length) {
-          return callback(new Error("No source provided"));
-        }
-
-        async.map(src, source, (error, results) => {
-          if (error) {
-            return callback(error);
-          }
-
-          // flatten
-          return callback(null, [].concat(...results));
-        });
-      } else {
-        return callback(new Error("Invalid source type provided"));
-      }
-    }
-
     return {
       General: {
-        source: (src, callback) => {
+        source(src) {
           print("General:source", `Source type is ${typeof src}`);
-          source(src, callback);
+
+          if (Buffer.isBuffer(src)) {
+            try {
+              return Promise.resolve([{ size: sizeOf(src), file: src }]);
+            } catch (error) {
+              return Promise.reject(new Error("Invalid image buffer"));
+            }
+          } else if (typeof src === "string") {
+            return promisify(fs.readFile)(src).then(this.source.bind(this));
+          } else if (Array.isArray(src) && !src.some(Array.isArray)) {
+            if (!src.length) {
+              return Promise.reject(new Error("No source provided"));
+            }
+
+            return Promise.all(src.map(this.source.bind(this))).then(results =>
+              [].concat(...results)
+            );
+          } else {
+            return Promise.reject(new Error("Invalid source type provided"));
+          }
         },
-        preparePlatformOptions,
-        background: hex => {
+
+        preparePlatformOptions(platform, options, baseOptions) {
+          if (typeof options !== "object") {
+            options = {};
+          }
+
+          _.each(options, (value, key) => {
+            const platformOptionsRef = PLATFORM_OPTIONS[key];
+
+            if (
+              typeof platformOptionsRef === "undefined" ||
+              platformOptionsRef.platforms.indexOf(platform) === -1
+            ) {
+              return Reflect.deleteProperty(options, key);
+            }
+          });
+
+          _.each(PLATFORM_OPTIONS, ({ platforms, defaultTo }, key) => {
+            if (
+              typeof options[key] === "undefined" &&
+              platforms.indexOf(platform) !== -1
+            ) {
+              options[key] = defaultTo;
+            }
+          });
+
+          if (typeof options.background === "boolean") {
+            if (platform === "android" && !options.background) {
+              options.background = "transparent";
+            } else {
+              options.background = baseOptions.background;
+            }
+          }
+
+          if (platform === "android" && options.background !== "transparent") {
+            options.disableTransparency = true;
+          }
+
+          return options;
+        },
+
+        background(hex) {
           print("General:background", `Parsing colour ${hex}`);
           const rgba = color(hex).toRgb();
 
           return Jimp.rgbaToInt(rgba.r, rgba.g, rgba.b, rgba.a * HEX_MAX);
         },
+
         /* eslint no-underscore-dangle: 0 */
-        vinyl: (object, input) => {
+        vinyl(object, input) {
           const output = new File({
             path: object.name,
             contents: Buffer.isBuffer(object.contents)
@@ -180,128 +138,114 @@ const path = require("path"),
       },
 
       HTML: {
-        parse: (html, callback) => {
-          print("HTML:parse", "HTML found, parsing and modifying source");
-          const $ = cheerio.load(html),
-            link = $("*").is("link"),
-            attribute = link ? "href" : "content",
-            value = $("*")
-              .first()
-              .attr(attribute);
+        parse(html) {
+          return new Promise(resolve => {
+            print("HTML:parse", "HTML found, parsing and modifying source");
+            const $ = cheerio.load(html),
+              link = $("*").is("link"),
+              attribute = link ? "href" : "content",
+              value = $("*")
+                .first()
+                .attr(attribute);
 
-          if (path.extname(value)) {
-            $("*")
-              .first()
-              .attr(attribute, relative(value));
-          } else if (value.slice(0, 1) === "#") {
-            $("*")
-              .first()
-              .attr(attribute, options.background);
-          } else if (
-            html.indexOf("application-name") !== NON_EXISTANT ||
-            html.indexOf("apple-mobile-web-app-title") !== NON_EXISTANT
-          ) {
-            $("*")
-              .first()
-              .attr(attribute, options.appName);
-          }
-          return callback(null, $.html());
-        },
-        update: (document, code, tags, callback) => {
-          const encoding = { encoding: "utf8" };
-
-          async.waterfall(
-            [
-              cb => mkdirp(path.dirname(document), cb),
-              (made, cb) =>
-                fs.readFile(document, encoding, (error, data) =>
-                  cb(null, error ? null : data)
-                ),
-              (data, cb) =>
-                data
-                  ? updateDocument(data, code, tags, cb)
-                  : cb(null, code.join("\n")),
-              (html, cb) => fs.writeFile(document, html, options, cb)
-            ],
-            callback
-          );
+            if (path.extname(value)) {
+              $("*")
+                .first()
+                .attr(attribute, relative(value));
+            } else if (value.slice(0, 1) === "#") {
+              $("*")
+                .first()
+                .attr(attribute, options.background);
+            } else if (
+              html.indexOf("application-name") !== NON_EXISTANT ||
+              html.indexOf("apple-mobile-web-app-title") !== NON_EXISTANT
+            ) {
+              $("*")
+                .first()
+                .attr(attribute, options.appName);
+            }
+            return resolve($.html());
+          });
         }
       },
 
       Files: {
-        create: (properties, name, platformOptions, callback) => {
-          print("Files:create", `Creating file: ${name}`);
-          if (name === "manifest.json") {
-            properties.name = options.appName;
-            properties.short_name = options.appName;
-            properties.description = options.appDescription;
-            properties.dir = options.dir;
-            properties.lang = options.lang;
-            properties.display = options.display;
-            properties.orientation = options.orientation;
-            properties.start_url = options.start_url;
-            properties.background_color = options.background;
-            properties.theme_color = options.theme_color;
-            _.map(properties.icons, icon => (icon.src = relative(icon.src)));
-            properties = JSON.stringify(properties, null, 2);
-          } else if (name === "manifest.webapp") {
-            properties.version = options.version;
-            properties.name = options.appName;
-            properties.description = options.appDescription;
-            properties.developer.name = options.developerName;
-            properties.developer.url = options.developerURL;
-            properties.icons = _.mapObject(properties.icons, property =>
-              relative(property)
-            );
-            properties = JSON.stringify(properties, null, 2);
-          } else if (name === "browserconfig.xml") {
-            _.map(properties[0].children[0].children[0].children, property => {
-              if (property.name === "TileColor") {
-                property.text = platformOptions.background;
-              } else {
-                property.attrs.src = relative(property.attrs.src);
-              }
-            });
-            properties = jsonxml(properties, xmlconfig);
-          } else if (name === "yandex-browser-manifest.json") {
-            properties.version = options.version;
-            properties.api_version = 1;
-            properties.layout.logo = relative(properties.layout.logo);
-            properties.layout.color = platformOptions.background;
-            properties = JSON.stringify(properties, null, 2);
-          } else if (/\.html$/.test(name)) {
-            properties = properties.join("\n");
-          }
-          return callback(null, { name, contents: properties });
+        create(properties, name, platformOptions) {
+          return new Promise(resolve => {
+            print("Files:create", `Creating file: ${name}`);
+            if (name === "manifest.json") {
+              properties.name = options.appName;
+              properties.short_name = options.appName;
+              properties.description = options.appDescription;
+              properties.dir = options.dir;
+              properties.lang = options.lang;
+              properties.display = options.display;
+              properties.orientation = options.orientation;
+              properties.start_url = options.start_url;
+              properties.background_color = options.background;
+              properties.theme_color = options.theme_color;
+              _.map(properties.icons, icon => (icon.src = relative(icon.src)));
+              properties = JSON.stringify(properties, null, 2);
+            } else if (name === "manifest.webapp") {
+              properties.version = options.version;
+              properties.name = options.appName;
+              properties.description = options.appDescription;
+              properties.developer.name = options.developerName;
+              properties.developer.url = options.developerURL;
+              properties.icons = _.mapObject(properties.icons, property =>
+                relative(property)
+              );
+              properties = JSON.stringify(properties, null, 2);
+            } else if (name === "browserconfig.xml") {
+              _.map(
+                properties[0].children[0].children[0].children,
+                property => {
+                  if (property.name === "TileColor") {
+                    property.text = platformOptions.background;
+                  } else {
+                    property.attrs.src = relative(property.attrs.src);
+                  }
+                }
+              );
+              properties = jsonxml(properties, xmlconfig);
+            } else if (name === "yandex-browser-manifest.json") {
+              properties.version = options.version;
+              properties.api_version = 1;
+              properties.layout.logo = relative(properties.layout.logo);
+              properties.layout.color = platformOptions.background;
+              properties = JSON.stringify(properties, null, 2);
+            } else if (/\.html$/.test(name)) {
+              properties = properties.join("\n");
+            }
+            return resolve({ name, contents: properties });
+          });
         }
       },
 
       Images: {
-        create: (properties, background, callback) => {
-          let jimp = null;
+        create(properties, background) {
+          return new Promise((resolve, reject) => {
+            print(
+              "Image:create",
+              `Creating empty ${properties.width}x${
+                properties.height
+              } canvas with ${
+                properties.transparent ? "transparent" : background
+              } background`
+            );
 
-          print(
-            "Image:create",
-            `Creating empty ${properties.width}x${
-              properties.height
-            } canvas with ${
-              properties.transparent ? "transparent" : background
-            } background`
-          );
-          jimp = new Jimp(
-            properties.width,
-            properties.height,
-            properties.transparent ? 0x00000000 : background,
-            (error, canvas) => callback(error, canvas, jimp)
-          );
+            this.jimp = new Jimp(
+              properties.width,
+              properties.height,
+              properties.transparent ? 0x00000000 : background,
+              (error, canvas) => (error ? reject(error) : resolve(canvas))
+            );
+          });
         },
-        read: (file, callback) => {
-          print("Image:read", `Reading file: ${file.buffer}`);
-          return Jimp.read(file, callback);
-        },
-        nearest: (sourceset, properties, offset, callback) => {
+
+        render(sourceset, properties, offset) {
           print(
-            "Image:nearest",
+            "Image:render",
             `Find nearest icon to ${properties.width}x${
               properties.height
             } with offset ${offset}`
@@ -313,26 +257,20 @@ const path = require("path"),
             sideSize = Math.max(width, height),
             svgSource = _.find(sourceset, source => source.size.type === "svg");
 
-          let nearestIcon = sourceset[0],
-            nearestSideSize = Math.max(
-              nearestIcon.size.width,
-              nearestIcon.size.height
-            );
+          let promise = null;
 
           if (svgSource) {
-            print(
-              "Image:nearest",
-              `SVG source will be saved as ${width}x${height}`
+            print("Image:render", `Rendering SVG to ${width}x${height}`);
+            promise = svg2png(svgSource.file, { height, width }).then(
+              Jimp.read
             );
-            svg2png(svgSource.file, { height, width })
-              .then(resizedBuffer =>
-                callback(null, {
-                  size: sizeOf(resizedBuffer),
-                  file: resizedBuffer
-                })
-              )
-              .catch(callback);
           } else {
+            let nearestIcon = sourceset[0],
+              nearestSideSize = Math.max(
+                nearestIcon.size.width,
+                nearestIcon.size.height
+              );
+
             _.each(sourceset, icon => {
               const max = Math.max(icon.size.width, icon.size.height);
 
@@ -345,65 +283,61 @@ const path = require("path"),
               }
             });
 
-            return callback(null, nearestIcon);
-          }
-        },
-        resize: (image, properties, offset, callback) => {
-          print(
-            "Images:resize",
-            `Resizing image to contain in ${properties.width}x${
-              properties.height
-            } with offset ${offset}`
-          );
-          const offsetSize = offset * 2;
+            print("Images:render", `Resizing PNG to ${width}x${height}`);
 
-          if (properties.rotate) {
-            print("Images:resize", `Rotating image by ${ROTATE_DEGREES}`);
-            image.rotate(ROTATE_DEGREES, false);
-          }
-
-          image.contain(
-            properties.width - offsetSize,
-            properties.height - offsetSize,
-            Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE
-          );
-          return callback(null, image);
-        },
-        composite: (canvas, image, properties, offset, maximum, callback) => {
-          const circle = path.join(__dirname, "mask.png"),
-            overlay = path.join(__dirname, "overlay.png");
-
-          function compositeIcon() {
-            print(
-              "Images:composite",
-              `Compositing favicon on ${properties.width}x${
-                properties.height
-              } canvas with offset ${offset}`
+            promise = Jimp.read(nearestIcon.file).then(image =>
+              image.contain(
+                width,
+                height,
+                Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE
+              )
             );
-            canvas.composite(image, offset, offset);
           }
 
+          return promise.then(image => {
+            if (properties.rotate) {
+              print("Images:render", `Rotating image by ${ROTATE_DEGREES}`);
+              image.rotate(ROTATE_DEGREES, false);
+            }
+
+            return image;
+          });
+        },
+
+        mask: Jimp.read(path.join(__dirname, "mask.png")),
+        overlay: Jimp.read(path.join(__dirname, "overlay.png")),
+
+        composite(canvas, image, properties, offset, max) {
           if (properties.mask) {
             print("Images:composite", "Masking composite image on circle");
-            async.parallel(
-              [cb => Jimp.read(circle, cb), cb => Jimp.read(overlay, cb)],
-              (error, images) => {
-                images[0].resize(maximum, Jimp.AUTO);
-                images[1].resize(maximum, Jimp.AUTO);
-                canvas.mask(images[0], 0, 0);
-                canvas.composite(images[1], 0, 0);
-                compositeIcon();
-                return callback(error, canvas);
+            return Promise.all([this.mask, this.overlay]).then(
+              ([mask, overlay]) => {
+                canvas.mask(mask.clone().resize(max, Jimp.AUTO), 0, 0);
+                canvas.composite(overlay.clone().resize(max, Jimp.AUTO), 0, 0);
+                const properties = Object.assign({}, properties, {
+                  mask: false
+                });
+
+                return this.composite(canvas, image, properties, offset, max);
               }
             );
-          } else {
-            compositeIcon();
-            return callback(null, canvas);
           }
-        },
-        getBuffer: (canvas, callback) => {
-          print("Images:getBuffer", "Collecting image buffer from canvas");
-          canvas.getBuffer(Jimp.MIME_PNG, callback);
+
+          print(
+            "Images:composite",
+            `Compositing favicon on ${properties.width}x${
+              properties.height
+            } canvas with offset ${offset}`
+          );
+
+          return new Promise((resolve, reject) =>
+            canvas
+              .composite(image, offset, offset)
+              .getBuffer(
+                Jimp.MIME_PNG,
+                (error, result) => (error ? reject(error) : resolve(result))
+              )
+          );
         }
       }
     };
