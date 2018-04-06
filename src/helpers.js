@@ -313,7 +313,7 @@ const path = require("path"),
               ([mask, overlay]) => {
                 canvas.mask(mask.clone().resize(max, Jimp.AUTO), 0, 0);
                 canvas.composite(overlay.clone().resize(max, Jimp.AUTO), 0, 0);
-                const properties = Object.assign({}, properties, {
+                properties = Object.assign({}, properties, {
                   mask: false
                 });
 
