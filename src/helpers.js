@@ -19,7 +19,6 @@ const path = require("path"),
 
   const xmlconfig = { prettyPrint: true, xmlHeader: true, indent: "  " },
     HEX_MAX = 255,
-    NON_EXISTANT = -1,
     ROTATE_DEGREES = 90;
 
   function helpers(options) {
@@ -82,7 +81,7 @@ const path = require("path"),
 
             if (
               typeof platformOptionsRef === "undefined" ||
-              platformOptionsRef.platforms.indexOf(platform) === -1
+              !platformOptionsRef.platforms.includes(platform)
             ) {
               return Reflect.deleteProperty(options, key);
             }
@@ -91,7 +90,7 @@ const path = require("path"),
           _.each(PLATFORM_OPTIONS, ({ platforms, defaultTo }, key) => {
             if (
               typeof options[key] === "undefined" &&
-              platforms.indexOf(platform) !== -1
+              platforms.includes(platform)
             ) {
               options[key] = defaultTo;
             }
@@ -157,8 +156,8 @@ const path = require("path"),
                 .first()
                 .attr(attribute, options.background);
             } else if (
-              html.indexOf("application-name") !== NON_EXISTANT ||
-              html.indexOf("apple-mobile-web-app-title") !== NON_EXISTANT
+              html.includes("application-name") ||
+              html.includes("apple-mobile-web-app-title")
             ) {
               $("*")
                 .first()
