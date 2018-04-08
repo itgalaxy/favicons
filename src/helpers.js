@@ -10,7 +10,6 @@ const path = require("path"),
   Jimp = require("jimp"),
   svg2png = require("svg2png"),
   File = require("vinyl"),
-  Reflect = require("harmony-reflect"),
   PLATFORM_OPTIONS = require("./config/platform-options.json");
 
 (() => {
@@ -76,7 +75,9 @@ const path = require("path"),
               typeof platformOptionsRef === "undefined" ||
               !platformOptionsRef.platforms.includes(platform)
             ) {
-              return Reflect.deleteProperty(options, key);
+              throw new Error(
+                `Unsupported option '${key}' on platform '${platform}'`
+              );
             }
           }
 

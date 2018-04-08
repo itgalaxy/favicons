@@ -1,7 +1,7 @@
 const favicons = require('../src');
 const test = require('ava');
 
-const {normalize} = require('./util');
+const {logo_png, normalize} = require('./util');
 
 test('should fail gracefully if no source is provided', async t => {
     t.plan(1);
@@ -59,4 +59,28 @@ test('should fail gracefully if path to source image is invalid', async t => {
     } catch (err) {
       t.is(err.message.split(',')[0], "ENOENT: no such file or directory");
     }
+});
+
+test('should fail gracefully if option is not supported on platform', async t => {
+  t.plan(2);
+
+  try {
+    await favicons(logo_png, {
+      icons: {
+        favicons: {offset: 10},
+      }
+    });
+  } catch (err) {
+    t.is(err.message, "Unsupported option 'offset' on platform 'favicons'");
+  }
+
+  try {
+    await favicons(logo_png, {
+      icons: {
+        favicons: {background: true},
+      }
+    });
+  } catch (err) {
+    t.is(err.message, "Unsupported option 'background' on platform 'favicons'");
+  }
 });
