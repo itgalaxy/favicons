@@ -51,7 +51,7 @@ var favicons = require('favicons'),
             android: true,              // Create Android homescreen icon. `boolean` or `{ offset, background, shadow }`
             appleIcon: true,            // Create Apple touch icons. `boolean` or `{ offset, background }`
             appleStartup: true,         // Create Apple startup images. `boolean` or `{ offset, background }`
-            coast: { offset: 25 },      // Create Opera Coast icon with offset 25%. `boolean` or `{ offset, background }`
+            coast: true,                // Create Opera Coast icon. `boolean` or `{ offset, background }`
             favicons: true,             // Create regular favicons. `boolean`
             firefox: true,              // Create Firefox OS icons. `boolean` or `{ offset, background }`
             windows: true,              // Create Windows 8 tile icons. `boolean` or `{ background }`
