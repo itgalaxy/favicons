@@ -2,7 +2,6 @@ const path = require("path"),
   url = require("url"),
   fs = require("fs"),
   promisify = require("util.promisify"),
-  _ = require("underscore"),
   color = require("tinycolor2"),
   cheerio = require("cheerio"),
   colors = require("colors"),
@@ -31,17 +30,11 @@ const path = require("path"),
     }
 
     function print(context, message) {
-      let newMessage = "";
-
       if (options.logging && message) {
-        _.each(message.split(" "), item => {
-          newMessage += ` ${
-            /^\d+x\d+$/gm.test(item) ? colors.magenta(item) : item
-          }`;
-        });
-        console.log(
-          `${colors.green("[Favicons]")} ${context.yellow}:${newMessage}...`
-        );
+        const { magenta, green, yellow } = colors;
+
+        message = message.replace(/ \d+(x\d+)?/g, item => magenta(item));
+        console.log(`${green("[Favicons]")} ${yellow(context)}: ${message}...`);
       }
     }
 
@@ -76,7 +69,7 @@ const path = require("path"),
             options = {};
           }
 
-          _.each(options, (value, key) => {
+          for (const key of Object.keys(options)) {
             const platformOptionsRef = PLATFORM_OPTIONS[key];
 
             if (
@@ -85,16 +78,18 @@ const path = require("path"),
             ) {
               return Reflect.deleteProperty(options, key);
             }
-          });
+          }
 
-          _.each(PLATFORM_OPTIONS, ({ platforms, defaultTo }, key) => {
+          for (const key of Object.keys(PLATFORM_OPTIONS)) {
+            const { platforms, defaultTo } = PLATFORM_OPTIONS[key];
+
             if (
               typeof options[key] === "undefined" &&
               platforms.includes(platform)
             ) {
               options[key] = defaultTo;
             }
-          });
+          }
 
           if (typeof options.background === "boolean") {
             if (platform === "android" && !options.background) {
@@ -183,7 +178,7 @@ const path = require("path"),
               properties.start_url = options.start_url;
               properties.background_color = options.background;
               properties.theme_color = options.theme_color;
-              _.map(properties.icons, icon => (icon.src = relative(icon.src)));
+              properties.icons.map(icon => (icon.src = relative(icon.src)));
               properties = JSON.stringify(properties, null, 2);
             } else if (name === "manifest.webapp") {
               properties.version = options.version;
@@ -191,21 +186,22 @@ const path = require("path"),
               properties.description = options.appDescription;
               properties.developer.name = options.developerName;
               properties.developer.url = options.developerURL;
-              properties.icons = _.mapObject(properties.icons, property =>
-                relative(property)
+              properties.icons = Object.keys(properties.icons).reduce(
+                (obj, key) =>
+                  Object.assign(obj, {
+                    [key]: relative(properties.icons[key])
+                  }),
+                {}
               );
               properties = JSON.stringify(properties, null, 2);
             } else if (name === "browserconfig.xml") {
-              _.map(
-                properties[0].children[0].children[0].children,
-                property => {
-                  if (property.name === "TileColor") {
-                    property.text = platformOptions.background;
-                  } else {
-                    property.attrs.src = relative(property.attrs.src);
-                  }
+              properties[0].children[0].children[0].children.map(property => {
+                if (property.name === "TileColor") {
+                  property.text = platformOptions.background;
+                } else {
+                  property.attrs.src = relative(property.attrs.src);
                 }
-              );
+              });
               properties = jsonxml(properties, xmlconfig);
             } else if (name === "yandex-browser-manifest.json") {
               properties.version = options.version;
@@ -254,7 +250,7 @@ const path = require("path"),
             width = properties.width - offsetSize,
             height = properties.height - offsetSize,
             sideSize = Math.max(width, height),
-            svgSource = _.find(sourceset, source => source.size.type === "svg");
+            svgSource = sourceset.find(source => source.size.type === "svg");
 
           let promise = null;
 
@@ -270,7 +266,7 @@ const path = require("path"),
                 nearestIcon.size.height
               );
 
-            _.each(sourceset, icon => {
+            for (const icon of sourceset) {
               const max = Math.max(icon.size.width, icon.size.height);
 
               if (
@@ -280,7 +276,7 @@ const path = require("path"),
                 nearestIcon = icon;
                 nearestSideSize = max;
               }
-            });
+            }
 
             print("Images:render", `Resizing PNG to ${width}x${height}`);
 
