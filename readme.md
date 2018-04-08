@@ -42,13 +42,12 @@ var favicons = require('favicons'),
         icons: {
             // Platform Options:
             // - offset - offset in percentage
-            // - shadow - drop shadow for Android icons, available online only
             // - background:
             //   * false - use default
             //   * true - force use default, e.g. set background for Android icons
             //   * color - set background for the specified icons
             //
-            android: true,              // Create Android homescreen icon. `boolean` or `{ offset, background, shadow }`
+            android: true,              // Create Android homescreen icon. `boolean` or `{ offset, background }`
             appleIcon: true,            // Create Apple touch icons. `boolean` or `{ offset, background }`
             appleStartup: true,         // Create Apple startup images. `boolean` or `{ offset, background }`
             coast: true,                // Create Opera Coast icon. `boolean` or `{ offset, background }`
