@@ -25,8 +25,15 @@ module.exports = function(options) {
       const { magenta, green, yellow } = colors;
 
       message = message.replace(/ \d+(x\d+)?/g, item => magenta(item));
+      message = message.replace(/#([0-9a-f]{3}){1,2}/g, item => magenta(item));
       console.log(`${green("[Favicons]")} ${yellow(context)}: ${message}...`);
     }
+  }
+
+  function parseColor(hex) {
+    const { r, g, b, a } = color(hex).toRgb();
+
+    return Jimp.rgbaToInt(r, g, b, a * 255);
   }
 
   return {
@@ -93,13 +100,6 @@ module.exports = function(options) {
         }
 
         return parameters;
-      },
-
-      background(hex) {
-        log("General:background", `Parsing colour ${hex}`);
-        const { r, g, b, a } = color(hex).toRgb();
-
-        return Jimp.rgbaToInt(r, g, b, a * 255);
       }
     },
 
@@ -208,7 +208,7 @@ module.exports = function(options) {
           this.jimp = new Jimp(
             properties.width,
             properties.height,
-            properties.transparent ? 0x00000000 : background,
+            properties.transparent ? 0 : parseColor(background),
             (error, canvas) => (error ? reject(error) : resolve(canvas))
           );
         });

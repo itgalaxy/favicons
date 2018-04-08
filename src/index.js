@@ -40,14 +40,13 @@ function favicons(source, options = {}, next) {
 
     const maximum = Math.max(properties.width, properties.height);
     const offset = Math.round(maximum / 100 * platformOptions.offset) || 0;
-    const background = µ.General.background(platformOptions.background);
 
     if (platformOptions.disableTransparency) {
       properties.transparent = false;
     }
 
     return Promise.all([
-      µ.Images.create(properties, background),
+      µ.Images.create(properties, platformOptions.background),
       µ.Images.render(sourceset, properties, offset)
     ])
       .then(([canvas, buffer]) =>
