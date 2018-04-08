@@ -9,7 +9,7 @@ const through2 = require("through2"),
 (() => {
   "use strict";
 
-  function favicons(source, parameters, next) {
+  function favicons(source, parameters = {}, next) {
     if (next) {
       return favicons(source, parameters)
         .then(response => next(null, response))
@@ -17,7 +17,7 @@ const through2 = require("through2"),
     }
 
     const config = clone(configDefaults),
-      options = mergeDefaults(parameters || {}, config.defaults),
+      options = mergeDefaults(parameters, config.defaults),
       µ = helpers(options);
 
     function createFavicon(sourceset, properties, name, platformOptions) {
