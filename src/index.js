@@ -4,6 +4,7 @@ const through2 = require("through2"),
   configDefaults = require("require-directory")(module, "config"),
   helpers = require("./helpers.js"),
   path = require("path"),
+  File = require("vinyl"),
   toIco = require("to-ico");
 
 (() => {
@@ -132,8 +133,6 @@ const through2 = require("through2"),
   }
 
   function stream(params, handleHtml) {
-    const µ = helpers(params);
-
     /* eslint func-names: 0, no-invalid-this: 0 */
     return through2.obj(function(file, encoding, callback) {
       if (file.isNull()) {
@@ -147,7 +146,14 @@ const through2 = require("through2"),
       favicons(file.contents, params)
         .then(({ images, files, html }) => {
           for (const asset of [...images, ...files]) {
-            this.push(µ.General.vinyl(asset, file));
+            this.push(
+              new File({
+                path: asset.name,
+                contents: Buffer.isBuffer(asset.contents)
+                  ? asset.contents
+                  : new Buffer(asset.contents)
+              })
+            );
           }
 
           if (handleHtml) {

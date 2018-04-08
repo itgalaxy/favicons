@@ -9,7 +9,6 @@ const path = require("path"),
   sizeOf = require("image-size"),
   Jimp = require("jimp"),
   svg2png = require("svg2png"),
-  File = require("vinyl"),
   PLATFORM_OPTIONS = require("./config/platform-options.json");
 
 (() => {
@@ -112,23 +111,6 @@ const path = require("path"),
           const rgba = color(hex).toRgb();
 
           return Jimp.rgbaToInt(rgba.r, rgba.g, rgba.b, rgba.a * HEX_MAX);
-        },
-
-        /* eslint no-underscore-dangle: 0 */
-        vinyl(object, input) {
-          const output = new File({
-            path: object.name,
-            contents: Buffer.isBuffer(object.contents)
-              ? object.contents
-              : new Buffer(object.contents)
-          });
-
-          // gulp-cache support
-          if (typeof input._cachedKey !== "undefined") {
-            output._cachedKey = input._cachedKey;
-          }
-
-          return output;
         }
       },
 
