@@ -33,7 +33,6 @@
     "cheerio": "^0.19.0",
     "clone": "^1.0.4",
     "colors": "^1.2.1",
-    "harmony-reflect": "^1.6.0",
     "image-size": "^0.6.2",
     "jimp": "^0.2.28",
     "jsontoxml": "^1.0.0",
@@ -43,7 +42,6 @@
     "through2": "^2.0.3",
     "tinycolor2": "^1.4.1",
     "to-ico": "^1.1.5",
-    "underscore": "^1.8.3",
     "util.promisify": "^1.0.0",
     "vinyl": "^2.1.0"
   },

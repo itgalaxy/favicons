@@ -6,9 +6,5 @@
 	"background": {
 		"platforms": ["android", "appleIcon", "appleStartup", "firefox", "coast", "windows", "yandex"],
 		"defaultTo": false
-	},
-	"shadow": {
-		"platforms": ["android"],
-		"defaultTo": false
 	}
 }
