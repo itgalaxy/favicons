@@ -135,6 +135,13 @@
       "rotate": false,
       "mask": false
     },
+    "apple-touch-icon-1024x1024.png": {
+      "width": 1024,
+      "height": 1024,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
+    },
     "apple-touch-icon.png": {
       "width": 180,
       "height": 180,
