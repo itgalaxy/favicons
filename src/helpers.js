@@ -141,7 +141,7 @@ module.exports = function(options) {
           log("Files:create", `Creating file: ${name}`);
           if (name === "manifest.json") {
             properties.name = options.appName;
-            properties.short_name = options.appName;
+            properties.short_name = options.shortName || options.appName;
             properties.description = options.appDescription;
             properties.dir = options.dir;
             properties.lang = options.lang;
