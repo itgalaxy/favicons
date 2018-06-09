@@ -1,27 +1,41 @@
 sudo: false
+
+git:
+  depth: 10
+
+branches:
+  only:
+    - master
+    - /^greenkeeper/.*$/
+
 language: node_js
 
-node_js:
-- '4'
-- '5'
-- '6'
-- '7'
-- '8'
-- node
+# cache node modules
+cache:
+  directories:
+    - $HOME/.npm
+    - node_modules
 
-os:
-- linux
-- osx
-
-jobs:
+matrix:
   include:
-  - stage: test
-    os: linux
-    node_js: node
-    script: travis_retry npm run coverage
-    after_success:
-    - travis_retry npm install coveralls
-    - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+    - node_js: '10'
+      script: npm run pretest
+      env: CI=pretest
+    - node_js: '10'
+      script: npm run test-only
+      env: CI=coverage 10
+    - node_js: '8'
+      script: npm run test-only
+      env: CI=tests 8
+    - node_js: '6'
+      script: npm run test-only
+      env: CI=tests 6
 
 before_install:
-- travis_retry npm install -g npm@latest
+  - npm install -g npm@latest
+
+install:
+  - npm ci
+
+after_success:
+  - if [ "$CI" = "coverage" ]; then cat ./.coverage/lcov.info | ./node_modules/.bin/coveralls; fi

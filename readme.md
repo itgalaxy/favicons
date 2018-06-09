@@ -1,7 +1,11 @@
 # Favicons
 
-[![Build Status](https://travis-ci.org/evilebottnawi/favicons.svg?branch=master)](https://travis-ci.org/evilebottnawi/favicons)
-[![Coverage Status](https://coveralls.io/repos/github/evilebottnawi/favicons/badge.svg?branch=master)](https://coveralls.io/github/evilebottnawi/favicons?branch=master)
+[![NPM version](https://img.shields.io/npm/v/favicons.svg)](https://www.npmjs.org/package/favicons)
+[![Build Status](https://travis-ci.org/itgalaxy/favicons.svg?branch=master)](https://travis-ci.org/evilebottnawi/favicons)
+[![Coverage Status](https://coveralls.io/repos/github/itgalaxy/favicons/badge.svg?branch=master)](https://coveralls.io/github/evilebottnawi/favicons?branch=master)
+[![Dependencies Status](https://david-dm.org/itgalaxy/webpack-modernizr-loader/status.svg)](https://david-dm.org/itgalaxy/webpack-modernizr-loader)
+[![DevDependencies Status](https://david-dm.org/itgalaxy/webpack-modernizr-loader/dev-status.svg)](https://david-dm.org/itgalaxy/webpack-modernizr-loader?type=dev)
+[![Greenkeeper badge](https://badges.greenkeeper.io/itgalaxy/webpack-modernizr-loader.svg)](https://greenkeeper.io)
 
 A Node.js module for generating favicons and their associated files. Originally built for [Google's Web Starter Kit](https://github.com/google/web-starter-kit) and [Catalyst](https://github.com/haydenbleasel/catalyst). Requires Node 4+. Installed through NPM with:
 
@@ -117,11 +121,18 @@ For the full list of files, check `config/files.json`. For the full HTML code, c
 
 Because pure Javascript modules aren't available at the moment. For example, the [El Capitan SVG favicon](https://github.com/haydenbleasel/favicons/issues/61) and the [Windows tile silhouette ability](https://github.com/haydenbleasel/favicons/issues/58) both require [SVG support](https://github.com/haydenbleasel/favicons/issues/53). If modules for these task begin to appear, please jump on the appropriate issue and we'll get on it ASAP.
 
-## Credits
+## Thank you
 
-Thank you to...
-
+- [@haydenbleasel](https://github.com/haydenbleasel) for this great project.
 - [@phbernard](https://github.com/phbernard) for all the work we did together to make Favicons and RFG awesome.
 - [@addyosmani](https://github.com/addyosmani), [@gauntface](https://github.com/gauntface), [@paulirish](https://github.com/paulirish), [@mathiasbynens](https://github.com/mathiasbynens) and [@pbakaus](https://github.com/pbakaus) for [their input](https://github.com/google/web-starter-kit/pull/442) on multiple source images.
 - [@sindresorhus](https://github.com/sindresorhus) for his help on documentation and parameter improvements.
 - Everyone who opens an issue or submits a pull request to this repo :)
+
+## Contribution
+
+Feel free to push your code if you agree with publishing under the MIT license.
+
+## [Changelog](CHANGELOG.md)
+
+## [License](LICENSE)

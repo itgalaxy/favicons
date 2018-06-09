@@ -1,13 +1,14 @@
-const favicons = require('../src');
-const test = require('ava');
-const fs = require('fs');
+const favicons = require("../src");
+const test = require("ava");
+const fs = require("fs");
 
-const {logo_png, logo_svg, normalize} = require('./util');
+const { logo_png, logo_svg, normalize } = require("./util");
 
-test('should accept an array of either buffers or paths to source images', async t => {
-    t.plan(1);
+test("should accept an array of either buffers or paths to source images", async t => {
+  t.plan(1);
 
-    const result = await favicons([logo_png, fs.readFileSync(logo_svg)]);
+  // eslint-disable-next-line no-sync
+  const result = await favicons([logo_png, fs.readFileSync(logo_svg)]);
 
-    t.snapshot(normalize(result));
+  t.snapshot(normalize(result));
 });

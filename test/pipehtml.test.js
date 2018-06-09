@@ -1,7 +1,7 @@
 const favicons = require("../src");
 const test = require("ava");
 
-const { logo_png, normalize } = require("./util");
+const { logo_png } = require("./util");
 
 test("should allow piping HTML as a file", async t => {
   t.plan(1);
