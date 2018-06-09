@@ -39,7 +39,7 @@ function favicons(source, options = {}, next) {
     }
 
     const maximum = Math.max(properties.width, properties.height);
-    const offset = Math.round(maximum / 100 * platformOptions.offset) || 0;
+    const offset = Math.round((maximum / 100) * platformOptions.offset) || 0;
 
     if (platformOptions.disableTransparency) {
       properties.transparent = false;

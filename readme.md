@@ -35,7 +35,7 @@ var favicons = require('favicons'),
         developerName: null,            // Your (or your developer's) name. `string`
         developerURL: null,             // Your (or your developer's) URL. `string`
         dir: "auto",                    // Primary text direction for name, short_name, and description
-        lang: "en-US"                   // Primary language for name and short_name
+        lang: "en-US",                  // Primary language for name and short_name
         background: "#fff",             // Background colour for flattened icons. `string`
         theme_color: "#fff",            // Theme color user for example in Android's task switcher. `string`
         display: "standalone",          // Preferred display mode: "fullscreen", "standalone", "minimal-ui" or "browser". `string`
