@@ -1,8 +1,8 @@
 # Favicons
 
 [![NPM version](https://img.shields.io/npm/v/favicons.svg)](https://www.npmjs.org/package/favicons)
-[![Build Status](https://travis-ci.org/itgalaxy/favicons.svg?branch=master)](https://travis-ci.org/evilebottnawi/favicons)
-[![Coverage Status](https://coveralls.io/repos/github/itgalaxy/favicons/badge.svg?branch=master)](https://coveralls.io/github/evilebottnawi/favicons?branch=master)
+[![Build Status](https://travis-ci.org/itgalaxy/favicons.svg?branch=master)](https://travis-ci.org/itgalaxy/favicons)
+[![Coverage Status](https://coveralls.io/repos/github/itgalaxy/favicons/badge.svg?branch=master)](https://coveralls.io/github/itgalaxy/favicons?branch=master)
 [![Dependencies Status](https://david-dm.org/itgalaxy/webpack-modernizr-loader/status.svg)](https://david-dm.org/itgalaxy/webpack-modernizr-loader)
 [![DevDependencies Status](https://david-dm.org/itgalaxy/webpack-modernizr-loader/dev-status.svg)](https://david-dm.org/itgalaxy/webpack-modernizr-loader?type=dev)
 [![Greenkeeper badge](https://badges.greenkeeper.io/itgalaxy/webpack-modernizr-loader.svg)](https://greenkeeper.io)
