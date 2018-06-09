@@ -1,14 +1,14 @@
-const favicons = require('../src');
-const test = require('ava');
+const favicons = require("../src");
+const test = require("ava");
 
-const {logo_png, normalize} = require('./util');
+const { logo_png, normalize } = require("./util");
 
-test('should allow setting an URL prefix', async t => {
-    t.plan(1);
+test("should allow setting an URL prefix", async t => {
+  t.plan(1);
 
-    const result = await favicons(logo_png, {
-        path: 'https://domain/subdomain',
-    });
+  const result = await favicons(logo_png, {
+    path: "https://domain/subdomain"
+  });
 
-    t.snapshot(normalize(result));
+  t.snapshot(normalize(result));
 });

@@ -8,10 +8,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/haydenbleasel/favicons.git"
+    "url": "https://github.com/itgalaxy/favicons.git"
   },
   "scripts": {
-    "test": "ava --require @babel/register test/**/*.test.js",
+    "lint": "eslint . --ignore-path .gitignore",
+    "fix": "npm run lint -- --fix",
+    "pretest": "npm run lint",
+    "test-only": "ava --require @babel/register test/**/*.test.js",
+    "test": "npm run test-only",
     "coverage": "nyc npm test",
     "prepublish": "gulp"
   },
@@ -26,9 +30,9 @@
   "author": "Hayden Bleasel <haydenbleasel@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/haydenbleasel/favicons/issues"
+    "url": "https://github.com/itgalaxy/favicons/issues"
   },
-  "homepage": "https://github.com/haydenbleasel/favicons",
+  "homepage": "https://github.com/itgalaxy/favicons",
   "dependencies": {
     "@babel/polyfill": "^7.0.0-beta.42",
     "cheerio": "^0.19.0",
