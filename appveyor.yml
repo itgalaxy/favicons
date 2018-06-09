@@ -18,12 +18,13 @@ branches:
 
 install:
   - ps: Install-Product node $env:nodejs_version
+  - npm -g install npm@latest
+  - node --version
+  - npm --version
   - npm ci
 
 cache:
   - node_modules
 
 test_script:
-  - node --version
-  - npm --version
-  - cmd: "npm run test-only"
+  - npm run test-only
