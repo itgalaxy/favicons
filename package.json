@@ -17,7 +17,7 @@
     "test-only": "ava --require @babel/register test/**/*.test.js",
     "test": "npm run test-only",
     "coverage": "nyc npm test",
-    "prepublish": "gulp"
+    "prepare": "gulp"
   },
   "keywords": [
     "favicon",
