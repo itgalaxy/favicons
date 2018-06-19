@@ -3,9 +3,9 @@
 [![NPM version](https://img.shields.io/npm/v/favicons.svg)](https://www.npmjs.org/package/favicons)
 [![Build Status](https://travis-ci.org/itgalaxy/favicons.svg?branch=master)](https://travis-ci.org/itgalaxy/favicons)
 [![Coverage Status](https://coveralls.io/repos/github/itgalaxy/favicons/badge.svg?branch=master)](https://coveralls.io/github/itgalaxy/favicons?branch=master)
-[![Dependencies Status](https://david-dm.org/itgalaxy/webpack-modernizr-loader/status.svg)](https://david-dm.org/itgalaxy/webpack-modernizr-loader)
-[![DevDependencies Status](https://david-dm.org/itgalaxy/webpack-modernizr-loader/dev-status.svg)](https://david-dm.org/itgalaxy/webpack-modernizr-loader?type=dev)
-[![Greenkeeper badge](https://badges.greenkeeper.io/itgalaxy/webpack-modernizr-loader.svg)](https://greenkeeper.io)
+[![Dependencies Status](https://david-dm.org/itgalaxy/favicons/status.svg)](https://david-dm.org/itgalaxy/favicons)
+[![DevDependencies Status](https://david-dm.org/itgalaxy/favicons/dev-status.svg)](https://david-dm.org/itgalaxy/favicons?type=dev)
+[![Greenkeeper badge](https://badges.greenkeeper.io/itgalaxy/favicons.svg)](https://greenkeeper.io)
 
 A Node.js module for generating favicons and their associated files. Originally built for [Google's Web Starter Kit](https://github.com/google/web-starter-kit) and [Catalyst](https://github.com/haydenbleasel/catalyst). Requires Node 4+. Installed through NPM with:
 
