@@ -1,6 +1,6 @@
 {
   "name": "favicons",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Favicon generator for Node.js",
   "main": "dist/index.js",
   "files": [
