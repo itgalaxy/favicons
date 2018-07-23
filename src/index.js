@@ -1,6 +1,6 @@
 const through2 = require("through2");
 const clone = require("clone");
-const mergeDefaults = require("merge-defaults");
+const mergeDefaults = require("lodash.defaultsdeep");
 const configDefaults = require("require-directory")(module, "config");
 const helpers = require("./helpers.js");
 const path = require("path");
