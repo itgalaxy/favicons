@@ -15,6 +15,7 @@ test("should allow specifying metadata", async t => {
     lang: "ar",
     background: "#333",
     theme_color: "#abc",
+    appleStatusBarStyle: "default",
     display: "fullscreen",
     orientation: "portrait",
     start_url: "/subdomain/",
