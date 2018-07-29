@@ -129,6 +129,10 @@ module.exports = function(options) {
             $("*")
               .first()
               .attr(attribute, options.appName);
+          } else if (html.includes("apple-mobile-web-app-status-bar-style")) {
+            $("*")
+              .first()
+              .attr(attribute, options.appleStatusBarStyle);
           }
           return resolve($.html());
         });

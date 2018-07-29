@@ -27,22 +27,23 @@ Please note: Favicons is tested on Node 4.x and above.
 
 ```js
 var favicons = require('favicons'),
-    source = 'test/logo.png',           // Source image(s). `string`, `buffer` or array of `string`
-    configuration = {
-        path: "/",                      // Path for overriding default icons path. `string`
-        appName: null,                  // Your application's name. `string`
-        appDescription: null,           // Your application's description. `string`
-        developerName: null,            // Your (or your developer's) name. `string`
-        developerURL: null,             // Your (or your developer's) URL. `string`
-        dir: "auto",                    // Primary text direction for name, short_name, and description
-        lang: "en-US"                   // Primary language for name and short_name
-        background: "#fff",             // Background colour for flattened icons. `string`
-        theme_color: "#fff",            // Theme color user for example in Android's task switcher. `string`
-        display: "standalone",          // Preferred display mode: "fullscreen", "standalone", "minimal-ui" or "browser". `string`
-        orientation: "any",             // Default orientation: "any", "natural", "portrait" or "landscape". `string`
-        start_url: "/?homescreen=1",    // Start URL when launching the application from a device. `string`
-        version: "1.0",                 // Your application's version string. `string`
-        logging: false,                 // Print logs to console? `boolean`
+    source = 'test/logo.png',                     // Source image(s). `string`, `buffer` or array of `string`
+    configuration = {          
+        path: "/",                                // Path for overriding default icons path. `string`
+        appName: null,                            // Your application's name. `string`
+        appDescription: null,                     // Your application's description. `string`
+        developerName: null,                      // Your (or your developer's) name. `string`
+        developerURL: null,                       // Your (or your developer's) URL. `string`
+        dir: "auto",                              // Primary text direction for name, short_name, and description
+        lang: "en-US",                            // Primary language for name and short_name
+        background: "#fff",                       // Background colour for flattened icons. `string`
+        theme_color: "#fff",                      // Theme color user for example in Android's task switcher. `string`
+        appleStatusBarStyle: "black-translucent", // Style for Apple status bar: "black-translucent", "default", "black". `string`
+        display: "standalone",                    // Preferred display mode: "fullscreen", "standalone", "minimal-ui" or "browser". `string`
+        orientation: "any",                       // Default orientation: "any", "natural", "portrait" or "landscape". `string`
+        start_url: "/?homescreen=1",              // Start URL when launching the application from a device. `string`
+        version: "1.0",                           // Your application's version string. `string`
+        logging: false,                           // Print logs to console? `boolean`
         icons: {
             // Platform Options:
             // - offset - offset in percentage
