@@ -25,10 +25,10 @@
   },
   "homepage": "https://github.com/haydenbleasel/favicons#gulp",
   "dependencies": {
-    "favicons": "^4.6.1"
+    "favicons": "^5.1.1"
   },
   "devDependencies": {
-    "babel-preset-es2015": "^6.5.0",
-    "gulp": "^3.9.1"
+    "babel-preset-env": "^1.7.0",
+    "gulp": "^4.0.0"
   }
 }
