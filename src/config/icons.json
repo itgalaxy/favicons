@@ -274,21 +274,24 @@
       "height": 60,
       "transparent": false,
       "rotate": false,
-      "mask": true
+      "mask": true,
+      "overlayGlow": true
     },
     "firefox_app_128x128.png": {
       "width": 128,
       "height": 128,
       "transparent": false,
       "rotate": false,
-      "mask": true
+      "mask": true,
+      "overlayGlow": true
     },
     "firefox_app_512x512.png": {
       "width": 512,
       "height": 512,
       "transparent": false,
       "rotate": false,
-      "mask": true
+      "mask": true,
+      "overlayGlow": true
     }
   },
   "windows": {
