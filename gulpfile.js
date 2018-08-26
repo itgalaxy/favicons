@@ -12,7 +12,7 @@ gulp.task("default", () =>
       .pipe(babel())
       .pipe(gulp.dest("dist/")),
 
-    gulp.src(["src/mask.png", "src/overlay.png"]).pipe(gulp.dest("dist/")),
+    gulp.src(["src/mask.png", "src/overlay-*.png"]).pipe(gulp.dest("dist/")),
 
     gulp.src(["src/config/*"]).pipe(gulp.dest("dist/config/"))
   ])

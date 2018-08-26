@@ -80,23 +80,17 @@ module.exports = function(options) {
         }
 
         for (const key of Object.keys(PLATFORM_OPTIONS)) {
-          const { platforms, defaultTo } = PLATFORM_OPTIONS[key];
+          const platformOption = PLATFORM_OPTIONS[key];
+          const { platforms, defaultTo } = platformOption;
 
           if (!(key in parameters) && platforms.includes(platform)) {
-            parameters[key] = defaultTo;
+            parameters[key] =
+              platform in platformOption ? platformOption[platform] : defaultTo;
           }
         }
 
-        if (typeof parameters.background === "boolean") {
-          if (platform === "android" && !parameters.background) {
-            parameters.background = "transparent";
-          } else {
-            parameters.background = options.background;
-          }
-        }
-
-        if (platform === "android" && parameters.background !== "transparent") {
-          parameters.disableTransparency = true;
+        if (parameters.background === true) {
+          parameters.background = options.background;
         }
 
         return parameters;
@@ -198,21 +192,21 @@ module.exports = function(options) {
     },
 
     Images: {
-      create(properties, background) {
+      create(properties) {
         return new Promise((resolve, reject) => {
           log(
             "Image:create",
             `Creating empty ${properties.width}x${
               properties.height
             } canvas with ${
-              properties.transparent ? "transparent" : background
+              properties.transparent ? "transparent" : properties.background
             } background`
           );
 
           this.jimp = new Jimp(
             properties.width,
             properties.height,
-            properties.transparent ? 0 : parseColor(background),
+            properties.transparent ? 0 : parseColor(properties.background),
             (error, canvas) => (error ? reject(error) : resolve(canvas))
           );
         });
@@ -280,22 +274,31 @@ module.exports = function(options) {
       },
 
       mask: Jimp.read(path.join(__dirname, "mask.png")),
-      overlay: Jimp.read(path.join(__dirname, "overlay.png")),
+      overlayGlow: Jimp.read(path.join(__dirname, "overlay-glow.png")),
+      // Gimp drop shadow filter: input: mask.png, config: X: 2, Y: 5, Offset: 5, Color: black, Opacity: 20
+      overlayShadow: Jimp.read(path.join(__dirname, "overlay-shadow.png")),
 
       composite(canvas, image, properties, offset, max) {
         if (properties.mask) {
           log("Images:composite", "Masking composite image on circle");
-          return Promise.all([this.mask, this.overlay]).then(
-            ([mask, overlay]) => {
-              canvas.mask(mask.clone().resize(max, Jimp.AUTO), 0, 0);
-              canvas.composite(overlay.clone().resize(max, Jimp.AUTO), 0, 0);
-              properties = Object.assign({}, properties, {
-                mask: false
-              });
-
-              return this.composite(canvas, image, properties, offset, max);
+          return Promise.all([
+            this.mask,
+            this.overlayGlow,
+            this.overlayShadow
+          ]).then(([mask, glow, shadow]) => {
+            canvas.mask(mask.clone().resize(max, Jimp.AUTO), 0, 0);
+            if (properties.overlayGlow) {
+              canvas.composite(glow.clone().resize(max, Jimp.AUTO), 0, 0);
             }
-          );
+            if (properties.overlayShadow) {
+              canvas.composite(shadow.clone().resize(max, Jimp.AUTO), 0, 0);
+            }
+            properties = Object.assign({}, properties, {
+              mask: false
+            });
+
+            return this.composite(canvas, image, properties, offset, max);
+          });
         }
 
         log(

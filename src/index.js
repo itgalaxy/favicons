@@ -41,16 +41,18 @@ function favicons(source, options = {}, next) {
     const maximum = Math.max(properties.width, properties.height);
     const offset = Math.round(maximum / 100 * platformOptions.offset) || 0;
 
-    if (platformOptions.disableTransparency) {
-      properties.transparent = false;
-    }
+    const mergedProperties = Object.assign({}, properties, platformOptions);
+
+    mergedProperties.transparent =
+      !mergedProperties.background ||
+      mergedProperties.background === "transparent";
 
     return Promise.all([
-      µ.Images.create(properties, platformOptions.background),
-      µ.Images.render(sourceset, properties, offset)
+      µ.Images.create(mergedProperties),
+      µ.Images.render(sourceset, mergedProperties, offset)
     ])
       .then(([canvas, buffer]) =>
-        µ.Images.composite(canvas, buffer, properties, offset, maximum)
+        µ.Images.composite(canvas, buffer, mergedProperties, offset, maximum)
       )
       .then(contents => ({ name, contents }));
   }
