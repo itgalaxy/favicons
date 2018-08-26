@@ -97,9 +97,13 @@ function favicons(source, options = {}, next) {
   async function create(sourceset) {
     const responses = [];
 
-    const platforms = Object.keys(options.icons).filter(
-      platform => options.icons[platform]
-    );
+    const platforms = Object.keys(options.icons)
+      .filter(platform => options.icons[platform])
+      .sort((a, b) => {
+        if (a === "favicons") return -1;
+        if (b === "favicons") return 1;
+        return a.localeCompare(b);
+      });
 
     for (const platform of platforms) {
       responses.push(await createPlatform(sourceset, platform));
@@ -108,7 +112,7 @@ function favicons(source, options = {}, next) {
     return {
       images: [].concat(...responses.map(r => r[0])),
       files: [].concat(...responses.map(r => r[1])),
-      html: [].concat(...responses.map(r => r[2])).sort()
+      html: [].concat(...responses.map(r => r[2]))
     };
   }
 
