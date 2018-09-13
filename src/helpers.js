@@ -145,6 +145,7 @@ module.exports = function(options) {
             properties.lang = options.lang;
             properties.display = options.display;
             properties.orientation = options.orientation;
+            properties.scope = options.scope;
             properties.start_url = options.start_url;
             properties.background_color = options.background;
             properties.theme_color = options.theme_color;

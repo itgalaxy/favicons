@@ -83,3 +83,11 @@ $RECYCLE.BIN/
 
 ### Custom ###
 dist/
+.idea/compiler.xml
+.idea/favicons.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml
+.idea/copyright/profiles_settings.xml
+.idea/inspectionProfiles/Project_Default.xml
