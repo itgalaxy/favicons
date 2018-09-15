@@ -8,6 +8,7 @@
       "lang": "en-US",
       "display": "standalone",
     	"orientation": "portrait",
+		"scope": "/",
     	"start_url": "./?utm_source=web_app_manifest",
       "background_color": "#FFFFFF",
       "theme_color": "#FFFFFF",

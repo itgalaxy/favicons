@@ -18,6 +18,7 @@ test("should allow specifying metadata", async t => {
     appleStatusBarStyle: "default",
     display: "fullscreen",
     orientation: "portrait",
+    scope: "/",
     start_url: "/subdomain/",
     version: "3.2.1"
   });

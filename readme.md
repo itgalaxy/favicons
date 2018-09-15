@@ -41,6 +41,7 @@ var favicons = require('favicons'),
         appleStatusBarStyle: "black-translucent", // Style for Apple status bar: "black-translucent", "default", "black". `string`
         display: "standalone",                    // Preferred display mode: "fullscreen", "standalone", "minimal-ui" or "browser". `string`
         orientation: "any",                       // Default orientation: "any", "natural", "portrait" or "landscape". `string`
+        scope: "/",                               // set of URLs that the browser considers within your app
         start_url: "/?homescreen=1",              // Start URL when launching the application from a device. `string`
         version: "1.0",                           // Your application's version string. `string`
         logging: false,                           // Print logs to console? `boolean`
@@ -103,6 +104,7 @@ gulp.task("default", function () {
         url: "http://haydenbleasel.com/",
         display: "standalone",
         orientation: "portrait",
+        scope: "/",
         start_url: "/?homescreen=1",
         version: 1.0,
         logging: false,
