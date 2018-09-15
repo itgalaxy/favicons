@@ -101,34 +101,24 @@ module.exports = function(options) {
       parse(html) {
         return new Promise(resolve => {
           log("HTML:parse", "HTML found, parsing and modifying source");
-          const $ = cheerio.load(html),
-            link = $("*").is("link"),
-            attribute = link ? "href" : "content",
-            value = $("*")
-              .first()
-              .attr(attribute);
+          const $ = cheerio.load(html);
+          const tag = $("*", "head").first();
+          const attribute = tag.is("link") ? "href" : "content";
+          const value = tag.attr(attribute);
 
           if (path.extname(value)) {
-            $("*")
-              .first()
-              .attr(attribute, relative(value));
+            tag.attr(attribute, relative(value));
           } else if (value.slice(0, 1) === "#") {
-            $("*")
-              .first()
-              .attr(attribute, options.background);
+            tag.attr(attribute, options.background);
           } else if (
             html.includes("application-name") ||
             html.includes("apple-mobile-web-app-title")
           ) {
-            $("*")
-              .first()
-              .attr(attribute, options.appName);
+            tag.attr(attribute, options.appName);
           } else if (html.includes("apple-mobile-web-app-status-bar-style")) {
-            $("*")
-              .first()
-              .attr(attribute, options.appleStatusBarStyle);
+            tag.attr(attribute, options.appleStatusBarStyle);
           }
-          return resolve($.html());
+          return resolve($.html(tag));
         });
       }
     },
