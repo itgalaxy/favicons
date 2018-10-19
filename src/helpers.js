@@ -247,7 +247,8 @@ module.exports = function(options) {
             image.contain(
               width,
               height,
-              Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE
+              Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE,
+              options.pixel_art ? Jimp.RESIZE_NEAREST_NEIGHBOR : null
             )
           );
         }
