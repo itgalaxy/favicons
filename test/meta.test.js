@@ -8,6 +8,7 @@ test("should allow specifying metadata", async t => {
 
   const result = await favicons(logo_png, {
     appName: "PWA",
+    appShortName: "PWA",
     appDescription: "Progressive Web App",
     developerName: "John Doe",
     developerURL: "https://john.doe.com",
