@@ -31,6 +31,7 @@ var favicons = require('favicons'),
     configuration = {          
         path: "/",                                // Path for overriding default icons path. `string`
         appName: null,                            // Your application's name. `string`
+        appShortName: null,                       // Your application's short_name. `string`. Optional. If not set, appName will be used
         appDescription: null,                     // Your application's description. `string`
         developerName: null,                      // Your (or your developer's) name. `string`
         developerURL: null,                       // Your (or your developer's) URL. `string`
@@ -97,6 +98,7 @@ var favicons = require("favicons").stream,
 gulp.task("default", function () {
     return gulp.src("logo.png").pipe(favicons({
         appName: "My App",
+        appShortName: "App",
         appDescription: "This is my application",
         developerName: "Hayden Bleasel",
         developerURL: "http://haydenbleasel.com/",
