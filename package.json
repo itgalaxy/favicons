@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/haydenbleasel/favicons#gulp",
   "dependencies": {
-    "favicons": "^5.1.1"
+    "favicons": "^5.2.0"
   },
   "devDependencies": {
     "babel-preset-env": "^1.7.0",
