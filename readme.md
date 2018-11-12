@@ -93,7 +93,7 @@ To use Favicons with Gulp, do as follows:
 
 ```js
 var favicons = require("favicons").stream,
-    gutil = require("gulp-util");
+    log = require("fancy-log");
 
 gulp.task("default", function () {
     return gulp.src("logo.png").pipe(favicons({
@@ -115,7 +115,7 @@ gulp.task("default", function () {
         pipeHTML: true,
         replace: true
     }))
-    .on("error", gutil.log)
+    .on("error", log)
     .pipe(gulp.dest("./"));
 });
 ```
