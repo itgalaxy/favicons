@@ -103,7 +103,8 @@ module.exports = function(options) {
           log("HTML:parse", "HTML found, parsing and modifying source");
           const $ = cheerio.load(html);
           const tag = $("*", "head").first();
-          const attribute = tag.is("link") ? "href" : "content";
+          const isLink = tag.is("link");
+          const attribute = isLink ? "href" : "content";
           const value = tag.attr(attribute);
 
           if (path.extname(value)) {
@@ -118,6 +119,15 @@ module.exports = function(options) {
           } else if (html.includes("apple-mobile-web-app-status-bar-style")) {
             tag.attr(attribute, options.appleStatusBarStyle);
           }
+
+          if (
+            isLink &&
+            tag.attr("rel") === "manifest" &&
+            options.loadManifestWithCredentials
+          ) {
+            tag.attr("crossOrigin", "use-credentials");
+          }
+
           return resolve($.html(tag));
         });
       }
