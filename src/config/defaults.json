@@ -17,6 +17,7 @@
   "logging": false,
   "pipeHTML": false,
   "pixel_art": false,
+  "loadManifestWithCredentials": false,
   "icons": {
     "android": true,
     "appleIcon": true,
