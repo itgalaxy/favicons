@@ -16,8 +16,11 @@ module.exports = function(options) {
     return path.substr(-1) === "/" ? path : `${path}/`;
   }
 
-  function relative(path) {
-    return url.resolve(options.path && directory(options.path), path);
+  function relative(path, relativeToPath = false) {
+    return url.resolve(
+      (!relativeToPath && options.path && directory(options.path)) || "",
+      path
+    );
   }
 
   function log(context, message) {
@@ -149,7 +152,10 @@ module.exports = function(options) {
             properties.start_url = options.start_url;
             properties.background_color = options.background;
             properties.theme_color = options.theme_color;
-            properties.icons.map(icon => (icon.src = relative(icon.src)));
+            properties.icons.map(
+              icon =>
+                (icon.src = relative(icon.src, options.manifestRelativePaths))
+            );
             properties = JSON.stringify(properties, null, 2);
           } else if (name === "manifest.webapp") {
             properties.version = options.version;
@@ -160,7 +166,10 @@ module.exports = function(options) {
             properties.icons = Object.keys(properties.icons).reduce(
               (obj, key) =>
                 Object.assign(obj, {
-                  [key]: relative(properties.icons[key])
+                  [key]: relative(
+                    properties.icons[key],
+                    options.manifestRelativePaths
+                  )
                 }),
               {}
             );
@@ -170,7 +179,10 @@ module.exports = function(options) {
               if (property.name === "TileColor") {
                 property.text = options.background;
               } else {
-                property.attrs.src = relative(property.attrs.src);
+                property.attrs.src = relative(
+                  property.attrs.src,
+                  options.manifestRelativePaths
+                );
               }
             });
             properties = jsonxml(properties, {
@@ -181,7 +193,10 @@ module.exports = function(options) {
           } else if (name === "yandex-browser-manifest.json") {
             properties.version = options.version;
             properties.api_version = 1;
-            properties.layout.logo = relative(properties.layout.logo);
+            properties.layout.logo = relative(
+              properties.layout.logo,
+              options.manifestRelativePaths
+            );
             properties.layout.color = options.background;
             properties = JSON.stringify(properties, null, 2);
           } else if (/\.html$/.test(name)) {
