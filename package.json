@@ -44,7 +44,7 @@
     "jsontoxml": "^1.0.1",
     "lodash.defaultsdeep": "^4.6.0",
     "require-directory": "^2.1.1",
-    "svg2png": "^4.1.1",
+    "sharp": "^0.21.1",
     "through2": "^3.0.0",
     "tinycolor2": "^1.4.1",
     "to-ico": "^1.1.5",
