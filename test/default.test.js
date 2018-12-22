@@ -1,17 +1,24 @@
 const favicons = require("../src");
 const test = require("ava");
 
-const { logo_png, normalize } = require("./util");
+const { snapshotManager } = require("ava/lib/concordance-options");
+const { factory } = require("concordance-comparator");
 
-test.cb("should generate the expected default result", t => {
+const { logo_png } = require("./util");
+const { Image, snapshotResult } = require("./Image");
+
+snapshotManager.plugins.push(factory(Image, v => new Image(v[0], v[1])));
+
+test("should generate the expected default result", async t => {
   t.plan(1);
 
-  favicons(logo_png, {}, (error, result) => {
-    if (error) {
-      throw error;
-    }
+  return new Promise((resolve, reject) => {
+    favicons(logo_png, {}, (error, result) => {
+      if (error) {
+        reject(error);
+      }
 
-    t.snapshot(normalize(result));
-    t.end();
+      snapshotResult(t, result).then(resolve, reject);
+    });
   });
 });

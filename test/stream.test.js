@@ -2,19 +2,33 @@ const favicons = require("../src").stream;
 const test = require("ava");
 const gulp = require("gulp");
 
-const { logo_png } = require("./util");
+const { snapshotManager } = require("ava/lib/concordance-options");
+const { factory } = require("concordance-comparator");
 
-test.cb("should provide stream interface", t => {
+const { logo_png } = require("./util");
+const { Image, snapshotResult } = require("./Image");
+
+snapshotManager.plugins.push(factory(Image, v => new Image(v[0], v[1])));
+
+test("should provide stream interface", async t => {
   t.plan(1);
 
-  const result = {};
+  const result = {
+    images: []
+  };
 
-  gulp
-    .src(logo_png)
-    .pipe(favicons({}, html => (result["index.html"] = html)))
-    .on("data", chunk => (result[chunk.path] = chunk.contents))
-    .on("end", () => {
-      t.snapshot(result);
-      t.end();
-    });
+  return new Promise((resolve, reject) => {
+    gulp
+      .src(logo_png)
+      .pipe(favicons({}, html => (result["index.html"] = html)))
+      .on("data", chunk => {
+        result.images.push({
+          name: chunk.path,
+          contents: chunk.contents
+        });
+      })
+      .on("end", () => {
+        snapshotResult(t, result).then(resolve, reject);
+      });
+  });
 });
