@@ -55,16 +55,19 @@
     "@babel/core": "^7.1.6",
     "@babel/preset-env": "^7.1.6",
     "@babel/register": "^7.0.0",
-    "ava": "^1.0.0-rc.2",
+    "ava": "^1.2.1",
     "babel-plugin-istanbul": "^5.1.0",
+    "concordance-comparator": "^0.1.0",
     "dir-compare": "^1.4.0",
     "eslint": "^5.9.0",
     "eslint-config-prettier": "^3.3.0",
     "eslint-plugin-prettier": "^3.0.0",
+    "fibers": "^3.1.1",
     "gulp": "^4.0.0",
     "gulp-babel": "^8.0.0",
     "gulp-eslint": "^5.0.0",
     "nyc": "^13.1.0",
-    "prettier": "^1.15.2"
+    "prettier": "^1.15.2",
+    "resemblejs": "^3.0.0"
   }
 }
