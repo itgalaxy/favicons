@@ -90,7 +90,7 @@ var config = require('favicons').config;
 
 ### Gulp
 
-To use Favicons with Gulp, do as follows:
+To use Favicons with Gulp, you can either use the [gulp-plugin](https://github.com/rejas/gulp-favicons) or call it manually as follows:
 
 ```js
 var favicons = require("favicons").stream,

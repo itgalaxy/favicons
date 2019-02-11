@@ -328,9 +328,8 @@ module.exports = function(options) {
         return new Promise((resolve, reject) =>
           canvas
             .composite(image, offset, offset)
-            .getBuffer(
-              Jimp.MIME_PNG,
-              (error, result) => (error ? reject(error) : resolve(result))
+            .getBuffer(Jimp.MIME_PNG, (error, result) =>
+              error ? reject(error) : resolve(result)
             )
         );
       }
