@@ -180,8 +180,8 @@
       "mask": false
     },
     "apple-touch-startup-image-748x1024.png": {
-      "width": 748,
-      "height": 1024,
+      "width": 1024,
+      "height": 768,
       "transparent": false,
       "rotate": true,
       "mask": false
@@ -201,8 +201,8 @@
       "mask": false
     },
     "apple-touch-startup-image-1182x2208.png": {
-      "width": 1182,
-      "height": 2208,
+      "width": 2208,
+      "height": 1182,
       "transparent": false,
       "rotate": true,
       "mask": false
@@ -215,8 +215,8 @@
       "mask": false
     },
     "apple-touch-startup-image-1496x2048.png": {
-      "width": 1496,
-      "height": 2048,
+      "width": 2048,
+      "height": 1496,
       "transparent": false,
       "rotate": true,
       "mask": false

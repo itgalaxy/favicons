@@ -278,16 +278,7 @@ module.exports = function(options) {
           );
         }
 
-        return promise.then(image => {
-          if (properties.rotate) {
-            const degrees = 90;
-
-            log("Images:render", `Rotating image by ${degrees}`);
-            image.rotate(degrees, false);
-          }
-
-          return image;
-        });
+        return promise.then(image => image);
       },
 
       mask: Jimp.read(path.join(__dirname, "mask.png")),
@@ -325,13 +316,18 @@ module.exports = function(options) {
           } canvas with offset ${offset}`
         );
 
-        return new Promise((resolve, reject) =>
-          canvas
-            .composite(image, offset, offset)
-            .getBuffer(Jimp.MIME_PNG, (error, result) =>
-              error ? reject(error) : resolve(result)
-            )
-        );
+        return new Promise((resolve, reject) => {
+          canvas.composite(image, offset, offset);
+          if (properties.rotate) {
+            const degrees = 90;
+
+            log("Images:render", `Rotating image by ${degrees}`);
+            canvas.rotate(degrees, false);
+          }
+          return canvas.getBuffer(Jimp.MIME_PNG, (error, result) =>
+            error ? reject(error) : resolve(result)
+          );
+        });
       }
     }
   };
