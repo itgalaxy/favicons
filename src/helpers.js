@@ -273,7 +273,11 @@ module.exports = function(options) {
               width,
               height,
               Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE,
-              options.pixel_art ? Jimp.RESIZE_NEAREST_NEIGHBOR : null
+              options.pixel_art &&
+                width >= image.bitmap.width &&
+                height >= image.bitmap.height
+                ? Jimp.RESIZE_NEAREST_NEIGHBOR
+                : null
             )
           );
         }
