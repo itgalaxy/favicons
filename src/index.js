@@ -120,7 +120,7 @@ function favicons(source, options = {}, next) {
 
   return options.pipeHTML
     ? result.then(response =>
-        µ.Files.create(response.html, options.html, false).then(file =>
+        µ.Files.create(response.html, options.html, true).then(file =>
           Object.assign(response, { files: [...response.files, file] })
         )
       )

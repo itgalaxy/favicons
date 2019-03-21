@@ -139,8 +139,8 @@ module.exports = function(options) {
     },
 
     Files: {
-      create(properties, name) {
-        return new Promise(resolve => {
+      create(properties, name, isHtml) {
+        return new Promise((resolve, reject) => {
           log("Files:create", `Creating file: ${name}`);
           if (name === "manifest.json") {
             properties.name = options.appName;
@@ -201,10 +201,12 @@ module.exports = function(options) {
             );
             properties.layout.color = options.background;
             properties = JSON.stringify(properties, null, 2);
-          } else if (/\.html$/.test(name)) {
+          } else if (isHtml) {
             properties = properties.join("\n");
+          } else {
+            reject(`Unknown format of file ${name}.`);
           }
-          return resolve({ name, contents: properties });
+          resolve({ name, contents: properties });
         });
       }
     },
