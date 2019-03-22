@@ -112,6 +112,8 @@ module.exports = function(options) {
 
           if (path.extname(value)) {
             tag.attr(attribute, relative(value));
+          } else if (html.includes("theme-color")) {
+            tag.attr(attribute, options.theme_color);
           } else if (value.slice(0, 1) === "#") {
             tag.attr(attribute, options.background);
           } else if (
