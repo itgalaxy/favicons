@@ -123,7 +123,7 @@ gulp.task("default", function () {
 
 ## Output
 
-For the full list of files, check `config/files.json`. For the full HTML code, check `config/html.json`. Finally, for the full list of icons, check `config/icons.json`.
+For the full list of files, check `config/files.json`. For the full HTML code, check `config/html.js`. Finally, for the full list of icons, check `config/icons.json`.
 
 ## Questions
 

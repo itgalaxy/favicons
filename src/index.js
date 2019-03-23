@@ -58,9 +58,7 @@ function favicons(source, options = {}, next) {
   }
 
   function createHTML(platform) {
-    return Promise.all(
-      Object.values(config.html[platform] || {}).map(µ.HTML.parse)
-    );
+    return Promise.all((config.html[platform] || []).map(µ.HTML.render));
   }
 
   function createFiles(platform) {

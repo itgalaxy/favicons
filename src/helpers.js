@@ -3,7 +3,6 @@ const url = require("url");
 const fs = require("fs");
 const promisify = require("util.promisify");
 const color = require("tinycolor2");
-const cheerio = require("cheerio");
 const colors = require("colors");
 const jsonxml = require("jsontoxml");
 const sizeOf = require("image-size");
@@ -101,40 +100,8 @@ module.exports = function(options) {
     },
 
     HTML: {
-      parse(html) {
-        return new Promise(resolve => {
-          log("HTML:parse", "HTML found, parsing and modifying source");
-          const $ = cheerio.load(html);
-          const tag = $("*", "head").first();
-          const isLink = tag.is("link");
-          const attribute = isLink ? "href" : "content";
-          const value = tag.attr(attribute);
-
-          if (path.extname(value)) {
-            tag.attr(attribute, relative(value));
-          } else if (html.includes("theme-color")) {
-            tag.attr(attribute, options.theme_color);
-          } else if (value.slice(0, 1) === "#") {
-            tag.attr(attribute, options.background);
-          } else if (
-            html.includes("application-name") ||
-            html.includes("apple-mobile-web-app-title")
-          ) {
-            tag.attr(attribute, options.appName);
-          } else if (html.includes("apple-mobile-web-app-status-bar-style")) {
-            tag.attr(attribute, options.appleStatusBarStyle);
-          }
-
-          if (
-            isLink &&
-            tag.attr("rel") === "manifest" &&
-            options.loadManifestWithCredentials
-          ) {
-            tag.attr("crossOrigin", "use-credentials");
-          }
-
-          return resolve($.html(tag));
-        });
+      render(htmlTemplate) {
+        return htmlTemplate(Object.assign({}, options, { relative }));
       }
     },
 
