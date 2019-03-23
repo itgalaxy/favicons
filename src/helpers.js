@@ -222,21 +222,10 @@ module.exports = function(options) {
               background,
               width,
               height,
-              fit: sharp.fit.inside
+              fit: sharp.fit.contain
             })
-            .toBuffer({ resolveWithObject: true })
-            .then(({ data, info }) =>
-              sharp(data)
-                .extend({
-                  background,
-                  top: (height - info.height) >> 1,
-                  bottom: (height - info.height + 1) >> 1,
-                  left: (width - info.width) >> 1,
-                  right: (width - info.width + 1) >> 1
-                })
-                .toBuffer()
-                .then(Jimp.read)
-            );
+            .toBuffer()
+            .then(Jimp.read);
         } else {
           const sideSize = Math.max(width, height);
 
