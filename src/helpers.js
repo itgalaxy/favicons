@@ -180,23 +180,20 @@ module.exports = function(options) {
 
     Images: {
       create(properties) {
-        return new Promise((resolve, reject) => {
-          log(
-            "Image:create",
-            `Creating empty ${properties.width}x${
-              properties.height
-            } canvas with ${
-              properties.transparent ? "transparent" : properties.background
-            } background`
-          );
+        log(
+          "Image:create",
+          `Creating empty ${properties.width}x${
+            properties.height
+          } canvas with ${
+            properties.transparent ? "transparent" : properties.background
+          } background`
+        );
 
-          this.jimp = new Jimp(
-            properties.width,
-            properties.height,
-            properties.transparent ? 0 : parseColor(properties.background),
-            (error, canvas) => (error ? reject(error) : resolve(canvas))
-          );
-        });
+        return Jimp.create(
+          properties.width,
+          properties.height,
+          properties.transparent ? 0 : parseColor(properties.background)
+        );
       },
 
       render(sourceset, properties, offset) {
@@ -301,18 +298,14 @@ module.exports = function(options) {
           } canvas with offset ${offset}`
         );
 
-        return new Promise((resolve, reject) => {
-          canvas.composite(image, offset, offset);
-          if (properties.rotate) {
-            const degrees = 90;
+        canvas.composite(image, offset, offset);
+        if (properties.rotate) {
+          const degrees = 90;
 
-            log("Images:render", `Rotating image by ${degrees}`);
-            canvas.rotate(degrees, false);
-          }
-          return canvas.getBuffer(Jimp.MIME_PNG, (error, result) =>
-            error ? reject(error) : resolve(result)
-          );
-        });
+          log("Images:render", `Rotating image by ${degrees}`);
+          canvas.rotate(degrees, false);
+        }
+        return canvas.getBufferAsync(Jimp.MIME_PNG);
       }
     }
   };
