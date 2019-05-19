@@ -5,6 +5,7 @@
         "node": "4"
       },
       "useBuiltIns": "usage",
+      "corejs": "3.0.0",
       "exclude": [
         "transform-regenerator"
       ]
