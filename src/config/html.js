@@ -35,7 +35,7 @@ module.exports = {
     ({ relative }) => `<link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 1)" href="${relative("apple-touch-startup-image-748x1024.png")}">`,
     ({ relative }) => `<link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 1)" href="${relative("apple-touch-startup-image-768x1004.png")}">`,
     ({ relative }) => `<link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)" href="${relative("apple-touch-startup-image-1496x2048.png")}">`,
-    ({ relative }) => `<link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)" href="${relative("apple-touch-startup-image-1536x2008.png")}">`
+    ({ relative }) => `<link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)" href="${relative("apple-touch-startup-image-1536x2008.png")}">`,
     // iPhone X (1125px x 2436px)
     ({ relative }) => `<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 3)" href="${relative("apple-touch-startup-image-1125x2436.png")}">`
   ],
