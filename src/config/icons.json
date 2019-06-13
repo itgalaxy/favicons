@@ -227,6 +227,13 @@
       "transparent": false,
       "rotate": false,
       "mask": false
+    },
+    "apple-touch-startup-image-1125x2436.png": {
+      "width": 1125,
+      "height": 2436,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
     }
   },
   "coast": {
