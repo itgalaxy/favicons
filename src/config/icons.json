@@ -227,6 +227,62 @@
       "transparent": false,
       "rotate": false,
       "mask": false
+    },
+    "apple-touch-startup-image-1242x2208.png": {
+      "width": 1242,
+      "height": 2208,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
+    },
+    "apple-touch-startup-image-2208x1242.png": {
+      "width": 2208,
+      "height": 1242,
+      "transparent": false,
+      "rotate": true,
+      "mask": false
+    },
+    "apple-touch-startup-image-1125x2436.png": {
+      "width": 1125,
+      "height": 2436,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
+    },
+    "apple-touch-startup-image-2436x1125.png": {
+      "width": 1125,
+      "height": 2436,
+      "transparent": false,
+      "rotate": true,
+      "mask": false
+    },
+    "apple-touch-startup-image-828x1792.png": {
+      "width": 828,
+      "height": 1792,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
+    },
+    "apple-touch-startup-image-1792x828.png": {
+      "width": 828,
+      "height": 1792,
+      "transparent": false,
+      "rotate": true,
+      "mask": false
+    },
+    "apple-touch-startup-image-1242x2688.png": {
+      "width": 1242,
+      "height": 2688,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
+    },
+    "apple-touch-startup-image-2688x1242.png": {
+      "width": 1242,
+      "height": 2688,
+      "transparent": false,
+      "rotate": true,
+      "mask": false
     }
   },
   "coast": {
