@@ -152,6 +152,7 @@ $RECYCLE.BIN/
 
 ### Custom ###
 dist/
+test/tmp/
 .idea/compiler.xml
 .idea/favicons.iml
 .idea/misc.xml
