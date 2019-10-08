@@ -257,7 +257,9 @@ module.exports = function(options) {
       render(sourceset, properties, offset) {
         log(
           "Image:render",
-          `Find nearest icon to ${properties.width}x${properties.height} with offset ${offset}`
+          `Find nearest icon to ${properties.width}x${
+            properties.height
+          } with offset ${offset}`
         );
 
         const width = properties.width - offset * 2;
@@ -353,7 +355,9 @@ module.exports = function(options) {
 
         log(
           "Images:composite",
-          `Compositing favicon on ${properties.width}x${properties.height} canvas with offset ${offset}`
+          `Compositing favicon on ${properties.width}x${
+            properties.height
+          } canvas with offset ${offset}`
         );
 
         canvas.composite(image, offset, offset);
