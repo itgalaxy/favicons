@@ -2,10 +2,10 @@
 
 /**
     Make sure you have the lates build. Run `gulp` to rebuild.
-    Run `node createExamples.js` to create the icons, slashs and files.
+    Run `node createExamples.js` to create the icons, splashs and files.
 **/
 
-var favicons = require('../dist/index.js'),
+const favicons = require('../dist/index.js'),
     fs = require('fs'),
     source = './fixtures/logo.png',              // Source image(s). `string`, `buffer` or array of `string`
     configuration = {
@@ -39,35 +39,35 @@ var favicons = require('../dist/index.js'),
             yandex: true                // Create Yandex browser icon. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
         }
     },
-    callback = function (error, response) {
+    callback = (error, response) => {
         if (error) {
-            console.log(error.message); // Error description e.g. "An unknown error has occurred"
+            throw Error(error.message); // Error description e.g. "An unknown error has occurred"
             return;
         }
 
         // Check if tmp dir exists, if not create
-        if (!fs.existsSync(__dirname + '/tmp/')){
-            fs.mkdirSync(__dirname + '/tmp/');
+        if (!fs.existsSync(`${__dirname}/tmp/`)){
+            fs.mkdirSync(`${__dirname}/tmp/`);
         }
 
         // Save images
         response.images.forEach(item => {
-            fs.writeFile(__dirname + '/tmp/' + item.name, item.contents, 'binary', function(err){
+            fs.writeFile(`${__dirname}/tmp/${item.name}`, item.contents, 'binary', function(err){
                 if (err) throw err
-                console.log(item.name + ' saved.')
+                console.log(`${item.name} saved.`)
             })
         });
 
         // Save files
         response.files.forEach(item => {
-            fs.writeFile(__dirname + '/tmp/' + item.name, item.contents, 'binary', function(err){
+            fs.writeFile(`${__dirname}/tmp/${item.name}`, item.contents, 'binary', function(err){
                 if (err) throw err
-                console.log(item.name + ' saved.')
+                console.log(`${item.name} saved.`)
             })
         });
 
         // Save HTML files
-        fs.writeFile(__dirname + '/tmp/index.html', response.html, 'binary', function(err){
+        fs.writeFile(`${__dirname}/tmp/index.html`, response.html, 'binary', function(err){
             if (err) throw err
             console.log('index.html saved.')
         })

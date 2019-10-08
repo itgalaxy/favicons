@@ -394,8 +394,8 @@
   },
   "windows": {
     "mstile-70x70.png": {
-      "width": 128,
-      "height": 128,
+      "width": 70,
+      "height": 70,
       "transparent": true,
       "rotate": false,
       "mask": false
@@ -408,22 +408,22 @@
       "mask": false
     },
     "mstile-150x150.png": {
-      "width": 270,
-      "height": 270,
+      "width": 150,
+      "height": 150,
       "transparent": true,
       "rotate": false,
       "mask": false
     },
     "mstile-310x150.png": {
-      "width": 558,
-      "height": 270,
+      "width": 310,
+      "height": 150,
       "transparent": true,
       "rotate": false,
       "mask": false
     },
     "mstile-310x310.png": {
-      "width": 558,
-      "height": 558,
+      "width": 310,
+      "height": 310,
       "transparent": true,
       "rotate": false,
       "mask": false
