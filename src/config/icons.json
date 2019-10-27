@@ -158,72 +158,156 @@
     }
   },
   "appleStartup": {
-    "apple-touch-startup-image-320x460.png": {
-      "width": 320,
-      "height": 460,
-      "transparent": false,
-      "rotate": false,
-      "mask": false
-    },
-    "apple-touch-startup-image-640x920.png": {
+    "apple-touch-startup-image-640x1136.png": {
       "width": 640,
-      "height": 920,
+      "height": 1136,
       "transparent": false,
       "rotate": false,
       "mask": false
     },
-    "apple-touch-startup-image-640x1096.png": {
-      "width": 640,
-      "height": 1096,
-      "transparent": false,
-      "rotate": false,
-      "mask": false
-    },
-    "apple-touch-startup-image-748x1024.png": {
-      "width": 1024,
-      "height": 768,
-      "transparent": false,
-      "rotate": true,
-      "mask": false
-    },
-    "apple-touch-startup-image-750x1294.png": {
+    "apple-touch-startup-image-750x1334.png": {
       "width": 750,
-      "height": 1294,
+      "height": 1334,
       "transparent": false,
       "rotate": false,
       "mask": false
     },
-    "apple-touch-startup-image-768x1004.png": {
-      "width": 768,
-      "height": 1004,
+    "apple-touch-startup-image-828x1792.png": {
+      "width": 828,
+      "height": 1792,
       "transparent": false,
       "rotate": false,
       "mask": false
     },
-    "apple-touch-startup-image-1182x2208.png": {
-      "width": 2208,
-      "height": 1182,
+    "apple-touch-startup-image-1125x2436.png": {
+      "width": 1125,
+      "height": 2436,
       "transparent": false,
-      "rotate": true,
+      "rotate": false,
       "mask": false
     },
-    "apple-touch-startup-image-1242x2148.png": {
+    "apple-touch-startup-image-1242x2208.png": {
       "width": 1242,
-      "height": 2148,
+      "height": 2208,
       "transparent": false,
       "rotate": false,
       "mask": false
     },
-    "apple-touch-startup-image-1496x2048.png": {
-      "width": 2048,
-      "height": 1496,
+    "apple-touch-startup-image-1242x2688.png": {
+      "width": 1242,
+      "height": 2688,
       "transparent": false,
-      "rotate": true,
+      "rotate": false,
       "mask": false
     },
-    "apple-touch-startup-image-1536x2008.png": {
+    "apple-touch-startup-image-1536x2048.png": {
       "width": 1536,
-      "height": 2008,
+      "height": 2048,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
+    },
+    "apple-touch-startup-image-1668x2224.png": {
+      "width": 1668,
+      "height": 2224,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
+    },
+    "apple-touch-startup-image-1668x2388.png": {
+      "width": 1668,
+      "height": 2388,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
+    },
+    "apple-touch-startup-image-2048x2732.png": {
+      "width": 2048,
+      "height": 2732,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
+    },
+    "apple-touch-startup-image-1136x640.png": {
+      "width": 1136,
+      "height": 640,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
+    },
+    "apple-touch-startup-image-2160x1620.png": {
+      "width": 2160,
+      "height": 1620,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
+    },
+    "apple-touch-startup-image-1620x2160.png": {
+      "height": 2160,
+      "width": 1620,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
+    },
+    "apple-touch-startup-image-1334x750.png": {
+      "width": 1334,
+      "height": 750,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
+    },
+    "apple-touch-startup-image-1792x828.png": {
+      "width": 1792,
+      "height": 828,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
+    },
+    "apple-touch-startup-image-2436x1125.png": {
+      "width": 2436,
+      "height": 1125,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
+    },
+    "apple-touch-startup-image-2208x1242.png": {
+      "width": 2208,
+      "height": 1242,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
+    },
+    "apple-touch-startup-image-2688x1242.png": {
+      "width": 2688,
+      "height": 1242,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
+    },
+    "apple-touch-startup-image-2048x1536.png": {
+      "width": 2048,
+      "height": 1536,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
+    },
+    "apple-touch-startup-image-2224x1668.png": {
+      "width": 2224,
+      "height": 1668,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
+    },
+    "apple-touch-startup-image-2388x1668.png": {
+      "width": 2388,
+      "height": 1668,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
+    },
+    "apple-touch-startup-image-2732x2048.png": {
+      "width": 2732,
+      "height": 2048,
       "transparent": false,
       "rotate": false,
       "mask": false
@@ -249,6 +333,13 @@
     "favicon-32x32.png": {
       "width": 32,
       "height": 32,
+      "transparent": true,
+      "rotate": false,
+      "mask": false
+    },
+    "favicon-48x48.png": {
+      "width": 48,
+      "height": 48,
       "transparent": true,
       "rotate": false,
       "mask": false
@@ -303,8 +394,8 @@
   },
   "windows": {
     "mstile-70x70.png": {
-      "width": 128,
-      "height": 128,
+      "width": 70,
+      "height": 70,
       "transparent": true,
       "rotate": false,
       "mask": false
@@ -317,22 +408,22 @@
       "mask": false
     },
     "mstile-150x150.png": {
-      "width": 270,
-      "height": 270,
+      "width": 150,
+      "height": 150,
       "transparent": true,
       "rotate": false,
       "mask": false
     },
     "mstile-310x150.png": {
-      "width": 558,
-      "height": 270,
+      "width": 310,
+      "height": 150,
       "transparent": true,
       "rotate": false,
       "mask": false
     },
     "mstile-310x310.png": {
-      "width": 558,
-      "height": 558,
+      "width": 310,
+      "height": 310,
       "transparent": true,
       "rotate": false,
       "mask": false
