@@ -14,10 +14,15 @@
     "lint": "eslint . --ignore-path .gitignore",
     "fix": "npm run lint -- --fix",
     "pretest": "npm run lint",
-    "test-only": "ava --require @babel/register test/**/*.test.js",
+    "test-only": "ava **/*.test.js",
     "test": "npm run test-only",
     "coverage": "nyc npm test",
     "prepare": "gulp"
+  },
+  "ava": {
+    "require": [
+      "@babel/register"
+    ]
   },
   "keywords": [
     "favicon",
