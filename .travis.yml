@@ -22,10 +22,10 @@ matrix:
       script: npm run pretest
       env: CI=pretest 12
     - node_js: '12'
-      script: npm run pretest
+      script: npm run test-only
       env: CI=tests 12
     - node_js: '11'
-      script: npm run pretest
+      script: npm run test-only
       env: CI=tests 11
     - node_js: '10'
       script: npm run test-only
