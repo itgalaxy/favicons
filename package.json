@@ -38,6 +38,9 @@
     "url": "https://github.com/itgalaxy/favicons/issues"
   },
   "homepage": "https://github.com/itgalaxy/favicons",
+  "engines": {
+    "node": ">=8.7.0"
+  },
   "dependencies": {
     "clone": "^2.1.2",
     "colors": "^1.4.0",
