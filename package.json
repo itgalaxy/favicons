@@ -14,7 +14,7 @@
     "lint": "eslint . --ignore-path .gitignore",
     "fix": "npm run lint -- --fix",
     "pretest": "npm run lint",
-    "test-only": "ava test/*.test.js",
+    "test-only": "ava",
     "test": "npm run test-only",
     "coverage": "nyc npm test",
     "prepare": "gulp"
@@ -39,7 +39,7 @@
   },
   "homepage": "https://github.com/itgalaxy/favicons",
   "engines": {
-    "node": ">=8.7.0"
+    "node": ">=8.9.4 <9 || >=10.0.0 <11 || >=12.0.0"
   },
   "dependencies": {
     "clone": "^2.1.2",
