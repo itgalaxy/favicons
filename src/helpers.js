@@ -1,7 +1,7 @@
 const path = require("path");
 const url = require("url");
 const fs = require("fs");
-const promisify = require("util.promisify");
+const { promisify } = require("util");
 const color = require("tinycolor2");
 const colors = require("colors");
 const jsonxml = require("jsontoxml");

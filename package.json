@@ -58,7 +58,6 @@
     "through2": "^3.0.1",
     "tinycolor2": "^1.4.1",
     "to-ico": "^1.1.5",
-    "util.promisify": "^1.0.0",
     "vinyl": "^2.2.0",
     "xml2js": "^0.4.22"
   },
