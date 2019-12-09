@@ -179,6 +179,10 @@ module.exports = function(options) {
             properties.start_url = options.start_url;
             properties.background_color = options.background;
             properties.theme_color = options.theme_color;
+            properties.prefer_related_applications =
+              options.preferRelatedApplications;
+            properties.related_applications = options.relatedApplications;
+
             properties.icons.map(
               icon =>
                 (icon.src = relative(icon.src, options.manifestRelativePaths))

@@ -19,6 +19,8 @@
   "pixel_art": false,
   "loadManifestWithCredentials": false,
   "manifestRelativePaths": false,
+  "preferRelatedApplications": false,
+  "relatedApplications": [],
   "icons": {
     "android": true,
     "appleIcon": true,

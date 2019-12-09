@@ -44,6 +44,8 @@ var favicons = require('favicons'),
         orientation: "any",                       // Default orientation: "any", "natural", "portrait" or "landscape". `string`
         scope: "/",                               // set of URLs that the browser considers within your app
         start_url: "/?homescreen=1",              // Start URL when launching the application from a device. `string`
+        preferRelatedApplications: false,         // Should the browser prompt the user to install the native companion app. `boolean`
+        relatedApplications: [],                  // Information about the native companion apps. This will only be used if `preferRelatedApplications` is `true`. `Array<{ id: string, url: string, platform: string }>`
         version: "1.0",                           // Your application's version string. `string`
         logging: false,                           // Print logs to console? `boolean`
         pixel_art: false,                         // Keeps pixels "sharp" when scaling up, for pixel art.  Only supported in offline mode.
