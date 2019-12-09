@@ -23,7 +23,7 @@ module.exports = {
     ({ relative }) => `<link rel="apple-touch-icon" sizes="1024x1024" href="${relative("apple-touch-icon-1024x1024.png")}">`,
     () => `<meta name="apple-mobile-web-app-capable" content="yes">`,
     ({ appleStatusBarStyle }) => `<meta name="apple-mobile-web-app-status-bar-style" content="${appleStatusBarStyle}">`,
-    ({ appName }) => appName ? `<meta name="apple-mobile-web-app-title" content="${appName}">` : `<meta name="apple-mobile-web-app-title">`
+    ({ appShortName, appName }) => (appShortName || appName) ? `<meta name="apple-mobile-web-app-title" content="${appShortName || appName}">` : `<meta name="apple-mobile-web-app-title">`
   ],
   appleStartup: [
     //
