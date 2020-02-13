@@ -30,12 +30,6 @@ matrix:
     - node_js: '10'
       script: npm run test-only
       env: CI=tests 10
-    - node_js: '9'
-      script: npm run test-only
-      env: CI=tests 9
-    - node_js: '8'
-      script: npm run test-only
-      env: CI=tests 8
 
 before_install:
   - npm install -g npm@latest
