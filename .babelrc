@@ -4,13 +4,8 @@
       "@babel/preset-env",
       {
         "targets": {
-          "node": "8.9"
-        },
-        "useBuiltIns": "usage",
-        "corejs": 3,
-        "exclude": [
-          "transform-regenerator"
-        ]
+          "node": "10.13"
+        }
       }
     ]
   ],

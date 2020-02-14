@@ -1,6 +1,6 @@
 {
   "name": "favicons",
-  "version": "5.5.0",
+  "version": "6.0.0",
   "description": "Favicon generator for Node.js",
   "main": "dist/index.js",
   "files": [
@@ -43,41 +43,40 @@
   },
   "homepage": "https://github.com/itgalaxy/favicons",
   "engines": {
-    "node": ">=8.9.4"
+    "node": ">=10.13.0"
   },
   "dependencies": {
     "clone": "^2.1.2",
     "colors": "^1.4.0",
-    "core-js": "^3.4.5",
     "image-size": "^0.8.3",
     "jimp": "^0.9.3",
     "jsontoxml": "^1.0.1",
     "lodash.defaultsdeep": "^4.6.1",
     "require-directory": "^2.1.1",
-    "sharp": "^0.23.3",
+    "sharp": "^0.24.0",
     "through2": "^3.0.1",
     "tinycolor2": "^1.4.1",
     "to-ico": "^1.1.5",
     "vinyl": "^2.2.0",
-    "xml2js": "^0.4.22"
+    "xml2js": "^0.4.23"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.4",
-    "@babel/preset-env": "^7.7.4",
-    "@babel/register": "^7.7.4",
+    "@babel/core": "^7.8.4",
+    "@babel/preset-env": "^7.8.4",
+    "@babel/register": "^7.8.3",
     "ava": "^2.4.0",
-    "babel-plugin-istanbul": "^5.2.0",
+    "babel-plugin-istanbul": "^6.0.0",
     "concordance-comparator": "^0.1.0",
     "del": "^5.1.0",
-    "dir-compare": "^1.8.0",
-    "eslint": "^6.7.1",
-    "eslint-config-prettier": "^6.7.0",
-    "eslint-plugin-prettier": "^3.1.1",
+    "dir-compare": "^2.2.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-prettier": "^3.1.2",
     "fibers": "^4.0.2",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-eslint": "^6.0.0",
-    "nyc": "^14.1.1",
+    "nyc": "^15.0.0",
     "prettier": "^1.19.1",
     "resemblejs": "^3.2.3"
   }
