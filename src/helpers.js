@@ -164,75 +164,71 @@ module.exports = function(options) {
     },
 
     Files: {
-      create(properties, name, isHtml) {
-        return new Promise((resolve, reject) => {
-          log("Files:create", `Creating file: ${name}`);
-          if (name === "manifest.json") {
-            properties.name = options.appName;
-            properties.short_name = options.appShortName || options.appName;
-            properties.description = options.appDescription;
-            properties.dir = options.dir;
-            properties.lang = options.lang;
-            properties.display = options.display;
-            properties.orientation = options.orientation;
-            properties.scope = options.scope;
-            properties.start_url = options.start_url;
-            properties.background_color = options.background;
-            properties.theme_color = options.theme_color;
-            properties.icons.map(
-              icon =>
-                (icon.src = relative(icon.src, options.manifestRelativePaths))
-            );
-            properties = JSON.stringify(properties, null, 2);
-          } else if (name === "manifest.webapp") {
-            properties.version = options.version;
-            properties.name = options.appName;
-            properties.description = options.appDescription;
-            properties.developer.name = options.developerName;
-            properties.developer.url = options.developerURL;
-            properties.icons = Object.keys(properties.icons).reduce(
-              (obj, key) =>
-                Object.assign(obj, {
-                  [key]: relative(
-                    properties.icons[key],
-                    options.manifestRelativePaths
-                  )
-                }),
-              {}
-            );
-            properties = JSON.stringify(properties, null, 2);
-          } else if (name === "browserconfig.xml") {
-            properties[0].children[0].children[0].children.map(property => {
-              if (property.name === "TileColor") {
-                property.text = options.background;
-              } else {
-                property.attrs.src = relative(
-                  property.attrs.src,
+      create(properties, name) {
+        log("Files:create", `Creating file: ${name}`);
+        if (name === "manifest.json") {
+          properties.name = options.appName;
+          properties.short_name = options.appShortName || options.appName;
+          properties.description = options.appDescription;
+          properties.dir = options.dir;
+          properties.lang = options.lang;
+          properties.display = options.display;
+          properties.orientation = options.orientation;
+          properties.scope = options.scope;
+          properties.start_url = options.start_url;
+          properties.background_color = options.background;
+          properties.theme_color = options.theme_color;
+          properties.icons.map(
+            icon =>
+              (icon.src = relative(icon.src, options.manifestRelativePaths))
+          );
+          properties = JSON.stringify(properties, null, 2);
+        } else if (name === "manifest.webapp") {
+          properties.version = options.version;
+          properties.name = options.appName;
+          properties.description = options.appDescription;
+          properties.developer.name = options.developerName;
+          properties.developer.url = options.developerURL;
+          properties.icons = Object.keys(properties.icons).reduce(
+            (obj, key) =>
+              Object.assign(obj, {
+                [key]: relative(
+                  properties.icons[key],
                   options.manifestRelativePaths
-                );
-              }
-            });
-            properties = jsonxml(properties, {
-              prettyPrint: true,
-              xmlHeader: true,
-              indent: "  "
-            });
-          } else if (name === "yandex-browser-manifest.json") {
-            properties.version = options.version;
-            properties.api_version = 1;
-            properties.layout.logo = relative(
-              properties.layout.logo,
-              options.manifestRelativePaths
-            );
-            properties.layout.color = options.background;
-            properties = JSON.stringify(properties, null, 2);
-          } else if (isHtml) {
-            properties = properties.join("\n");
-          } else {
-            reject(`Unknown format of file ${name}.`);
-          }
-          resolve({ name, contents: properties });
-        });
+                )
+              }),
+            {}
+          );
+          properties = JSON.stringify(properties, null, 2);
+        } else if (name === "browserconfig.xml") {
+          properties[0].children[0].children[0].children.map(property => {
+            if (property.name === "TileColor") {
+              property.text = options.background;
+            } else {
+              property.attrs.src = relative(
+                property.attrs.src,
+                options.manifestRelativePaths
+              );
+            }
+          });
+          properties = jsonxml(properties, {
+            prettyPrint: true,
+            xmlHeader: true,
+            indent: "  "
+          });
+        } else if (name === "yandex-browser-manifest.json") {
+          properties.version = options.version;
+          properties.api_version = 1;
+          properties.layout.logo = relative(
+            properties.layout.logo,
+            options.manifestRelativePaths
+          );
+          properties.layout.color = options.background;
+          properties = JSON.stringify(properties, null, 2);
+        } else {
+          return Promise.reject(`Unknown format of file ${name}.`);
+        }
+        return Promise.resolve({ name, contents: properties });
       }
     },
 

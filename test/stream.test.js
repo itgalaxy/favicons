@@ -32,3 +32,21 @@ test("should provide stream interface", async t => {
       });
   });
 });
+
+test("should stream html file", async t => {
+  let found = false;
+
+  await new Promise(resolve => {
+    gulp
+      .src(logo_png)
+      .pipe(favicons({ pipeHTML: true, html: "foo.html" }))
+      .on("data", chunk => {
+        if (chunk.basename === "foo.html") {
+          found = true;
+        }
+      })
+      .on("end", () => resolve());
+  });
+
+  t.true(found);
+});
