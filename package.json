@@ -26,7 +26,8 @@
     "files": [
       "test/**/*.test.js",
       "test/*.test.js"
-    ]
+    ],
+    "timeout": "60s"
   },
   "keywords": [
     "favicon",
@@ -64,7 +65,7 @@
     "@babel/core": "^7.8.4",
     "@babel/preset-env": "^7.8.4",
     "@babel/register": "^7.8.3",
-    "ava": "^2.4.0",
+    "ava": "^3.8.1",
     "babel-plugin-istanbul": "^6.0.0",
     "concordance-comparator": "^0.1.0",
     "del": "^5.1.0",
