@@ -20,7 +20,7 @@ class Image {
     if (this.name !== other.name) return false;
     if (Buffer.compare(this.buffer, other.buffer) === 0) return true;
 
-    const threshold = 5;
+    const threshold = 20;
     const diff = Future.fromPromise(
       new Promise((resolve, reject) => {
         compare(this.buffer, other.buffer, (err, data) => {
