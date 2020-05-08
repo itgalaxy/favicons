@@ -79,6 +79,6 @@
     "gulp-eslint": "^6.0.0",
     "nyc": "^15.0.0",
     "prettier": "^1.19.1",
-    "resemblejs": "^3.2.4"
+    "resemblejs": "^3.2.3"
   }
 }
