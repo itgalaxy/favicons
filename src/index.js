@@ -128,10 +128,7 @@ function stream(params, handleHtml) {
       return callback(new Error("Streaming not supported"));
     }
 
-    const { pipeHTML, ...options } = mergeDefaults(
-      params,
-      configDefaults.defaults
-    );
+    const { html: path, pipeHTML, ...options } = params;
 
     favicons(file.contents, options)
       .then(({ images, files, html }) => {
@@ -153,7 +150,7 @@ function stream(params, handleHtml) {
         if (pipeHTML) {
           this.push(
             new File({
-              path: options.html,
+              path,
               contents: Buffer.from(html.join("\n"))
             })
           );

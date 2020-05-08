@@ -15,7 +15,6 @@
   "start_url": "/?homescreen=1",
   "version": "1.0",
   "logging": false,
-  "pipeHTML": false,
   "pixel_art": false,
   "loadManifestWithCredentials": false,
   "manifestRelativePaths": false,
