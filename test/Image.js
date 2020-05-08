@@ -30,6 +30,10 @@ class Image {
       })
     ).wait();
 
+    console.log("DEBUGGING");
+    console.log(diff);
+    console.log(JSON.stringify(diff));
+
     const r = diff.isSameDimensions && diff.rawMisMatchPercentage < threshold;
 
     if (!r) console.log(this.name, diff);
