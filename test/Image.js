@@ -30,7 +30,7 @@ class Image {
       })
     ).wait();
 
-    console.log("DEBUGGING");
+    console.log(`DEBUGGING ${this.name}`);
     console.log(diff);
     console.log(JSON.stringify(diff));
 
