@@ -1,6 +1,8 @@
 # https://www.appveyor.com/docs/appveyor-yml
 
 environment:
+  global:
+    - THRESHOLD: "20"
   matrix:
     - nodejs_version: "14"
     - nodejs_version: "12"

@@ -14,3 +14,14 @@ module.exports.normalize = ({ files, images, html }) =>
     (obj, { name, contents }) => Object.assign(obj, { [name]: contents }),
     { "index.html": html }
   );
+
+// Windows tests seem to be flaky
+// https://ci.appveyor.com/project/evilebottnawi/favicons-8tpdt/builds/32754535
+// https://ci.appveyor.com/project/evilebottnawi/favicons-8tpdt/builds/32747583
+// The diff between these two commits is empty
+// Relax test strictness in windows
+module.exports.getThreshold = def => {
+  const env = parseInt(process.env.THRESHOLD, 10);
+
+  return !isNaN(env) && env >= 0 && env <= 100 ? env : def;
+};
