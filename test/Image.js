@@ -41,9 +41,7 @@ module.exports.Image = Image;
 
 module.exports.snapshotResult = async function(test, result) {
   for (const image of result.images) {
-    // '.ico' is not supported by resemble
-    if (!image.name.endsWith(".ico"))
-      image.contents = new Image(image.name, image.contents);
+    image.contents = new Image(image.name, image.contents);
   }
 
   await new Promise(resolve =>
