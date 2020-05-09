@@ -1,7 +1,6 @@
 const Fiber = require("fibers");
 const Future = require("fibers/future");
 const compare = require("resemblejs").compare;
-const { getThreshold } = require("./util");
 
 class Image {
   constructor(name, buffer) {
