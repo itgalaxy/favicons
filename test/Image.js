@@ -1,6 +1,9 @@
 const Fiber = require("fibers");
 const Future = require("fibers/future");
 const compare = require("resemblejs").compare;
+const { getThreshold } = require("./util");
+
+const defaultThreshold = 5;
 
 class Image {
   constructor(name, buffer) {
@@ -20,7 +23,7 @@ class Image {
     if (this.name !== other.name) return false;
     if (Buffer.compare(this.buffer, other.buffer) === 0) return true;
 
-    const threshold = getThreshold(5);
+    const threshold = getThreshold(defaultThreshold);
     const diff = Future.fromPromise(
       new Promise((resolve, reject) => {
         compare(this.buffer, other.buffer, (err, data) => {
