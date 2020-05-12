@@ -144,7 +144,7 @@ function stream(params, handleHtml) {
               path: asset.name,
               contents: Buffer.isBuffer(asset.contents)
                 ? asset.contents
-                : new Buffer(asset.contents)
+                : Buffer.from(asset.contents)
             })
           );
         }
