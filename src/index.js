@@ -114,15 +114,7 @@ function favicons(source, options = {}, next) {
     };
   }
 
-  const result = µ.General.source(source).then(create);
-
-  return options.pipeHTML
-    ? result.then(response =>
-        µ.Files.create(response.html, options.html, true).then(file =>
-          Object.assign(response, { files: [...response.files, file] })
-        )
-      )
-    : result;
+  return µ.General.source(source).then(create);
 }
 
 function stream(params, handleHtml) {
@@ -136,7 +128,9 @@ function stream(params, handleHtml) {
       return callback(new Error("Streaming not supported"));
     }
 
-    favicons(file.contents, params)
+    const { html: path, pipeHTML, ...options } = params;
+
+    favicons(file.contents, options)
       .then(({ images, files, html }) => {
         for (const asset of [...images, ...files]) {
           this.push(
@@ -151,6 +145,15 @@ function stream(params, handleHtml) {
 
         if (handleHtml) {
           handleHtml(html);
+        }
+
+        if (pipeHTML) {
+          this.push(
+            new File({
+              path,
+              contents: Buffer.from(html.join("\n"))
+            })
+          );
         }
 
         callback(null);
