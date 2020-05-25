@@ -28,7 +28,7 @@ Please note: Favicons is tested on Node 10.13 and above.
 ```js
 var favicons = require('favicons'),
     source = 'test/logo.png',                     // Source image(s). `string`, `buffer` or array of `string`
-    configuration = {          
+    configuration = {
         path: "/",                                // Path for overriding default icons path. `string`
         appName: null,                            // Your application's name. `string`
         appShortName: null,                       // Your application's short_name. `string`. Optional. If not set, appName will be used
@@ -60,7 +60,8 @@ var favicons = require('favicons'),
             //   * overlayShadow - apply drop shadow after mask has been applied .`boolean`
             //
             android: true,              // Create Android homescreen icon. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
-            appleIcon: true,            // Create Apple touch icons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
+            apple: false,               // Create a single Apple touch icon (180x180). `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
+            appleIcon: true,            // Create all Apple touch icons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
             appleStartup: true,         // Create Apple startup images. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
             coast: true,                // Create Opera Coast icon. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
             favicons: true,             // Create regular favicons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
@@ -130,6 +131,26 @@ For the full list of files, check `config/files.json`. For the full HTML code, c
 > Why are you missing certain favicons?
 
 Because pure Javascript modules aren't available at the moment. For example, the [El Capitan SVG favicon](https://github.com/haydenbleasel/favicons/issues/61) and the [Windows tile silhouette ability](https://github.com/haydenbleasel/favicons/issues/58) both require [SVG support](https://github.com/haydenbleasel/favicons/issues/53). If modules for these task begin to appear, please jump on the appropriate issue and we'll get on it ASAP.
+
+> What is the difference between apple and appleIcon?
+
+See webhint explanation on why a single 180x180 touch icon might be the best solution: [https://webhint.io/docs/user-guide/hints/hint-apple-touch-icons/](https://webhint.io/docs/user-guide/hints/hint-apple-touch-icons/):
+
+Over time as Apple released different size displays for their devices, the requirements for the size of the touch icon have changed quite a bit \[...\]. Declaring one 180×180px PNG image, e.g.:
+
+```html
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+```
+
+in the <head> of the page is enough, and including all the different sizes is not recommended as:
+
+- It will increase the size of the pages with very little to no real benefit (most users will probably not add the site to their home screens).
+
+- Most sizes will probably never be used as iOS devices get upgraded quickly, so [most iOS users will be on the latest 2 versions of iOS]app store stats and using newer devices.
+
+- The 180×180px image, if needed, [will be automatically downscaled by Safari, and the result of the scaling is generally ok][icon scaling].
+
+The only downside to using one icon is that some users will load a larger image, while a much smaller file would have worked just as well. But the chance of that happening decreases with every day as users upgrade their devices and their iOS version.
 
 ## Thank you
 

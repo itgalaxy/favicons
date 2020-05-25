@@ -20,6 +20,7 @@
   "manifestRelativePaths": false,
   "icons": {
     "android": true,
+    "apple": false,
     "appleIcon": true,
     "appleStartup": true,
     "coast": true,

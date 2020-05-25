@@ -19,6 +19,7 @@ test("should allow configuring 'overlayShadow'", async t => {
         mask: true,
         overlayShadow: true
       },
+      apple: false,
       appleIcon: false,
       appleStartup: false,
       coast: false,

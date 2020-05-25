@@ -9,6 +9,12 @@ module.exports = {
     ({ theme_color, background }) => `<meta name="theme-color" content="${theme_color || background}">`,
     ({ appName }) => appName ? `<meta name="application-name" content="${appName}">` : `<meta name="application-name">`
   ],
+  apple: [
+    ({ relative }) => `<link rel="apple-touch-icon" sizes="180x180" href="${relative("apple-touch-icon.png")}">`,
+    () => `<meta name="apple-mobile-web-app-capable" content="yes">`,
+    ({ appleStatusBarStyle }) => `<meta name="apple-mobile-web-app-status-bar-style" content="${appleStatusBarStyle}">`,
+    ({ appShortName, appName }) => (appShortName || appName) ? `<meta name="apple-mobile-web-app-title" content="${appShortName || appName}">` : `<meta name="apple-mobile-web-app-title">`
+  ],
   appleIcon: [
     ({ relative }) => `<link rel="apple-touch-icon" sizes="57x57" href="${relative("apple-touch-icon-57x57.png")}">`,
     ({ relative }) => `<link rel="apple-touch-icon" sizes="60x60" href="${relative("apple-touch-icon-60x60.png")}">`,
