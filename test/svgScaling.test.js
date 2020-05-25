@@ -7,6 +7,7 @@ const { logo_small_svg } = require("./util");
 // difference between the generated files.
 const icons = {
   android: false,
+  apple: false,
   appleIcon: true,
   appleStartup: false,
   coast: false,

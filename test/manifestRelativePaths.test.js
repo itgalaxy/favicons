@@ -20,6 +20,7 @@ test("should images without options.path to manifests when manifestRelativePaths
       firefox: true,
       windows: true,
       yandex: true,
+      apple: false,
       appleIcon: false,
       appleStartup: false,
       coast: false,

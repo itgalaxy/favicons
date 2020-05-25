@@ -30,7 +30,8 @@ const favicons = require('../dist/index.js'),
         loadManifestWithCredentials: false,       // Browsers don't send cookies when fetching a manifest, enable this to fix that. `boolean`
         icons: {
             android: true,              // Create Android homescreen icon. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
-            appleIcon: true,            // Create Apple touch icons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
+            apple: true,                // Create a single Apple touch icon (180x180). `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
+            appleIcon: true,            // Create all Apple touch icons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
             appleStartup: true,         // Create Apple startup images. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
             coast: true,                // Create Opera Coast icon. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
             favicons: true,             // Create regular favicons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`

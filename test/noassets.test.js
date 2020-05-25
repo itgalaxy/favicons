@@ -10,6 +10,7 @@ test("should allow disabling asset generation", async t => {
   const { files, images, html } = await favicons(logo_png, {
     icons: {
       android: false,
+      apple: false,
       appleIcon: false,
       appleStartup: false,
       coast: false,

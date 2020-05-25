@@ -64,6 +64,15 @@
       "mask": false
     }
   },
+  "apple": {
+    "apple-touch-icon.png": {
+      "width": 180,
+      "height": 180,
+      "transparent": false,
+      "rotate": false,
+      "mask": false
+    }
+  },
   "appleIcon": {
     "apple-touch-icon-57x57.png": {
       "width": 57,

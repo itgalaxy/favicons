@@ -16,6 +16,7 @@ test("should add crossOrigin to manifest tag when loadManifestWithCredentials is
     loadManifestWithCredentials: true,
     icons: {
       android: true,
+      apple: false,
       appleIcon: false,
       appleStartup: false,
       coast: false,
