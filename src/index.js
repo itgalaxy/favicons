@@ -48,10 +48,11 @@ const toIco = require("to-ico");
  * Build favicons
  * @param {string} source - The path to the source image to generate icons from
  * @param {Partial<FaviconOptions>|undefined} options - The options used to build favicons
- * @param {FaviconCallback} next - The callback to execute after processing
- * @returns {Promise}
+ * @param {FaviconCallback|undefined} next - The callback to execute after processing
+ * @returns {Promise|Promise<FaviconResponse>}
  */
-function favicons(source, options = {}, next) {
+// eslint-disable-next-line no-undefined
+function favicons(source, options = {}, next = undefined) {
   if (next) {
     return favicons(source, options)
       .then(response => next(null, response))
