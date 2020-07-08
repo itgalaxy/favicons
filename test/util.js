@@ -9,7 +9,7 @@ function fixture(uri) {
 
   module.exports[key] = fixture(img);
 });
-module.exports.pixel_art = module.exports.pixel_art_png
+module.exports.pixel_art = module.exports.pixel_art_png;
 
 module.exports.normalize = ({ files, images, html }) =>
   [...files, ...images].reduce(

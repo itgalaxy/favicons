@@ -1,3 +1,7 @@
+// generate README sources:  jq ". | with_entries(.value |= keys)" < icons.json
+
+// TO_DO: More comments to know what's going on, for future maintainers
+
 const through2 = require("through2");
 const clone = require("clone");
 const mergeDefaults = require("lodash.defaultsdeep");
