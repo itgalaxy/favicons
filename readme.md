@@ -28,7 +28,7 @@ Please note: Favicons is tested on Node 10.13 and above.
 ```js
 var favicons = require('favicons'),
     source = 'test/logo.png',                     // Source image(s). `string`, `buffer` or array of `string`
-    configuration = {          
+    configuration = {
         path: "/",                                // Path for overriding default icons path. `string`
         appName: null,                            // Your application's name. `string`
         appShortName: null,                       // Your application's short_name. `string`. Optional. If not set, appName will be used
@@ -59,14 +59,14 @@ var favicons = require('favicons'),
             //   * overlayGlow - apply glow effect after mask has been applied (applied by default for firefox). `boolean`
             //   * overlayShadow - apply drop shadow after mask has been applied .`boolean`
             //
-            android: true,              // Create Android homescreen icon. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
-            appleIcon: true,            // Create Apple touch icons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
-            appleStartup: true,         // Create Apple startup images. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
-            coast: true,                // Create Opera Coast icon. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
-            favicons: true,             // Create regular favicons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
-            firefox: true,              // Create Firefox OS icons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
-            windows: true,              // Create Windows 8 tile icons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
-            yandex: true                // Create Yandex browser icon. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
+            android: true,              // Create Android homescreen icon. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }` or an array of sources
+            appleIcon: true,            // Create Apple touch icons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }` or an array of sources
+            appleStartup: true,         // Create Apple startup images. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }` or an array of sources
+            coast: true,                // Create Opera Coast icon. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }` or an array of sources
+            favicons: true,             // Create regular favicons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }` or an array of sources
+            firefox: true,              // Create Firefox OS icons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }` or an array of sources
+            windows: true,              // Create Windows 8 tile icons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }` or an array of sources
+            yandex: true                // Create Yandex browser icon. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }` or an array of sources
         }
     },
     callback = function (error, response) {
@@ -80,6 +80,88 @@ var favicons = require('favicons'),
     };
 
 favicons(source, configuration, callback);
+```
+
+The default sources are as follow (groupped by platform):
+
+```javascript
+{
+  "android": [
+    "android-chrome-144x144.png",
+    "android-chrome-192x192.png",
+    "android-chrome-256x256.png",
+    "android-chrome-36x36.png",
+    "android-chrome-384x384.png",
+    "android-chrome-48x48.png",
+    "android-chrome-512x512.png",
+    "android-chrome-72x72.png",
+    "android-chrome-96x96.png"
+  ],
+  "appleIcon": [
+    "apple-touch-icon-1024x1024.png",
+    "apple-touch-icon-114x114.png",
+    "apple-touch-icon-120x120.png",
+    "apple-touch-icon-144x144.png",
+    "apple-touch-icon-152x152.png",
+    "apple-touch-icon-167x167.png",
+    "apple-touch-icon-180x180.png",
+    "apple-touch-icon-57x57.png",
+    "apple-touch-icon-60x60.png",
+    "apple-touch-icon-72x72.png",
+    "apple-touch-icon-76x76.png",
+    "apple-touch-icon-precomposed.png",
+    "apple-touch-icon.png"
+  ],
+  "appleStartup": [
+    "apple-touch-startup-image-1125x2436.png",
+    "apple-touch-startup-image-1136x640.png",
+    "apple-touch-startup-image-1242x2208.png",
+    "apple-touch-startup-image-1242x2688.png",
+    "apple-touch-startup-image-1334x750.png",
+    "apple-touch-startup-image-1536x2048.png",
+    "apple-touch-startup-image-1620x2160.png",
+    "apple-touch-startup-image-1668x2224.png",
+    "apple-touch-startup-image-1668x2388.png",
+    "apple-touch-startup-image-1792x828.png",
+    "apple-touch-startup-image-2048x1536.png",
+    "apple-touch-startup-image-2048x2732.png",
+    "apple-touch-startup-image-2160x1620.png",
+    "apple-touch-startup-image-2208x1242.png",
+    "apple-touch-startup-image-2224x1668.png",
+    "apple-touch-startup-image-2388x1668.png",
+    "apple-touch-startup-image-2436x1125.png",
+    "apple-touch-startup-image-2688x1242.png",
+    "apple-touch-startup-image-2732x2048.png",
+    "apple-touch-startup-image-640x1136.png",
+    "apple-touch-startup-image-750x1334.png",
+    "apple-touch-startup-image-828x1792.png"
+  ],
+  "coast": [
+    "coast-228x228.png"
+  ],
+  "favicons": [
+    "favicon-16x16.png",
+    "favicon-32x32.png",
+    "favicon-48x48.png",
+    "favicon.ico"
+  ],
+  "firefox": [
+    "firefox_app_128x128.png",
+    "firefox_app_512x512.png",
+    "firefox_app_60x60.png"
+  ],
+  "windows": [
+    "mstile-144x144.png",
+    "mstile-150x150.png",
+    "mstile-310x150.png",
+    "mstile-310x310.png",
+    "mstile-70x70.png"
+  ],
+  "yandex": [
+    "yandex-browser-50x50.png"
+  ]
+}
+
 ```
 
 You can programmatically access Favicons configuration (icon filenames, HTML, manifest files, etc) with:

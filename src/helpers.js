@@ -123,10 +123,9 @@ module.exports = function(options) {
       },
 
       preparePlatformOptions(platform) {
+        const icons = options.icons[platform];
         const parameters =
-          typeof options.icons[platform] === "object"
-            ? options.icons[platform]
-            : {};
+          typeof icons === "object" && !Array.isArray(icons) ? icons : {};
 
         for (const key of Object.keys(parameters)) {
           if (
