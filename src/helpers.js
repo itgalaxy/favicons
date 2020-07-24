@@ -177,11 +177,16 @@ module.exports = function(options) {
           properties.start_url = options.start_url;
           properties.background_color = options.background;
           properties.theme_color = options.theme_color;
-          if (typeof options.preferRelatedApplications !== "undefined") {
+          // Defaults to false, so omit the value https://developer.mozilla.org/en-US/docs/Web/Manifest/prefer_related_applications
+          if (options.preferRelatedApplications) {
             properties.prefer_related_applications =
               options.preferRelatedApplications;
           }
-          if (typeof options.relatedApplications !== "undefined") {
+          // Only include related_applications if a lengthy array is provided.
+          if (
+            Array.isArray(options.relatedApplications) &&
+            options.relatedApplications.length > 0
+          ) {
             properties.related_applications = options.relatedApplications;
           }
           properties.icons.map(
