@@ -178,7 +178,8 @@ module.exports = function(options) {
           properties.background_color = options.background;
           properties.theme_color = options.theme_color;
           if (typeof options.preferRelatedApplications !== "undefined") {
-            properties.prefer_related_applications = options.preferRelatedApplications;
+            properties.prefer_related_applications =
+              options.preferRelatedApplications;
           }
           if (typeof options.relatedApplications !== "undefined") {
             properties.related_applications = options.relatedApplications;
