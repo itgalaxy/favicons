@@ -1,6 +1,6 @@
 {
   "name": "favicons",
-  "version": "6.0.0",
+  "version": "6.2.0",
   "description": "Favicon generator for Node.js",
   "main": "dist/index.js",
   "files": [
@@ -26,7 +26,8 @@
     "files": [
       "test/**/*.test.js",
       "test/*.test.js"
-    ]
+    ],
+    "timeout": "2m"
   },
   "keywords": [
     "favicon",
@@ -49,11 +50,11 @@
     "clone": "^2.1.2",
     "colors": "^1.4.0",
     "image-size": "^0.8.3",
-    "jimp": "^0.9.3",
+    "jimp": "^0.10.3",
     "jsontoxml": "^1.0.1",
     "lodash.defaultsdeep": "^4.6.1",
     "require-directory": "^2.1.1",
-    "sharp": "^0.24.0",
+    "sharp": "^0.25.2",
     "through2": "^3.0.1",
     "tinycolor2": "^1.4.1",
     "to-ico": "^1.1.5",
@@ -64,7 +65,7 @@
     "@babel/core": "^7.8.4",
     "@babel/preset-env": "^7.8.4",
     "@babel/register": "^7.8.3",
-    "ava": "^2.4.0",
+    "ava": "^3.8.1",
     "babel-plugin-istanbul": "^6.0.0",
     "concordance-comparator": "^0.1.0",
     "del": "^5.1.0",
@@ -76,8 +77,10 @@
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-eslint": "^6.0.0",
+    "icojs": "^0.14.0",
     "nyc": "^15.0.0",
+    "pixelmatch": "^5.2.0",
     "prettier": "^1.19.1",
-    "resemblejs": "^3.2.3"
+    "resemblejs": "^3.2.4"
   }
 }

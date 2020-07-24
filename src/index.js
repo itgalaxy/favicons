@@ -1,3 +1,7 @@
+// generate README sources:  jq ". | with_entries(.value |= keys)" < icons.json
+
+// TO_DO: More comments to know what's going on, for future maintainers
+
 const through2 = require("through2");
 const clone = require("clone");
 const mergeDefaults = require("lodash.defaultsdeep");
@@ -7,7 +11,52 @@ const path = require("path");
 const File = require("vinyl");
 const toIco = require("to-ico");
 
-function favicons(source, options = {}, next) {
+/**
+ * @typedef FaviconOptions
+ * @type {typeof import("./config/defaults.json")}
+ */
+
+/**
+ * @typedef FaviconImage
+ * @type {object}
+ * @property {string} name
+ * @property {Buffer} contents
+ */
+
+/**
+ * @typedef FaviconFile
+ * @type {object}
+ * @property {string} name
+ * @property {string} contents
+ */
+
+/**
+ * @typedef FaviconHtmlElement
+ * @type {string}
+ */
+
+/**
+ * @typedef FaviconResponse
+ * @type {object}
+ * @property {FaviconImage[]} images
+ * @property {FaviconFile[]} files
+ * @property {FaviconHtmlElement[]} html
+ */
+
+/**
+ * @typedef FaviconCallback
+ * @type {(error: Error|null, response: FaviconResponse) => any}
+ */
+
+/**
+ * Build favicons
+ * @param {string} source - The path to the source image to generate icons from
+ * @param {Partial<FaviconOptions>|undefined} options - The options used to build favicons
+ * @param {FaviconCallback|undefined} next - The callback to execute after processing
+ * @returns {Promise|Promise<FaviconResponse>}
+ */
+// eslint-disable-next-line no-undefined
+function favicons(source, options = {}, next = undefined) {
   if (next) {
     return favicons(source, options)
       .then(response => next(null, response))
@@ -71,9 +120,17 @@ function favicons(source, options = {}, next) {
 
   function createFavicons(sourceset, platform) {
     const platformOptions = µ.General.preparePlatformOptions(platform);
+    const icons = Array.isArray(options.icons[platform])
+      ? options.icons[platform].reduce((opts, icon) => {
+          // map the selected names to their original configs
+          if (platform in config.icons && icon in config.icons[platform])
+            opts[icon] = config.icons[platform][icon];
+          return opts;
+        }, {})
+      : config.icons[platform];
 
     return Promise.all(
-      Object.keys(config.icons[platform] || {}).map(name =>
+      Object.keys(icons || {}).map(name =>
         createFavicon(
           sourceset,
           config.icons[platform][name],
@@ -114,15 +171,7 @@ function favicons(source, options = {}, next) {
     };
   }
 
-  const result = µ.General.source(source).then(create);
-
-  return options.pipeHTML
-    ? result.then(response =>
-        µ.Files.create(response.html, options.html, true).then(file =>
-          Object.assign(response, { files: [...response.files, file] })
-        )
-      )
-    : result;
+  return µ.General.source(source).then(create);
 }
 
 function stream(params, handleHtml) {
@@ -136,7 +185,9 @@ function stream(params, handleHtml) {
       return callback(new Error("Streaming not supported"));
     }
 
-    favicons(file.contents, params)
+    const { html: path, pipeHTML, ...options } = params;
+
+    favicons(file.contents, options)
       .then(({ images, files, html }) => {
         for (const asset of [...images, ...files]) {
           this.push(
@@ -144,13 +195,22 @@ function stream(params, handleHtml) {
               path: asset.name,
               contents: Buffer.isBuffer(asset.contents)
                 ? asset.contents
-                : new Buffer(asset.contents)
+                : Buffer.from(asset.contents)
             })
           );
         }
 
         if (handleHtml) {
           handleHtml(html);
+        }
+
+        if (pipeHTML) {
+          this.push(
+            new File({
+              path,
+              contents: Buffer.from(html.join("\n"))
+            })
+          );
         }
 
         callback(null);

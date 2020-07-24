@@ -35,13 +35,13 @@ test("should fail gracefully if buffer is empty", async t => {
   t.plan(2);
 
   try {
-    await favicons(new Buffer(""));
+    await favicons(Buffer.from(""));
   } catch (err) {
     t.is(err.message, "Invalid image buffer");
   }
 
   try {
-    await favicons([new Buffer("")]);
+    await favicons([Buffer.from("")]);
   } catch (err) {
     t.is(err.message, "Invalid image buffer");
   }
