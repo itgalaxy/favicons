@@ -1,4 +1,5 @@
 /* eslint-disable */
+// TO_DO: Make tests less cumbersome to edit
 // TO_DO: Make tags autoclosed (i.e. <meta /> instead of <meta>), but tests won't allow that right now
 
 const appleIconSizes = [
@@ -92,14 +93,6 @@ const appleStartupItems = [
       height: 2048,
     },
     {
-      dwidth: 810,
-      dheight: 1080,
-      pixelRatio: 2,
-      orientation: "portrait",
-      width: 1620,
-      height: 2160,
-    },
-    {
       dwidth: 834,
       dheight: 1112,
       pixelRatio: 2,
@@ -123,6 +116,15 @@ const appleStartupItems = [
       width: 2048,
       height: 2732,
     },
+    {
+      dwidth: 810,
+      dheight: 1080,
+      pixelRatio: 2,
+      orientation: "portrait",
+      width: 1620,
+      height: 2160,
+    },
+
 
     {
       dwidth: 320,
@@ -221,7 +223,7 @@ const coastSizes = [
 const faviconSizes = [
   16,
   32,
-  48
+  48,
 ];
 
 function hasAll(arr) {
