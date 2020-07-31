@@ -1,4 +1,5 @@
 /* eslint-disable */
+const escapeHtml = require("escape-html");
 
 const appleIconSizes = [57, 60, 72, 76, 114, 120, 144, 152, 167, 180, 1024];
 
@@ -283,13 +284,13 @@ module.exports = {
         : `<link rel="manifest" href="${relative("manifest.json")}">`,
     () => `<meta name="mobile-web-app-capable" content="yes">`,
     ({ theme_color, background }) => `<meta name="theme-color" content="${theme_color || background}">`,
-    ({ appName }) => appName ? `<meta name="application-name" content="${appName}">` : `<meta name="application-name">`
+    ({ appName }) => appName ? `<meta name="application-name" content="${escapeHtml(appName)}">` : `<meta name="application-name">`
   ],
   appleIcon: [
     ...appleIconSizes.map(size => ctx => appleIconGen(size, ctx)),
     () => `<meta name="apple-mobile-web-app-capable" content="yes">`,
     ({ appleStatusBarStyle }) => `<meta name="apple-mobile-web-app-status-bar-style" content="${appleStatusBarStyle}">`,
-    ({ appShortName, appName }) => (appShortName || appName) ? `<meta name="apple-mobile-web-app-title" content="${appShortName || appName}">` : `<meta name="apple-mobile-web-app-title">`
+    ({ appShortName, appName }) => (appShortName || appName) ? `<meta name="apple-mobile-web-app-title" content="${escapeHtml(appShortName || appName)}">` : `<meta name="apple-mobile-web-app-title">`
   ],
   appleStartup: appleStartupItems.map(item => ctx => appleStartupGen(item, ctx)),
   coast: coastSizes.map(size => ctx => coastGen(size, ctx)),
