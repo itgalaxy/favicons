@@ -1,4 +1,7 @@
 // prettier-ignore
+
+const escapeHtml = require('escape-html');
+
 module.exports = {
   android: [
     ({ relative, loadManifestWithCredentials }) =>
@@ -7,7 +10,7 @@ module.exports = {
         : `<link rel="manifest" href="${relative("manifest.json")}">`,
     () => `<meta name="mobile-web-app-capable" content="yes">`,
     ({ theme_color, background }) => `<meta name="theme-color" content="${theme_color || background}">`,
-    ({ appName }) => appName ? `<meta name="application-name" content="${appName}">` : `<meta name="application-name">`
+    ({ appName }) => appName ? `<meta name="application-name" content="${escapeHtml(appName)}">` : `<meta name="application-name">`
   ],
   appleIcon: [
     ({ relative }) => `<link rel="apple-touch-icon" sizes="57x57" href="${relative("apple-touch-icon-57x57.png")}">`,
@@ -23,7 +26,7 @@ module.exports = {
     ({ relative }) => `<link rel="apple-touch-icon" sizes="1024x1024" href="${relative("apple-touch-icon-1024x1024.png")}">`,
     () => `<meta name="apple-mobile-web-app-capable" content="yes">`,
     ({ appleStatusBarStyle }) => `<meta name="apple-mobile-web-app-status-bar-style" content="${appleStatusBarStyle}">`,
-    ({ appShortName, appName }) => (appShortName || appName) ? `<meta name="apple-mobile-web-app-title" content="${appShortName || appName}">` : `<meta name="apple-mobile-web-app-title">`
+    ({ appShortName, appName }) => (appShortName || appName) ? `<meta name="apple-mobile-web-app-title" content="${escapeHtml(appShortName || appName)}">` : `<meta name="apple-mobile-web-app-title">`
   ],
   appleStartup: [
     //
