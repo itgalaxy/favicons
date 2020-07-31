@@ -40,6 +40,7 @@
   "dependencies": {
     "clone": "^2.1.2",
     "colors": "^1.4.0",
+    "escape-html": "^1.0.3",
     "image-size": "^1.0.0",
     "jsontoxml": "^1.0.1",
     "lodash.defaultsdeep": "^4.6.1",
