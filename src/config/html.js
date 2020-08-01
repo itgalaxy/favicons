@@ -1,6 +1,4 @@
 /* eslint-disable */
-// TO_DO: Make tests less cumbersome to edit
-// TO_DO: Make tags autoclosed (i.e. <meta /> instead of <meta>), but tests won't allow that right now
 
 const appleIconSizes = [
   57,
@@ -233,18 +231,27 @@ function hasAll(arr) {
   };
 }
 
+function hasAny(arr){
+	return function(icons){
+		if(Array.isArray(icons))
+			return arr.some(item => icons.include(item));
+		
+		return icons;
+	}
+}
+
 function ctxHasIcons(icons, icon) {
   if (Array.isArray(icons)) return icons.includes(icon);
-
   return icons;
 }
 
 const allAppleIcons = hasAll(appleIconSizes.map(size => `apple-touch-icon-${size}x${size}.png`));
+const anyAppleIcon = hasAny(appleIconSizes.map(size => `apple-touch-icon-${size}x${size}.png`));
 
 function appleIconGen(size, { relative, icons }) {
   const iconName = `apple-touch-icon-${size}x${size}.png`;
 
-  return !ctxHasIcons(icons.appleIcon, iconName) ? "" : `<link rel="apple-touch-icon" sizes="${size}x${size}" href="${relative(iconName)}"/>`;
+  return !ctxHasIcons(icons.appleIcon, iconName) ? "" : `<link rel="apple-touch-icon" sizes="${size}x${size}" href="${relative(iconName)}">`;
 }
 
 function appleStartupGen(
@@ -253,18 +260,18 @@ function appleStartupGen(
 ) {
   const iconName = `apple-touch-startup-image-${width}x${height}.png`;
 
-  return !ctxHasIcons(icons.appleStartup, iconName) ? "" : `<link rel="apple-touch-startup-image" media="(device-width: ${dwidth}px) and (device-height: ${dheight}px) and (-webkit-device-pixel-ratio: ${pixelRatio}) and (orientation: ${orientation})" href="${relative(iconName)}"/>`;
+  return !ctxHasIcons(icons.appleStartup, iconName) ? "" : `<link rel="apple-touch-startup-image" media="(device-width: ${dwidth}px) and (device-height: ${dheight}px) and (-webkit-device-pixel-ratio: ${pixelRatio}) and (orientation: ${orientation})" href="${relative(iconName)}">`;
 }
 
 function coastGen(size, { relative, icons }) {
   const iconName = `coast-${size}x${size}.png`;
 
-  return !ctxHasIcons(icons.coast, iconName) ? "" : `<link rel="icon" type="image/png" sizes="${size}x${size}" href="${relative(iconName)}"/>`;
+  return !ctxHasIcons(icons.coast, iconName) ? "" : `<link rel="icon" type="image/png" sizes="${size}x${size}" href="${relative(iconName)}">`;
 }
 
 function faviconGen(size, { relative, icons }){
   const iconName = `favicon-${size}x${size}.png`;
-  return !ctxHasIcons(icons.favicons, iconName) ? "" : `<link rel="icon" type="image/png" sizes="${size}x${size}" href="${relative(iconName)}"/>`;
+  return !ctxHasIcons(icons.favicons, iconName) ? "" : `<link rel="icon" type="image/png" sizes="${size}x${size}" href="${relative(iconName)}">`;
 }
 
 // prettier-ignore
@@ -272,30 +279,30 @@ module.exports = {
   android: [
     ({ relative, loadManifestWithCredentials }) =>
       loadManifestWithCredentials
-        ? `<link rel="manifest" href="${relative("manifest.json")}" crossOrigin="use-credentials"/>`
-        : `<link rel="manifest" href="${relative("manifest.json")}"/>`,
+        ? `<link rel="manifest" href="${relative("manifest.json")}" crossOrigin="use-credentials">`
+        : `<link rel="manifest" href="${relative("manifest.json")}">`,
     () => `<meta name="mobile-web-app-capable" content="yes">`,
-    ({ theme_color, background }) => `<meta name="theme-color" content="${theme_color || background}"/>`,
-    ({ appName }) => appName ? `<meta name="application-name" content="${appName}">` : `<meta name="application-name"/>`
+    ({ theme_color, background }) => `<meta name="theme-color" content="${theme_color || background}">`,
+    ({ appName }) => appName ? `<meta name="application-name" content="${appName}">` : `<meta name="application-name">`
   ],
   appleIcon: [
     ...appleIconSizes.map(size => ctx => appleIconGen(size, ctx)),
-    ({ icons }) => !allAppleIcons(icons.appleIcon) ? "" : `<meta name="apple-mobile-web-app-capable" content="yes"/>`,
-    ({ appleStatusBarStyle }) => `<meta name="apple-mobile-web-app-status-bar-style" content="${appleStatusBarStyle}"/>`,
-    ({ appShortName, appName }) => (appShortName || appName) ? `<meta name="apple-mobile-web-app-title" content="${appShortName || appName}">` : `<meta name="apple-mobile-web-app-title"/>`
+    () => `<meta name="apple-mobile-web-app-capable" content="yes">`,
+    ({ appleStatusBarStyle }) => `<meta name="apple-mobile-web-app-status-bar-style" content="${appleStatusBarStyle}">`,
+    ({ appShortName, appName }) => (appShortName || appName) ? `<meta name="apple-mobile-web-app-title" content="${appShortName || appName}">` : `<meta name="apple-mobile-web-app-title">`
   ],
   appleStartup: appleStartupItems.map(item => ctx => appleStartupGen(item, ctx)),
   coast: coastSizes.map(size => ctx => coastGen(size, ctx)),
   favicons: [
-    ({ relative, icons }) => !ctxHasIcons(icons.favicons, "favicon.ico") ? "" : `<link rel="shortcut icon" href="${relative("favicon.ico")}"/>`,
+    ({ relative, icons }) => !ctxHasIcons(icons.favicons, "favicon.ico") ? "" : `<link rel="shortcut icon" href="${relative("favicon.ico")}">`,
     ...faviconSizes.map(size => ctx => faviconGen(size, ctx)),
   ],
   windows: [
-    ({ background }) => `<meta name="msapplication-TileColor" content="${background}"/>`,
-    ({ relative, icons }) => !ctxHasIcons(icons.windows, "mstile-144x144.png") ? "" : `<meta name="msapplication-TileImage" content="${relative("mstile-144x144.png")}"/>`,
-    ({ relative }) => `<meta name="msapplication-config" content="${relative("browserconfig.xml")}"/>`
+    ({ background }) => `<meta name="msapplication-TileColor" content="${background}">`,
+    ({ relative, icons }) => !ctxHasIcons(icons.windows, "mstile-144x144.png") ? "" : `<meta name="msapplication-TileImage" content="${relative("mstile-144x144.png")}">`,
+    ({ relative }) => `<meta name="msapplication-config" content="${relative("browserconfig.xml")}">`
   ],
   yandex: [
-    ({ relative }) => `<link rel="yandex-tableau-widget" href="${relative("yandex-browser-manifest.json")}"/>`
+    ({ relative }) => `<link rel="yandex-tableau-widget" href="${relative("yandex-browser-manifest.json")}">`
   ]
 };
