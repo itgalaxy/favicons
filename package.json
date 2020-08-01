@@ -27,7 +27,7 @@
       "test/**/*.test.js",
       "test/*.test.js"
     ],
-    "timeout": "10m"
+    "timeout": "2m"
   },
   "keywords": [
     "favicon",
