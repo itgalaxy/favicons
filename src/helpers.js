@@ -184,6 +184,24 @@ module.exports = function (options) {
             icon.purpose =
               options.manifestMaskable === true ? "any maskable" : "any";
           });
+          // If manifestMaskable is set but is not a boolean
+          // assume a file (or an array) is passed, and we should link
+          // the generated files with maskable as purpose.
+          if (
+            options.manifestMaskable &&
+            typeof options.manifestMaskable !== "boolean"
+          ) {
+            const maskableIcons = properties.icons.map(icon => ({
+              ...icon,
+              src: icon.src.replace(
+                /android-chrome-(.+)\.png$/,
+                "android-chrome-maskable-$1.png"
+              ),
+              purpose: "maskable"
+            }));
+
+            properties.icons = [...properties.icons, ...maskableIcons];
+          }
           properties = JSON.stringify(properties, null, 2);
         } else if (name === "manifest.webapp") {
           properties.version = options.version;
