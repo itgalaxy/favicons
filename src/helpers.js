@@ -179,7 +179,7 @@ module.exports = function (options) {
           properties.start_url = options.start_url;
           properties.background_color = options.background;
           properties.theme_color = options.theme_color;
-          properties.icons.forEach(icon => {
+          properties.icons.forEach((icon) => {
             icon.src = relative(icon.src, options.manifestRelativePaths);
             icon.purpose =
               options.manifestMaskable === true ? "any maskable" : "any";
