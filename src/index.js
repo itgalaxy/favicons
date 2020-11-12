@@ -164,6 +164,21 @@ function favicons(source, options = {}, next = undefined) {
       responses.push(await createPlatform(sourceset, platform));
     }
 
+    // Generate android maskable images from a different source set
+    if (
+      options.icons.android &&
+      options.manifestMaskable &&
+      typeof options.manifestMaskable !== "boolean"
+    ) {
+      const maskableSourceset = await µ.General.source(
+        options.manifestMaskable
+      );
+
+      responses.push(
+        await createPlatform(maskableSourceset, "android_maskable")
+      );
+    }
+
     return {
       images: [].concat(...responses.map(r => r[0])),
       files: [].concat(...responses.map(r => r[1])),
