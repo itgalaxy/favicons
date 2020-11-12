@@ -48,6 +48,8 @@ var favicons = require('favicons'),
         logging: false,                           // Print logs to console? `boolean`
         pixel_art: false,                         // Keeps pixels "sharp" when scaling up, for pixel art.  Only supported in offline mode.
         loadManifestWithCredentials: false,       // Browsers don't send cookies when fetching a manifest, enable this to fix that. `boolean`
+        manifestMaskable: false,                  // Maskable source image(s) for manifest.json. "true" to use default source. `boolean`, `string`, `buffer` or array of `string`
+                                                  // This is different than the mask applied on the icons. More information at https://web.dev/maskable-icon/
         icons: {
             // Platform Options:
             // - offset - offset in percentage
