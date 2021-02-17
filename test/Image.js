@@ -39,7 +39,7 @@ class Image {
           width,
           height,
           {
-            threshold
+            threshold,
           }
         );
         const rawMisMatchPercentage =
@@ -53,12 +53,12 @@ class Image {
           rawMisMatchPercentage: Math.max(
             rawMisMatchPercentage,
             currDiff.rawMisMatchPercentage
-          )
+          ),
         };
       },
       {
         isSameDimensions: true,
-        rawMisMatchPercentage: 0
+        rawMisMatchPercentage: 0,
       }
     );
   }
@@ -67,16 +67,24 @@ class Image {
     return Future.fromPromise(
       new Promise((resolve, reject) => {
         compare(this.buffer, other.buffer, (err, data) => {
-          if (err) reject(err);
-          else resolve(data);
+          if (err) {
+            reject(err);
+          } else {
+            resolve(data);
+          }
         });
       })
     ).wait();
   }
 
   compare(other) {
-    if (this.name !== other.name) return false;
-    if (Buffer.compare(this.buffer, other.buffer) === 0) return true;
+    if (this.name !== other.name) {
+      return false;
+    }
+
+    if (Buffer.compare(this.buffer, other.buffer) === 0) {
+      return true;
+    }
 
     const threshold = 5;
     const diff = ICO.isICO(this.buffer)
@@ -85,19 +93,22 @@ class Image {
 
     const r = diff.isSameDimensions && diff.rawMisMatchPercentage < threshold;
 
-    if (!r) console.log(this.name, diff);
+    if (!r) {
+      console.log(this.name, diff);
+    }
+
     return r;
   }
 }
 
 module.exports.Image = Image;
 
-module.exports.snapshotResult = async function(test, result) {
+module.exports.snapshotResult = async function (test, result) {
   for (const image of result.images) {
     image.contents = new Image(image.name, image.contents);
   }
 
-  await new Promise(resolve =>
+  await new Promise((resolve) =>
     Fiber(() => {
       test.snapshot(result);
       resolve();

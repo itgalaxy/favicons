@@ -20,8 +20,8 @@ const options = {
     coast: false,
     firefox: false,
     windows: false,
-    yandex: false
-  }
+    yandex: false,
+  },
 };
 
 const metaLength = 0;
@@ -37,16 +37,16 @@ function processSource() {
 }
 
 function generatedHTML(html) {
-  return html.filter(str => str.length > 0);
+  return html.filter((str) => str.length > 0);
 }
 
-test("should allow to restrict the icons to generate", async t => {
+test("should allow to restrict the icons to generate", async (t) => {
   // eslint-disable-next-line no-magic-numbers
   const testCases = [
     {
       // favicons
       source,
-      options
+      options,
     },
     {
       // android
@@ -56,9 +56,9 @@ test("should allow to restrict the icons to generate", async t => {
         icons: {
           ...options.icons,
           favicons: false,
-          android: ["android-chrome-48x48.png"]
-        }
-      }
+          android: ["android-chrome-48x48.png"],
+        },
+      },
     },
     {
       // appleIcon
@@ -68,10 +68,10 @@ test("should allow to restrict the icons to generate", async t => {
         icons: {
           ...options.icons,
           favicons: false,
-          appleIcon: ["apple-touch-icon-60x60.png"]
-        }
-      }
-    }
+          appleIcon: ["apple-touch-icon-60x60.png"],
+        },
+      },
+    },
   ];
 
   t.plan(testCases.length);
@@ -85,7 +85,7 @@ test("should allow to restrict the icons to generate", async t => {
   await Promise.all(promises);
 });
 
-test("should allow to restrict the HTML tags generated", async t => {
+test("should allow to restrict the HTML tags generated", async (t) => {
   // eslint-disable-next-line no-magic-numbers
   t.plan(1);
 
@@ -96,7 +96,7 @@ test("should allow to restrict the HTML tags generated", async t => {
   t.deepEqual(useful.length, expectedLength);
 });
 
-test("should allow to restrict the HTML tags taking into account manifests and others", async t => {
+test("should allow to restrict the HTML tags taking into account manifests and others", async (t) => {
   const testCases = [
     {
       // android
@@ -108,9 +108,9 @@ test("should allow to restrict the HTML tags taking into account manifests and o
         coast: false,
         firefox: false,
         windows: false,
-        yandex: false
+        yandex: false,
       },
-      expectedLength: 4 // (manifest + capable + theme color + app name)
+      expectedLength: 4, // (manifest + capable + theme color + app name)
     },
     {
       // firefox
@@ -122,9 +122,9 @@ test("should allow to restrict the HTML tags taking into account manifests and o
         coast: false,
         firefox: ["firefox_app_128x128.png"],
         windows: false,
-        yandex: false
+        yandex: false,
       },
-      expectedLength: 0 // nothing
+      expectedLength: 0, // nothing
     },
     {
       // appleIcon
@@ -136,17 +136,17 @@ test("should allow to restrict the HTML tags taking into account manifests and o
         coast: false,
         firefox: false,
         windows: false,
-        yandex: false
+        yandex: false,
       },
-      expectedLength: 4 // icons + (capable + status bar + app name)
-    }
+      expectedLength: 4, // icons + (capable + status bar + app name)
+    },
   ];
 
   t.plan(testCases.length);
 
   const promises = testCases.map(async ({ testOptions, expectedLength }) => {
     const { html } = await favicons(source, {
-      icons: testOptions
+      icons: testOptions,
     });
     const useful = generatedHTML(html);
 

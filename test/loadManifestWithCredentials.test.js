@@ -7,9 +7,9 @@ const { factory } = require("concordance-comparator");
 const { logo_png } = require("./util");
 const { Image, snapshotResult } = require("./Image");
 
-snapshotManager.plugins.push(factory(Image, v => new Image(v[0], v[1])));
+snapshotManager.plugins.push(factory(Image, (v) => new Image(v[0], v[1])));
 
-test("should add crossOrigin to manifest tag when loadManifestWithCredentials is true", async t => {
+test("should add crossOrigin to manifest tag when loadManifestWithCredentials is true", async (t) => {
   t.plan(1);
 
   const result = await favicons(logo_png, {
@@ -22,8 +22,8 @@ test("should add crossOrigin to manifest tag when loadManifestWithCredentials is
       favicons: false,
       firefox: false,
       windows: false,
-      yandex: false
-    }
+      yandex: false,
+    },
   });
 
   await snapshotResult(t, result);

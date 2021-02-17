@@ -7,9 +7,9 @@ const { factory } = require("concordance-comparator");
 const { logo_png } = require("./util");
 const { Image, snapshotResult } = require("./Image");
 
-snapshotManager.plugins.push(factory(Image, v => new Image(v[0], v[1])));
+snapshotManager.plugins.push(factory(Image, (v) => new Image(v[0], v[1])));
 
-test("should allow configuring 'overlayShadow'", async t => {
+test("should allow configuring 'overlayShadow'", async (t) => {
   t.plan(1);
 
   const result = await favicons(logo_png, {
@@ -17,7 +17,7 @@ test("should allow configuring 'overlayShadow'", async t => {
       android: {
         background: true,
         mask: true,
-        overlayShadow: true
+        overlayShadow: true,
       },
       appleIcon: false,
       appleStartup: false,
@@ -25,8 +25,8 @@ test("should allow configuring 'overlayShadow'", async t => {
       firefox: false,
       windows: false,
       favicons: false,
-      yandex: false
-    }
+      yandex: false,
+    },
   });
 
   await snapshotResult(t, result);

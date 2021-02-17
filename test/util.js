@@ -4,7 +4,7 @@ function fixture(uri) {
   return path.resolve(__dirname, "fixtures", uri);
 }
 
-["logo.png", "logo.svg", "logo_small.svg", "pixel_art.png"].forEach(img => {
+["logo.png", "logo.svg", "logo_small.svg", "pixel_art.png"].forEach((img) => {
   const key = img.replace(/\.([^.]+)$/, "_$1");
 
   module.exports[key] = fixture(img);

@@ -7,9 +7,9 @@ const { factory } = require("concordance-comparator");
 const { logo_png } = require("./util");
 const { Image, snapshotResult } = require("./Image");
 
-snapshotManager.plugins.push(factory(Image, v => new Image(v[0], v[1])));
+snapshotManager.plugins.push(factory(Image, (v) => new Image(v[0], v[1])));
 
-test("should allow specifying metadata", async t => {
+test("should allow specifying metadata", async (t) => {
   t.plan(1);
 
   const result = await favicons(logo_png, {
@@ -27,7 +27,7 @@ test("should allow specifying metadata", async t => {
     orientation: "portrait",
     scope: "/",
     start_url: "/subdomain/",
-    version: "3.2.1"
+    version: "3.2.1",
   });
 
   await snapshotResult(t, result);

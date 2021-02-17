@@ -8,23 +8,23 @@ const { factory } = require("concordance-comparator");
 const { logo_png } = require("./util");
 const { Image, snapshotResult } = require("./Image");
 
-snapshotManager.plugins.push(factory(Image, v => new Image(v[0], v[1])));
+snapshotManager.plugins.push(factory(Image, (v) => new Image(v[0], v[1])));
 
-test("should provide stream interface", async t => {
+test("should provide stream interface", async (t) => {
   t.plan(1);
 
   const result = {
-    images: []
+    images: [],
   };
 
   return new Promise((resolve, reject) => {
     gulp
       .src(logo_png)
-      .pipe(favicons({}, html => (result["index.html"] = html)))
-      .on("data", chunk => {
+      .pipe(favicons({}, (html) => (result["index.html"] = html)))
+      .on("data", (chunk) => {
         result.images.push({
           name: chunk.path,
-          contents: chunk.contents
+          contents: chunk.contents,
         });
       })
       .on("end", () => {
@@ -33,14 +33,14 @@ test("should provide stream interface", async t => {
   });
 });
 
-test("should stream html file", async t => {
+test("should stream html file", async (t) => {
   let found = false;
 
-  await new Promise(resolve => {
+  await new Promise((resolve) => {
     gulp
       .src(logo_png)
       .pipe(favicons({ pipeHTML: true, html: "foo.html" }))
-      .on("data", chunk => {
+      .on("data", (chunk) => {
         if (chunk.basename === "foo.html") {
           found = true;
         }

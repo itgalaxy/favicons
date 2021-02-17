@@ -3,7 +3,7 @@ const test = require("ava");
 
 const { logo_png } = require("./util");
 
-test("should allow disabling asset generation", async t => {
+test("should allow disabling asset generation", async (t) => {
   // eslint-disable-next-line no-magic-numbers
   t.plan(3);
 
@@ -16,8 +16,8 @@ test("should allow disabling asset generation", async t => {
       favicons: false,
       firefox: false,
       windows: false,
-      yandex: false
-    }
+      yandex: false,
+    },
   });
 
   t.deepEqual(files, []);

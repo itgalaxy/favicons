@@ -7,9 +7,9 @@ const { factory } = require("concordance-comparator");
 const { logo_png } = require("./util");
 const { Image, snapshotResult } = require("./Image");
 
-snapshotManager.plugins.push(factory(Image, v => new Image(v[0], v[1])));
+snapshotManager.plugins.push(factory(Image, (v) => new Image(v[0], v[1])));
 
-test("should images without options.path to manifests when manifestRelativePaths is true", async t => {
+test("should images without options.path to manifests when manifestRelativePaths is true", async (t) => {
   t.plan(1);
 
   const result = await favicons(logo_png, {
@@ -23,8 +23,8 @@ test("should images without options.path to manifests when manifestRelativePaths
       appleIcon: false,
       appleStartup: false,
       coast: false,
-      favicons: false
-    }
+      favicons: false,
+    },
   });
 
   await snapshotResult(t, result);

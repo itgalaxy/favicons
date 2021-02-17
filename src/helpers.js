@@ -11,7 +11,7 @@ const sharp = require("sharp");
 const xml2js = require("xml2js");
 const PLATFORM_OPTIONS = require("./config/platform-options.json");
 
-module.exports = function(options) {
+module.exports = function (options) {
   function directory(path) {
     return path.substr(-1) === "/" ? path : `${path}/`;
   }
@@ -27,8 +27,10 @@ module.exports = function(options) {
     if (options.logging) {
       const { magenta, green, yellow } = colors;
 
-      message = message.replace(/ \d+(x\d+)?/g, item => magenta(item));
-      message = message.replace(/#([0-9a-f]{3}){1,2}/g, item => magenta(item));
+      message = message.replace(/ \d+(x\d+)?/g, (item) => magenta(item));
+      message = message.replace(/#([0-9a-f]{3}){1,2}/g, (item) =>
+        magenta(item)
+      );
       console.log(`${green("[Favicons]")} ${yellow(context)}: ${message}...`);
     }
   }
@@ -93,7 +95,7 @@ module.exports = function(options) {
           resolve(Buffer.from(modifiedSvg));
         });
       });
-    }
+    },
   };
 
   return {
@@ -114,7 +116,7 @@ module.exports = function(options) {
             return Promise.reject(new Error("No source provided"));
           }
 
-          return Promise.all(src.map(this.source.bind(this))).then(results =>
+          return Promise.all(src.map(this.source.bind(this))).then((results) =>
             [].concat(...results)
           );
         } else {
@@ -153,13 +155,13 @@ module.exports = function(options) {
         }
 
         return parameters;
-      }
+      },
     },
 
     HTML: {
       render(htmlTemplate) {
         return htmlTemplate(Object.assign({}, options, { relative }));
-      }
+      },
     },
 
     Files: {
@@ -178,7 +180,7 @@ module.exports = function(options) {
           properties.background_color = options.background;
           properties.theme_color = options.theme_color;
           properties.icons.forEach(
-            icon =>
+            (icon) =>
               (icon.src = relative(icon.src, options.manifestRelativePaths))
           );
           properties = JSON.stringify(properties, null, 2);
@@ -194,13 +196,13 @@ module.exports = function(options) {
                 [key]: relative(
                   properties.icons[key],
                   options.manifestRelativePaths
-                )
+                ),
               }),
             {}
           );
           properties = JSON.stringify(properties, null, 2);
         } else if (name === "browserconfig.xml") {
-          properties[0].children[0].children[0].children.map(property => {
+          properties[0].children[0].children[0].children.map((property) => {
             if (property.name === "TileColor") {
               property.text = options.background;
             } else {
@@ -213,7 +215,7 @@ module.exports = function(options) {
           properties = jsonxml(properties, {
             prettyPrint: true,
             xmlHeader: true,
-            indent: "  "
+            indent: "  ",
           });
         } else if (name === "yandex-browser-manifest.json") {
           properties.version = options.version;
@@ -228,7 +230,7 @@ module.exports = function(options) {
           return Promise.reject(`Unknown format of file ${name}.`);
         }
         return Promise.resolve({ name, contents: properties });
-      }
+      },
     },
 
     Images: {
@@ -257,7 +259,9 @@ module.exports = function(options) {
 
         const width = properties.width - offset * 2;
         const height = properties.height - offset * 2;
-        const svgSource = sourceset.find(source => source.size.type === "svg");
+        const svgSource = sourceset.find(
+          (source) => source.size.type === "svg"
+        );
 
         let promise = null;
 
@@ -267,13 +271,13 @@ module.exports = function(options) {
           log("Image:render", `Rendering SVG to ${width}x${height}`);
           promise = svgtool
             .ensureSize(svgSource, width, height)
-            .then(svgBuffer =>
+            .then((svgBuffer) =>
               sharp(svgBuffer)
                 .resize({
                   background,
                   width,
                   height,
-                  fit: sharp.fit.contain
+                  fit: sharp.fit.contain,
                 })
                 .toBuffer()
             )
@@ -301,7 +305,7 @@ module.exports = function(options) {
 
           log("Images:render", `Resizing PNG to ${width}x${height}`);
 
-          promise = Jimp.read(nearestIcon.file).then(image =>
+          promise = Jimp.read(nearestIcon.file).then((image) =>
             image.contain(
               width,
               height,
@@ -315,7 +319,7 @@ module.exports = function(options) {
           );
         }
 
-        return promise.then(image => image);
+        return promise.then((image) => image);
       },
 
       mask: Jimp.read(path.join(__dirname, "mask.png")),
@@ -329,7 +333,7 @@ module.exports = function(options) {
           return Promise.all([
             this.mask,
             this.overlayGlow,
-            this.overlayShadow
+            this.overlayShadow,
           ]).then(([mask, glow, shadow]) => {
             canvas.mask(mask.clone().resize(max, Jimp.AUTO), 0, 0);
             if (properties.overlayGlow) {
@@ -339,7 +343,7 @@ module.exports = function(options) {
               canvas.composite(shadow.clone().resize(max, Jimp.AUTO), 0, 0);
             }
             properties = Object.assign({}, properties, {
-              mask: false
+              mask: false,
             });
 
             return this.composite(canvas, image, properties, offset, max);
@@ -359,7 +363,7 @@ module.exports = function(options) {
           canvas.rotate(degrees, false);
         }
         return canvas.getBufferAsync(Jimp.MIME_PNG);
-      }
-    }
+      },
+    },
   };
 };
