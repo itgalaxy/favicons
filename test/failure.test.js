@@ -3,7 +3,7 @@ const test = require("ava");
 
 const { logo_png } = require("./util");
 
-test("should fail gracefully if no source is provided", async t => {
+test("should fail gracefully if no source is provided", async (t) => {
   t.plan(1);
 
   try {
@@ -13,7 +13,7 @@ test("should fail gracefully if no source is provided", async t => {
   }
 });
 
-test("should fail gracefully if source is neither a buffer or a string", async t => {
+test("should fail gracefully if source is neither a buffer or a string", async (t) => {
   t.plan(2);
 
   try {
@@ -31,7 +31,7 @@ test("should fail gracefully if source is neither a buffer or a string", async t
   }
 });
 
-test("should fail gracefully if buffer is empty", async t => {
+test("should fail gracefully if buffer is empty", async (t) => {
   t.plan(2);
 
   try {
@@ -47,7 +47,7 @@ test("should fail gracefully if buffer is empty", async t => {
   }
 });
 
-test("should fail gracefully if path to source image is invalid", async t => {
+test("should fail gracefully if path to source image is invalid", async (t) => {
   t.plan(2);
 
   try {
@@ -63,14 +63,14 @@ test("should fail gracefully if path to source image is invalid", async t => {
   }
 });
 
-test("should fail gracefully if option is not supported on platform", async t => {
+test("should fail gracefully if option is not supported on platform", async (t) => {
   t.plan(1);
 
   try {
     await favicons(logo_png, {
       icons: {
-        favicons: { foo: 10 }
-      }
+        favicons: { foo: 10 },
+      },
     });
   } catch (err) {
     t.is(err.message, "Unsupported option 'foo' on platform 'favicons'");

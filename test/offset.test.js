@@ -7,9 +7,9 @@ const { factory } = require("concordance-comparator");
 const { logo_png } = require("./util");
 const { Image, snapshotResult } = require("./Image");
 
-snapshotManager.plugins.push(factory(Image, v => new Image(v[0], v[1])));
+snapshotManager.plugins.push(factory(Image, (v) => new Image(v[0], v[1])));
 
-test("should allow offsetting the icon on selected platforms", async t => {
+test("should allow offsetting the icon on selected platforms", async (t) => {
   t.plan(1);
 
   const result = await favicons(logo_png, {
@@ -18,8 +18,8 @@ test("should allow offsetting the icon on selected platforms", async t => {
       appleIcon: { offset: 10 },
       appleStartup: { offset: 10 },
       coast: { offset: 10 },
-      firefox: { offset: 10 }
-    }
+      firefox: { offset: 10 },
+    },
   });
 
   await snapshotResult(t, result);

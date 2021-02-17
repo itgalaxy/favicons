@@ -13,13 +13,13 @@ const icons = {
   favicons: false,
   firefox: false,
   windows: false,
-  yandex: false
+  yandex: false,
 };
 
-test("should scale the SVG image properly", async t => {
+test("should scale the SVG image properly", async (t) => {
   const result = await favicons(logo_small_svg, { icons });
   const largeImage = result.images.find(
-    image => image.name === "apple-touch-icon-1024x1024.png"
+    (image) => image.name === "apple-touch-icon-1024x1024.png"
   );
 
   t.plan(1);

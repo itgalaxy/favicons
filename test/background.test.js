@@ -7,9 +7,9 @@ const { factory } = require("concordance-comparator");
 const { logo_png } = require("./util");
 const { Image, snapshotResult } = require("./Image");
 
-snapshotManager.plugins.push(factory(Image, v => new Image(v[0], v[1])));
+snapshotManager.plugins.push(factory(Image, (v) => new Image(v[0], v[1])));
 
-test("should allow configuring background color on selected platforms", async t => {
+test("should allow configuring background color on selected platforms", async (t) => {
   t.plan(1);
 
   const result = await favicons(logo_png, {
@@ -20,8 +20,8 @@ test("should allow configuring background color on selected platforms", async t 
       coast: { background: true },
       firefox: { background: true },
       windows: { background: true },
-      yandex: { background: true }
-    }
+      yandex: { background: true },
+    },
   });
 
   await snapshotResult(t, result);

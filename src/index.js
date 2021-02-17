@@ -59,7 +59,7 @@ const toIco = require("to-ico");
 function favicons(source, options = {}, next = undefined) {
   if (next) {
     return favicons(source, options)
-      .then(response => next(null, response))
+      .then((response) => next(null, response))
       .catch(next);
   }
 
@@ -79,10 +79,10 @@ function favicons(source, options = {}, next = undefined) {
             platformOptions
           )
         )
-      ).then(results =>
-        toIco(results.map(({ contents }) => contents)).then(buffer => ({
+      ).then((results) =>
+        toIco(results.map(({ contents }) => contents)).then((buffer) => ({
           name,
-          contents: buffer
+          contents: buffer,
         }))
       );
     }
@@ -98,12 +98,12 @@ function favicons(source, options = {}, next = undefined) {
 
     return Promise.all([
       µ.Images.create(mergedProperties),
-      µ.Images.render(sourceset, mergedProperties, offset)
+      µ.Images.render(sourceset, mergedProperties, offset),
     ])
       .then(([canvas, buffer]) =>
         µ.Images.composite(canvas, buffer, mergedProperties, offset, maximum)
       )
-      .then(contents => ({ name, contents }));
+      .then((contents) => ({ name, contents }));
   }
 
   function createHTML(platform) {
@@ -112,7 +112,7 @@ function favicons(source, options = {}, next = undefined) {
 
   function createFiles(platform) {
     return Promise.all(
-      Object.keys(config.files[platform] || {}).map(name =>
+      Object.keys(config.files[platform] || {}).map((name) =>
         µ.Files.create(config.files[platform][name], name)
       )
     );
@@ -130,7 +130,7 @@ function favicons(source, options = {}, next = undefined) {
       : config.icons[platform];
 
     return Promise.all(
-      Object.keys(icons || {}).map(name =>
+      Object.keys(icons || {}).map((name) =>
         createFavicon(
           sourceset,
           config.icons[platform][name],
@@ -145,7 +145,7 @@ function favicons(source, options = {}, next = undefined) {
     return Promise.all([
       createFavicons(sourceset, platform),
       createFiles(platform),
-      createHTML(platform)
+      createHTML(platform),
     ]);
   }
 
@@ -153,7 +153,7 @@ function favicons(source, options = {}, next = undefined) {
     const responses = [];
 
     const platforms = Object.keys(options.icons)
-      .filter(platform => options.icons[platform])
+      .filter((platform) => options.icons[platform])
       .sort((a, b) => {
         if (a === "favicons") return -1;
         if (b === "favicons") return 1;
@@ -165,9 +165,9 @@ function favicons(source, options = {}, next = undefined) {
     }
 
     return {
-      images: [].concat(...responses.map(r => r[0])),
-      files: [].concat(...responses.map(r => r[1])),
-      html: [].concat(...responses.map(r => r[2]))
+      images: [].concat(...responses.map((r) => r[0])),
+      files: [].concat(...responses.map((r) => r[1])),
+      html: [].concat(...responses.map((r) => r[2])),
     };
   }
 
@@ -176,7 +176,7 @@ function favicons(source, options = {}, next = undefined) {
 
 function stream(params, handleHtml) {
   /* eslint no-invalid-this: 0 */
-  return through2.obj(function(file, encoding, callback) {
+  return through2.obj(function (file, encoding, callback) {
     if (file.isNull()) {
       return callback(null, file);
     }
@@ -195,7 +195,7 @@ function stream(params, handleHtml) {
               path: asset.name,
               contents: Buffer.isBuffer(asset.contents)
                 ? asset.contents
-                : Buffer.from(asset.contents)
+                : Buffer.from(asset.contents),
             })
           );
         }
@@ -208,7 +208,7 @@ function stream(params, handleHtml) {
           this.push(
             new File({
               path,
-              contents: Buffer.from(html.join("\n"))
+              contents: Buffer.from(html.join("\n")),
             })
           );
         }

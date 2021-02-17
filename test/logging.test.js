@@ -3,9 +3,9 @@ const test = require("ava");
 
 const { logo_png } = require("./util");
 
-test("should allow enabling verbose output", async t => {
+test("should allow enabling verbose output", async (t) => {
   await favicons(logo_png, {
-    logging: true
+    logging: true,
   });
 
   t.pass();
