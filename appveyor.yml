@@ -13,8 +13,8 @@ build: off
 deploy: off
 
 branches:
-    only:
-      - master
+  only:
+    - master
 
 install:
   - ps: Install-Product node $env:nodejs_version x64
