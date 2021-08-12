@@ -11,8 +11,8 @@
     "url": "https://github.com/itgalaxy/favicons.git"
   },
   "scripts": {
-    "fmt": "prettier --write .",
-    "fmt-check": "prettier --check .",
+    "fmt": "prettier --write . --ignore-path .gitignore",
+    "fmt-check": "prettier --check . --ignore-path .gitignore",
     "lint": "eslint . --ignore-path .gitignore",
     "fix": "npm run lint -- --fix && npm run fmt",
     "pretest": "npm run lint && npm run fmt-check",
