@@ -23,7 +23,7 @@ The Gulp / Grunt wrapper modules have a few extra properties. You can also confi
 
 Favicons generates its icons locally using pure Javascript with no external dependencies.
 
-Please note: Favicons is tested on Node 10.13 and above.
+Please note: Favicons is tested on Node 12.13 and above.
 
 ```js
 var favicons = require("favicons"),
