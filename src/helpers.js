@@ -191,13 +191,13 @@ module.exports = function (options) {
             options.manifestMaskable &&
             typeof options.manifestMaskable !== "boolean"
           ) {
-            const maskableIcons = properties.icons.map(icon => ({
+            const maskableIcons = properties.icons.map((icon) => ({
               ...icon,
               src: icon.src.replace(
                 /android-chrome-(.+)\.png$/,
                 "android-chrome-maskable-$1.png"
               ),
-              purpose: "maskable"
+              purpose: "maskable",
             }));
 
             properties.icons = [...properties.icons, ...maskableIcons];
