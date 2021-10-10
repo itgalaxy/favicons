@@ -64,6 +64,71 @@
       "mask": false
     }
   },
+  "android_maskable": {
+    "android-chrome-maskable-36x36.png": {
+      "width": 36,
+      "height": 36,
+      "transparent": true,
+      "rotate": false,
+      "mask": false
+    },
+    "android-chrome-maskable-48x48.png": {
+      "width": 48,
+      "height": 48,
+      "transparent": true,
+      "rotate": false,
+      "mask": false
+    },
+    "android-chrome-maskable-72x72.png": {
+      "width": 72,
+      "height": 72,
+      "transparent": true,
+      "rotate": false,
+      "mask": false
+    },
+    "android-chrome-maskable-96x96.png": {
+      "width": 96,
+      "height": 96,
+      "transparent": true,
+      "rotate": false,
+      "mask": false
+    },
+    "android-chrome-maskable-144x144.png": {
+      "width": 144,
+      "height": 144,
+      "transparent": true,
+      "rotate": false,
+      "mask": false
+    },
+    "android-chrome-maskable-192x192.png": {
+      "width": 192,
+      "height": 192,
+      "transparent": true,
+      "rotate": false,
+      "mask": false
+    },
+    "android-chrome-maskable-256x256.png": {
+      "width": 256,
+      "height": 256,
+      "transparent": true,
+      "rotate": false,
+      "mask": false
+    },
+    "android-chrome-maskable-384x384.png": {
+      "width": 384,
+      "height": 384,
+      "transparent": true,
+      "rotate": false,
+      "mask": false
+    },
+    "android-chrome-maskable-512x512.png": {
+      "width": 512,
+      "height": 512,
+      "transparent": true,
+      "rotate": false,
+      "mask": false
+    }
+  },
   "appleIcon": {
     "apple-touch-icon-57x57.png": {
       "width": 57,
