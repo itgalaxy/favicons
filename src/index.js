@@ -9,7 +9,7 @@ const configDefaults = require("require-directory")(module, "config");
 const helpers = require("./helpers.js");
 const path = require("path");
 const File = require("vinyl");
-const toIco = require("to-ico");
+const toIco = require("png-to-ico");
 
 /**
  * @typedef FaviconOptions
