@@ -55,11 +55,11 @@
     "jimp": "^0.16.1",
     "jsontoxml": "^1.0.1",
     "lodash.defaultsdeep": "^4.6.1",
+    "png-to-ico": "^2.1.2",
     "require-directory": "^2.1.1",
     "sharp": "^0.28.2",
     "through2": "^4.0.2",
     "tinycolor2": "^1.4.2",
-    "to-ico": "^1.1.5",
     "vinyl": "^2.2.1",
     "xml2js": "^0.4.23"
   },
