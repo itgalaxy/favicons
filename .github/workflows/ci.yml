@@ -1,0 +1,48 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macOS-latest
+          - windows-latest
+        node-version:
+          - 12
+          - 14
+
+    steps:
+      - name: Install dependencies
+        run: sudo apt-get install -y libvips-dev
+        if: matrix.os == 'ubuntu-latest'
+
+      - name: Install dependencies
+        run: brew install vips
+        if: matrix.os == 'macOs-latest'
+
+      - name: Set PATH
+        shell: bash
+        run: |
+          echo "C:\msys64\mingw64\bin" >> $GITHUB_PATH
+          echo "C:\msys64\usr\bin" >> $GITHUB_PATH
+        if: matrix.os == 'windows-latest'
+
+      - name: Install dependencies
+        run: pacman --noconfirm -S mingw-w64-x86_64-libvips
+        if: matrix.os == 'windows-latest'
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - uses: actions/checkout@v2
+      - run: npm ci
+
+      - run: npm test

@@ -23,8 +23,8 @@
 *.html text
 *.inc text
 *.ini text
-*.js text
-*.json text
+*.js text eol=lf
+*.json text eol=lf
 *.jsx text
 *.less text
 *.od text
@@ -51,7 +51,7 @@ Dockerfile text
 
 ## Documentation
 *.markdown text
-*.md text
+*.md text eol=lf
 *.mdwn text
 *.mdown text
 *.mkd text
@@ -91,9 +91,9 @@ TODO text
 *.twig text
 
 ## Linters
-.babelrc text
+.babelrc text eol=lf
 .csslintrc text
-.eslintrc text
+.eslintrc text eol=lf
 .htmlhintrc text
 .jscsrc text
 .jshintrc text
@@ -116,8 +116,8 @@ TODO text
 .gitignore text
 .htaccess text
 *.npmignore text
-*.yaml text
-*.yml text
+*.yaml text eol=lf
+*.yml text eol=lf
 browserslist text
 Makefile text
 makefile text
