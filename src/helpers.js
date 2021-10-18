@@ -407,7 +407,14 @@ module.exports = function (options) {
           log("Images:render", `Rotating image by ${degrees}`);
           pipeline = pipeline.rotate(degrees, false);
         }
-        return await pipeline.toFormat("png").toBuffer();
+
+        if (properties.raw) {
+          return await pipeline
+            .toColorspace("srgb")
+            .raw({ depth: "uchar" })
+            .toBuffer({ resolveWithObject: true });
+        }
+        return await pipeline.png().toBuffer();
       },
     },
   };

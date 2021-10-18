@@ -54,7 +54,6 @@
     "image-size": "^0.8.3",
     "jsontoxml": "^1.0.1",
     "lodash.defaultsdeep": "^4.6.1",
-    "png-to-ico": "^2.1.2",
     "require-directory": "^2.1.1",
     "sharp": "^0.28.2",
     "through2": "^4.0.2",
