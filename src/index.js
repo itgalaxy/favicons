@@ -9,7 +9,7 @@ const configDefaults = require("require-directory")(module, "config");
 const helpers = require("./helpers.js");
 const path = require("path");
 const File = require("vinyl");
-const toIco = require("png-to-ico");
+const { toIco } = require("./ico");
 
 /**
  * @typedef FaviconOptions
@@ -68,23 +68,24 @@ function favicons(source, options = {}, next = undefined) {
   const config = clone(configDefaults);
   const µ = helpers(options);
 
-  function createFavicon(sourceset, properties, name, platformOptions) {
+  async function createFavicon(sourceset, properties, name, platformOptions) {
     if (path.extname(name) === ".ico") {
-      return Promise.all(
+      const images = await Promise.all(
         properties.sizes.map(({ width, height }) =>
           createFavicon(
             sourceset,
-            Object.assign({}, properties, { width, height }),
-            `${width}x${height}.png`,
+            { ...properties, width, height, raw: true },
+            `${width}x${height}.rawdata`,
             platformOptions
           )
         )
-      ).then((results) =>
-        toIco(results.map(({ contents }) => contents)).then((buffer) => ({
-          name,
-          contents: buffer,
-        }))
       );
+      const contents = toIco(images.map((image) => image.contents));
+
+      return {
+        name,
+        contents,
+      };
     }
 
     const maximum = Math.max(properties.width, properties.height);
@@ -96,14 +97,16 @@ function favicons(source, options = {}, next = undefined) {
       !mergedProperties.background ||
       mergedProperties.background === "transparent";
 
-    return Promise.all([
-      µ.Images.create(mergedProperties),
-      µ.Images.render(sourceset, mergedProperties, offset),
-    ])
-      .then(([canvas, buffer]) =>
-        µ.Images.composite(canvas, buffer, mergedProperties, offset)
-      )
-      .then((contents) => ({ name, contents }));
+    const canvas = µ.Images.create(mergedProperties);
+    const buffer = µ.Images.render(sourceset, mergedProperties, offset);
+    const contents = await µ.Images.composite(
+      await canvas,
+      await buffer,
+      mergedProperties,
+      offset
+    );
+
+    return { name, contents };
   }
 
   function createHTML(platform) {
