@@ -101,7 +101,7 @@ function favicons(source, options = {}, next = undefined) {
       µ.Images.render(sourceset, mergedProperties, offset),
     ])
       .then(([canvas, buffer]) =>
-        µ.Images.composite(canvas, buffer, mergedProperties, offset, maximum)
+        µ.Images.composite(canvas, buffer, mergedProperties, offset)
       )
       .then((contents) => ({ name, contents }));
   }

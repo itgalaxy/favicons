@@ -2,11 +2,9 @@ const path = require("path");
 const url = require("url");
 const fs = require("fs");
 const { promisify } = require("util");
-const color = require("tinycolor2");
 const colors = require("colors");
 const jsonxml = require("jsontoxml");
 const sizeOf = require("image-size");
-const Jimp = require("jimp");
 const sharp = require("sharp");
 const xml2js = require("xml2js");
 const PLATFORM_OPTIONS = require("./config/platform-options.json");
@@ -33,12 +31,6 @@ module.exports = function (options) {
       );
       console.log(`${green("[Favicons]")} ${yellow(context)}: ${message}...`);
     }
-  }
-
-  function parseColor(hex) {
-    const { r, g, b, a } = color(hex).toRgb();
-
-    return Jimp.rgbaToInt(r, g, b, a * 255);
   }
 
   // sharp renders the SVG in its source width and height with 72 DPI which can
@@ -263,14 +255,24 @@ module.exports = function (options) {
           } background`
         );
 
-        return Jimp.create(
-          properties.width,
-          properties.height,
-          properties.transparent ? 0 : parseColor(properties.background)
-        );
+        let image = sharp({
+          create: {
+            width: properties.width,
+            height: properties.height,
+            channels: properties.transparent ? 4 : 3,
+            background: properties.transparent
+              ? "#00000000"
+              : properties.background,
+          },
+        });
+
+        if (properties.transparent) {
+          image = image.ensureAlpha();
+        }
+        return image.png().toBuffer();
       },
 
-      render(sourceset, properties, offset) {
+      async render(sourceset, properties, offset) {
         log(
           "Image:render",
           `Find nearest icon to ${properties.width}x${properties.height} with offset ${offset}`
@@ -282,91 +284,110 @@ module.exports = function (options) {
           (source) => source.size.type === "svg"
         );
 
-        let promise = null;
-
         if (svgSource) {
-          const background = { r: 0, g: 0, b: 0, alpha: 0 };
-
           log("Image:render", `Rendering SVG to ${width}x${height}`);
-          promise = svgtool
-            .ensureSize(svgSource, width, height)
-            .then((svgBuffer) =>
-              sharp(svgBuffer)
-                .resize({
-                  background,
-                  width,
-                  height,
-                  fit: sharp.fit.contain,
-                })
-                .toBuffer()
-            )
-            .then(Jimp.read);
-        } else {
-          const sideSize = Math.max(width, height);
+          const svgBuffer = await svgtool.ensureSize(svgSource, width, height);
 
-          let nearestIcon = sourceset[0];
-          let nearestSideSize = Math.max(
-            nearestIcon.size.width,
-            nearestIcon.size.height
-          );
-
-          for (const icon of sourceset) {
-            const max = Math.max(icon.size.width, icon.size.height);
-
-            if (
-              (nearestSideSize > max || nearestSideSize < sideSize) &&
-              max >= sideSize
-            ) {
-              nearestIcon = icon;
-              nearestSideSize = max;
-            }
-          }
-
-          log("Images:render", `Resizing PNG to ${width}x${height}`);
-
-          promise = Jimp.read(nearestIcon.file).then((image) =>
-            image.contain(
-              width,
-              height,
-              Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE,
-              options.pixel_art &&
-                width >= image.bitmap.width &&
-                height >= image.bitmap.height
-                ? Jimp.RESIZE_NEAREST_NEIGHBOR
-                : null
-            )
-          );
+          return await sharp(svgBuffer).resize({
+            background: "#00000000",
+            width,
+            height,
+            fit: sharp.fit.contain,
+          });
         }
 
-        return promise.then((image) => image);
+        const sideSize = Math.max(width, height);
+
+        let nearestIcon = sourceset[0];
+        let nearestSideSize = Math.max(
+          nearestIcon.size.width,
+          nearestIcon.size.height
+        );
+
+        for (const icon of sourceset) {
+          const max = Math.max(icon.size.width, icon.size.height);
+
+          if (
+            (nearestSideSize > max || nearestSideSize < sideSize) &&
+            max >= sideSize
+          ) {
+            nearestIcon = icon;
+            nearestSideSize = max;
+          }
+        }
+
+        log("Images:render", `Resizing PNG to ${width}x${height}`);
+
+        const image = await sharp(nearestIcon.file).ensureAlpha();
+        const metadata = await image.metadata();
+
+        return image.resize({
+          width,
+          height,
+          fit: sharp.fit.contain,
+          background: "#00000000",
+          kernel:
+            options.pixel_art &&
+            width >= metadata.width &&
+            height >= metadata.height
+              ? "nearest"
+              : "lanczos3",
+        });
       },
 
-      mask: Jimp.read(path.join(__dirname, "mask.png")),
-      overlayGlow: Jimp.read(path.join(__dirname, "overlay-glow.png")),
+      mask: path.join(__dirname, "mask.png"),
+      overlayGlow: path.join(__dirname, "overlay-glow.png"),
       // Gimp drop shadow filter: input: mask.png, config: X: 2, Y: 5, Offset: 5, Color: black, Opacity: 20
-      overlayShadow: Jimp.read(path.join(__dirname, "overlay-shadow.png")),
+      overlayShadow: path.join(__dirname, "overlay-shadow.png"),
 
-      composite(canvas, image, properties, offset, max) {
+      async maskImage(image, mask) {
+        const pipeline = sharp(image);
+        const meta = await pipeline.metadata();
+
+        const maskBuffer = await sharp(mask)
+          .resize({
+            width: meta.width,
+            height: meta.height,
+            fit: sharp.fit.contain,
+            background: "#00000000",
+          })
+          .toColourspace("b-w")
+          .toBuffer();
+
+        return await pipeline.joinChannel(maskBuffer).png().toBuffer();
+      },
+
+      async overlay(image, coverPath) {
+        const pipeline = sharp(image);
+        const meta = await pipeline.metadata();
+
+        const cover = await sharp(coverPath)
+          .resize({
+            width: meta.width,
+            height: meta.height,
+            fit: sharp.fit.contain,
+          })
+          .png()
+          .toBuffer();
+
+        return await pipeline
+          .composite([{ input: cover, left: 0, top: 0 }])
+          .png()
+          .toBuffer();
+      },
+
+      async composite(canvas, image, properties, offset) {
         if (properties.mask) {
           log("Images:composite", "Masking composite image on circle");
-          return Promise.all([
-            this.mask,
-            this.overlayGlow,
-            this.overlayShadow,
-          ]).then(([mask, glow, shadow]) => {
-            canvas.mask(mask.clone().resize(max, Jimp.AUTO), 0, 0);
-            if (properties.overlayGlow) {
-              canvas.composite(glow.clone().resize(max, Jimp.AUTO), 0, 0);
-            }
-            if (properties.overlayShadow) {
-              canvas.composite(shadow.clone().resize(max, Jimp.AUTO), 0, 0);
-            }
-            properties = Object.assign({}, properties, {
-              mask: false,
-            });
 
-            return this.composite(canvas, image, properties, offset, max);
-          });
+          canvas = await this.maskImage(canvas, this.mask);
+
+          if (properties.overlayGlow) {
+            canvas = await this.overlay(canvas, this.overlayGlow);
+          }
+          if (properties.overlayShadow) {
+            canvas = await this.overlay(canvas, this.overlayShadow);
+          }
         }
 
         log(
@@ -374,14 +395,19 @@ module.exports = function (options) {
           `Compositing favicon on ${properties.width}x${properties.height} canvas with offset ${offset}`
         );
 
-        canvas.composite(image, offset, offset);
+        const input = await image.toBuffer();
+
+        let pipeline = sharp(canvas).composite([
+          { input, left: offset, top: offset },
+        ]);
+
         if (properties.rotate) {
           const degrees = 90;
 
           log("Images:render", `Rotating image by ${degrees}`);
-          canvas.rotate(degrees, false);
+          pipeline = pipeline.rotate(degrees, false);
         }
-        return canvas.getBufferAsync(Jimp.MIME_PNG);
+        return await pipeline.toFormat("png").toBuffer();
       },
     },
   };
