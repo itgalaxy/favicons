@@ -16,20 +16,9 @@
     "lint": "eslint . --ignore-path .gitignore",
     "fix": "npm run lint -- --fix && npm run fmt",
     "pretest": "npm run lint && npm run fmt-check",
-    "test-only": "ava",
-    "test-jest": "jest",
+    "test-only": "jest",
     "test": "npm run test-only",
     "prepare": "gulp"
-  },
-  "ava": {
-    "require": [
-      "@babel/register"
-    ],
-    "files": [
-      "test/**/*.test.js",
-      "test/*.test.js"
-    ],
-    "timeout": "2m"
   },
   "keywords": [
     "favicon",
