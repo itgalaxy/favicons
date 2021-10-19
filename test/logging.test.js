@@ -1,12 +1,16 @@
 const favicons = require("../src");
-const test = require("ava");
-
 const { logo_png } = require("./util");
 
-test("should allow enabling verbose output", async (t) => {
-  await favicons(logo_png, {
-    logging: true,
-  });
+describe("logging", () => {
+  it("should allow enabling verbose output", async () => {
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
 
-  t.pass();
+    await favicons(logo_png, {
+      logging: true,
+    });
+
+    expect(logSpy).toHaveBeenCalled();
+
+    logSpy.mockRestore();
+  });
 });
