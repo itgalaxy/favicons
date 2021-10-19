@@ -8,7 +8,7 @@ gulp.task("clean", () => del("dist/**", { force: true }));
 gulp.task("build", () =>
   Promise.all([
     gulp
-      .src(["src/index.js", "src/helpers.js"])
+      .src(["src/index.js", "src/helpers.js", "src/ico.js"])
       .pipe(eslint())
       .pipe(eslint.format())
       .pipe(eslint.failAfterError())
