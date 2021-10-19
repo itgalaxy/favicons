@@ -53,7 +53,7 @@
     "no-magic-numbers": [
       2,
       {
-        "ignore": [-1, 0, 1, 2, 100, 255],
+        "ignore": [-1, 0, 1, 2, 3, 4, 100, 255],
         "ignoreArrayIndexes": true
       }
     ],
