@@ -28,5 +28,10 @@
     "firefox": true,
     "windows": true,
     "yandex": true
+  },
+  "responses": {
+    "images": true,
+    "files": true,
+    "html": true
   }
 }
