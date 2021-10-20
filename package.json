@@ -40,30 +40,30 @@
   "dependencies": {
     "clone": "^2.1.2",
     "colors": "^1.4.0",
-    "image-size": "^0.8.3",
+    "image-size": "^1.0.0",
     "jsontoxml": "^1.0.1",
     "lodash.defaultsdeep": "^4.6.1",
     "require-directory": "^2.1.1",
-    "sharp": "^0.28.2",
+    "sharp": "^0.29.1",
     "through2": "^4.0.2",
     "vinyl": "^2.2.1",
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
-    "@babel/core": "^7.14.0",
-    "@babel/preset-env": "^7.14.1",
+    "@babel/core": "^7.15.8",
+    "@babel/preset-env": "^7.15.8",
     "del": "^6.0.0",
-    "eslint": "^7.20.0",
+    "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-jest": "^25.2.2",
-    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-prettier": "^3.4.1",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-eslint": "^6.0.0",
-    "icojs": "^0.15.1",
+    "icojs": "^0.16.1",
     "jest": "^27.3.1",
     "jest-image-snapshot": "^4.5.1",
-    "prettier": "^2.3.0"
+    "prettier": "^2.4.1"
   },
   "jest": {
     "testTimeout": 180000,
