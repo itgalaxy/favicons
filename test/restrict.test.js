@@ -1,13 +1,5 @@
 const favicons = require("../src");
-const test = require("ava");
-
-// const { snapshotManager } = require("ava/lib/concordance-options");
-// const { factory } = require("concordance-comparator");
-
 const { logo_png } = require("./util");
-// const { Image } = require("./Image");
-
-// snapshotManager.plugins.push(factory(Image, v => new Image(v[0], v[1])));
 
 const source = logo_png;
 
@@ -40,7 +32,7 @@ function generatedHTML(html) {
   return html.filter((str) => str.length > 0);
 }
 
-test("should allow to restrict the icons to generate", async (t) => {
+test("should allow to restrict the icons to generate", async () => {
   // eslint-disable-next-line no-magic-numbers
   const testCases = [
     {
@@ -74,29 +66,27 @@ test("should allow to restrict the icons to generate", async (t) => {
     },
   ];
 
-  t.plan(testCases.length);
+  expect.assertions(testCases.length);
 
-  const promises = testCases.map(async ({ source, options }) => {
+  for (const { source, options } of testCases) {
     const { images } = await favicons(source, options);
 
-    t.deepEqual(images.length, expectedLength);
-  });
-
-  await Promise.all(promises);
+    expect(images.length).toBe(expectedLength);
+  }
 });
 
-test("should allow to restrict the HTML tags generated", async (t) => {
+test("should allow to restrict the HTML tags generated", async () => {
   // eslint-disable-next-line no-magic-numbers
-  t.plan(1);
+  expect.assertions(1);
 
   const { html } = await processSource();
 
   const useful = generatedHTML(html);
 
-  t.deepEqual(useful.length, expectedLength);
+  expect(useful.length).toBe(expectedLength);
 });
 
-test("should allow to restrict the HTML tags taking into account manifests and others", async (t) => {
+test("should allow to restrict the HTML tags taking into account manifests and others", async () => {
   const testCases = [
     {
       // android
@@ -142,16 +132,14 @@ test("should allow to restrict the HTML tags taking into account manifests and o
     },
   ];
 
-  t.plan(testCases.length);
+  expect.assertions(testCases.length);
 
-  const promises = testCases.map(async ({ testOptions, expectedLength }) => {
+  for (const { testOptions, expectedLength } of testCases) {
     const { html } = await favicons(source, {
       icons: testOptions,
     });
     const useful = generatedHTML(html);
 
-    t.deepEqual(useful.length, expectedLength);
-  });
-
-  await Promise.all(promises);
+    expect(useful.length).toBe(expectedLength);
+  }
 });

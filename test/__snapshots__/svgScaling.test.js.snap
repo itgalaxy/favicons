@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should scale the SVG image properly 2`] = `
+Array [
+  Object {
+    "contents": null,
+    "name": "apple-touch-icon-1024x1024.png",
+  },
+]
+`;

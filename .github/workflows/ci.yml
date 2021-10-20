@@ -16,6 +16,7 @@ jobs:
         node-version:
           - 12
           - 14
+          - 16
 
     steps:
       - name: Install dependencies

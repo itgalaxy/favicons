@@ -1,39 +1,45 @@
 const favicons = require("../src").stream;
-const test = require("ava");
 const gulp = require("gulp");
-
-const { snapshotManager } = require("ava/lib/concordance-options");
-const { factory } = require("concordance-comparator");
-
 const { logo_png } = require("./util");
-const { Image, snapshotResult } = require("./Image");
 
-snapshotManager.plugins.push(factory(Image, (v) => new Image(v[0], v[1])));
-
-test("should provide stream interface", async (t) => {
-  t.plan(1);
+test("should provide stream interface", async () => {
+  expect.assertions(1);
 
   const result = {
     images: [],
+    files: [],
   };
 
-  return new Promise((resolve, reject) => {
+  function isImage(file) {
+    return /\.(png|ico|jpg|jpeg|svg)$/i.test(file.path);
+  }
+
+  await new Promise((resolve) => {
     gulp
       .src(logo_png)
       .pipe(favicons({}, (html) => (result["index.html"] = html)))
       .on("data", (chunk) => {
-        result.images.push({
-          name: chunk.path,
-          contents: chunk.contents,
-        });
+        if (isImage(chunk)) {
+          result.images.push({
+            name: chunk.path,
+            contents: chunk.contents,
+          });
+        } else {
+          result.files.push({
+            name: chunk.path,
+            contents: chunk.contents,
+          });
+        }
       })
       .on("end", () => {
-        snapshotResult(t, result).then(resolve, reject);
+        resolve();
       });
   });
+
+  await expect(result).toMatchFaviconsSnapshot();
 });
 
-test("should stream html file", async (t) => {
+test("should stream html file", async () => {
   let found = false;
 
   await new Promise((resolve) => {
@@ -48,5 +54,5 @@ test("should stream html file", async (t) => {
       .on("end", () => resolve());
   });
 
-  t.true(found);
+  expect(found).toBe(true);
 });
