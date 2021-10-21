@@ -9,6 +9,27 @@ const sharp = require("sharp");
 const xml2js = require("xml2js");
 const PLATFORM_OPTIONS = require("./config/platform-options.json");
 
+function arrayComparator(a, b) {
+  a = [a].flat(Infinity);
+  b = [b].flat(Infinity);
+  for (let i = 0; i < Math.max(a.length, b.length); ++i) {
+    if (i >= a.length) return -1;
+    if (i >= b.length) return 1;
+    if (a[i] !== b[i]) {
+      return a[i] < b[i] ? -1 : 1;
+    }
+  }
+  return 0;
+}
+
+function minBy(array, comparator) {
+  return array.reduce((acc, cur) => (comparator(acc, cur) < 0 ? acc : cur));
+}
+
+function minByKey(array, keyFn) {
+  return minBy(array, (a, b) => arrayComparator(keyFn(a), keyFn(b)));
+}
+
 module.exports = function (options) {
   function directory(path) {
     return path.substr(-1) === "/" ? path : `${path}/`;
@@ -297,24 +318,14 @@ module.exports = function (options) {
         }
 
         const sideSize = Math.max(width, height);
+        const nearestIcon = minByKey(sourceset, (icon) => {
+          const iconSideSize = Math.max(icon.size.width, icon.size.height);
 
-        let nearestIcon = sourceset[0];
-        let nearestSideSize = Math.max(
-          nearestIcon.size.width,
-          nearestIcon.size.height
-        );
-
-        for (const icon of sourceset) {
-          const max = Math.max(icon.size.width, icon.size.height);
-
-          if (
-            (nearestSideSize > max || nearestSideSize < sideSize) &&
-            max >= sideSize
-          ) {
-            nearestIcon = icon;
-            nearestSideSize = max;
-          }
-        }
+          return [
+            iconSideSize >= sideSize ? 0 : 1,
+            Math.abs(iconSideSize - sideSize),
+          ];
+        });
 
         log("Images:render", `Resizing PNG to ${width}x${height}`);
 
