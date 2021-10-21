@@ -1,13 +1,10 @@
 const favicons = require("../src");
-const test = require("ava");
-
 const { logo_png } = require("./util");
 
-test("should allow disabling asset generation", async (t) => {
-  // eslint-disable-next-line no-magic-numbers
-  t.plan(3);
+test("should allow disabling asset generation", async () => {
+  expect.assertions(1);
 
-  const { files, images, html } = await favicons(logo_png, {
+  const result = await favicons(logo_png, {
     icons: {
       android: false,
       appleIcon: false,
@@ -20,7 +17,9 @@ test("should allow disabling asset generation", async (t) => {
     },
   });
 
-  t.deepEqual(files, []);
-  t.deepEqual(images, []);
-  t.deepEqual(html, []);
+  expect(result).toStrictEqual({
+    files: [],
+    images: [],
+    html: [],
+  });
 });

@@ -1,70 +1,68 @@
 const favicons = require("../src");
-const test = require("ava");
-
 const { logo_png } = require("./util");
 
-test("should fail gracefully if no source is provided", async (t) => {
-  t.plan(1);
+test("should fail gracefully if no source is provided", async () => {
+  expect.assertions(1);
 
   try {
     await favicons([]);
   } catch (err) {
-    t.is(err.message, "No source provided");
+    expect(err.message).toBe("No source provided");
   }
 });
 
-test("should fail gracefully if source is neither a buffer or a string", async (t) => {
-  t.plan(2);
+test("should fail gracefully if source is neither a buffer or a string", async () => {
+  expect.assertions(2);
 
   try {
     // eslint-disable-next-line no-magic-numbers
     await favicons(42);
   } catch (err) {
-    t.is(err.message, "Invalid source type provided");
+    expect(err.message).toBe("Invalid source type provided");
   }
 
   try {
     // eslint-disable-next-line no-magic-numbers
     await favicons([42]);
   } catch (err) {
-    t.is(err.message, "Invalid source type provided");
+    expect(err.message).toBe("Invalid source type provided");
   }
 });
 
-test("should fail gracefully if buffer is empty", async (t) => {
-  t.plan(2);
+test("should fail gracefully if buffer is empty", async () => {
+  expect.assertions(2);
 
   try {
     await favicons(Buffer.from(""));
   } catch (err) {
-    t.is(err.message, "Invalid image buffer");
+    expect(err.message).toBe("Invalid image buffer");
   }
 
   try {
     await favicons([Buffer.from("")]);
   } catch (err) {
-    t.is(err.message, "Invalid image buffer");
+    expect(err.message).toBe("Invalid image buffer");
   }
 });
 
-test("should fail gracefully if path to source image is invalid", async (t) => {
-  t.plan(2);
+test("should fail gracefully if path to source image is invalid", async () => {
+  expect.assertions(2);
 
   try {
     await favicons("missing.png");
   } catch (err) {
-    t.is(err.message.split(",")[0], "ENOENT: no such file or directory");
+    expect(err.message).toMatch("ENOENT: no such file or directory");
   }
 
   try {
     await favicons(["missing.png"]);
   } catch (err) {
-    t.is(err.message.split(",")[0], "ENOENT: no such file or directory");
+    expect(err.message).toMatch("ENOENT: no such file or directory");
   }
 });
 
-test("should fail gracefully if option is not supported on platform", async (t) => {
-  t.plan(1);
+test("should fail gracefully if option is not supported on platform", async () => {
+  expect.assertions(1);
 
   try {
     await favicons(logo_png, {
@@ -73,6 +71,6 @@ test("should fail gracefully if option is not supported on platform", async (t) 
       },
     });
   } catch (err) {
-    t.is(err.message, "Unsupported option 'foo' on platform 'favicons'");
+    expect(err.message).toBe("Unsupported option 'foo' on platform 'favicons'");
   }
 });

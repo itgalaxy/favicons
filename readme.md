@@ -231,6 +231,6 @@ Because pure Javascript modules aren't available at the moment. For example, the
 
 Feel free to push your code if you agree with publishing under the MIT license.
 
-When testing, don't forget to update snapshots whenever you edit them: `ava --update-snapshots`.
+When testing, don't forget to update snapshots whenever you edit them: `npm test -- -u`.
 
 ## [License](LICENSE)

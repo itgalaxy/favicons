@@ -1,0 +1,78 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should images without options.path to manifests when manifestRelativePaths is true 19`] = `
+Array [
+  Object {
+    "contents": null,
+    "name": "android-chrome-36x36.png",
+  },
+  Object {
+    "contents": null,
+    "name": "android-chrome-48x48.png",
+  },
+  Object {
+    "contents": null,
+    "name": "android-chrome-72x72.png",
+  },
+  Object {
+    "contents": null,
+    "name": "android-chrome-96x96.png",
+  },
+  Object {
+    "contents": null,
+    "name": "android-chrome-144x144.png",
+  },
+  Object {
+    "contents": null,
+    "name": "android-chrome-192x192.png",
+  },
+  Object {
+    "contents": null,
+    "name": "android-chrome-256x256.png",
+  },
+  Object {
+    "contents": null,
+    "name": "android-chrome-384x384.png",
+  },
+  Object {
+    "contents": null,
+    "name": "android-chrome-512x512.png",
+  },
+  Object {
+    "contents": null,
+    "name": "firefox_app_60x60.png",
+  },
+  Object {
+    "contents": null,
+    "name": "firefox_app_128x128.png",
+  },
+  Object {
+    "contents": null,
+    "name": "firefox_app_512x512.png",
+  },
+  Object {
+    "contents": null,
+    "name": "mstile-70x70.png",
+  },
+  Object {
+    "contents": null,
+    "name": "mstile-144x144.png",
+  },
+  Object {
+    "contents": null,
+    "name": "mstile-150x150.png",
+  },
+  Object {
+    "contents": null,
+    "name": "mstile-310x150.png",
+  },
+  Object {
+    "contents": null,
+    "name": "mstile-310x310.png",
+  },
+  Object {
+    "contents": null,
+    "name": "yandex-browser-50x50.png",
+  },
+]
+`;

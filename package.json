@@ -16,20 +16,9 @@
     "lint": "eslint . --ignore-path .gitignore",
     "fix": "npm run lint -- --fix && npm run fmt",
     "pretest": "npm run lint && npm run fmt-check",
-    "test-only": "ava",
+    "test-only": "jest",
     "test": "npm run test-only",
-    "coverage": "nyc npm test",
     "prepare": "gulp"
-  },
-  "ava": {
-    "require": [
-      "@babel/register"
-    ],
-    "files": [
-      "test/**/*.test.js",
-      "test/*.test.js"
-    ],
-    "timeout": "2m"
   },
   "keywords": [
     "favicon",
@@ -63,23 +52,32 @@
   "devDependencies": {
     "@babel/core": "^7.14.0",
     "@babel/preset-env": "^7.14.1",
-    "@babel/register": "^7.13.16",
-    "ava": "^3.15.0",
-    "babel-plugin-istanbul": "^6.0.0",
-    "concordance-comparator": "^0.1.0",
     "del": "^6.0.0",
-    "dir-compare": "^3.2.0",
     "eslint": "^7.20.0",
     "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-jest": "^25.2.2",
     "eslint-plugin-prettier": "^3.4.0",
-    "fibers": "^5.0.0",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-eslint": "^6.0.0",
     "icojs": "^0.15.1",
-    "nyc": "^15.1.0",
-    "pixelmatch": "^5.2.1",
-    "prettier": "^2.3.0",
-    "resemblejs": "^3.2.5"
+    "jest": "^27.3.1",
+    "jest-image-snapshot": "^4.5.1",
+    "prettier": "^2.3.0"
+  },
+  "jest": {
+    "testTimeout": 180000,
+    "setupFilesAfterEnv": [
+      "<rootDir>/test/setup.js"
+    ],
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ],
+    "coverageDirectory": "<rootDir>/coverage",
+    "coverageReporters": [
+      "text-summary",
+      "html"
+    ]
   }
 }
