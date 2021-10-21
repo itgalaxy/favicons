@@ -110,10 +110,12 @@ function favicons(source, options = {}, next = undefined) {
   }
 
   function createHTML(platform) {
+    if (!options.output.html) return [];
     return Promise.all((config.html[platform] || []).map(µ.HTML.render));
   }
 
   function createFiles(platform) {
+    if (!options.output.files) return [];
     return Promise.all(
       Object.keys(config.files[platform] || {}).map((name) =>
         µ.Files.create(config.files[platform][name], name)
@@ -122,6 +124,7 @@ function favicons(source, options = {}, next = undefined) {
   }
 
   function createFavicons(sourceset, platform) {
+    if (!options.output.images) return [];
     const platformOptions = µ.General.preparePlatformOptions(platform);
     const icons = Array.isArray(options.icons[platform])
       ? options.icons[platform].reduce((opts, icon) => {
