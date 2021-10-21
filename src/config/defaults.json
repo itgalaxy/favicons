@@ -29,7 +29,7 @@
     "windows": true,
     "yandex": true
   },
-  "responses": {
+  "output": {
     "images": true,
     "files": true,
     "html": true

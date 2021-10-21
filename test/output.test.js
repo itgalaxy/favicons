@@ -15,7 +15,7 @@ test("should not generate images", async (t) => {
       windows: false,
       yandex: false,
     },
-    responses: {
+    output: {
       images: false,
     },
   });
@@ -38,7 +38,7 @@ test("should not generate files", async (t) => {
       windows: false,
       yandex: false,
     },
-    responses: {
+    output: {
       files: false,
     },
   });
@@ -61,7 +61,7 @@ test("should not generate html", async (t) => {
       windows: false,
       yandex: false,
     },
-    responses: {
+    output: {
       html: false,
     },
   });
