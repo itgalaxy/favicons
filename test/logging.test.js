@@ -1,9 +1,11 @@
-const favicons = require("../src");
-const { logo_png } = require("./util");
+import favicons from "../src";
+import { logo_png } from "./util";
 
 describe("logging", () => {
   it("should allow enabling verbose output", async () => {
-    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {
+      /* do nothing */
+    });
 
     await favicons(logo_png, {
       logging: true,

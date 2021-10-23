@@ -1,18 +1,10 @@
-const path = require("path");
+import * as path from "path";
 
 function fixture(uri) {
   return path.resolve(__dirname, "fixtures", uri);
 }
 
-["logo.png", "logo.svg", "logo_small.svg", "pixel_art.png"].forEach((img) => {
-  const key = img.replace(/\.([^.]+)$/, "_$1");
-
-  module.exports[key] = fixture(img);
-});
-module.exports.pixel_art = module.exports.pixel_art_png;
-
-module.exports.normalize = ({ files, images, html }) =>
-  [...files, ...images].reduce(
-    (obj, { name, contents }) => Object.assign(obj, { [name]: contents }),
-    { "index.html": html }
-  );
+export const logo_png = fixture("logo.png");
+export const logo_svg = fixture("logo.svg");
+export const logo_small_svg = fixture("logo_small.svg");
+export const pixel_art = fixture("pixel_art.png");

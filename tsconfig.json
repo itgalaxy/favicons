@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "target": "es2019",
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["./src/**/*"]
+}

@@ -1,5 +1,5 @@
-const favicons = require("../src");
-const { logo_small_svg } = require("./util");
+import favicons from "../src";
+import { logo_small_svg } from "./util";
 
 // Only one iconset is required that contains large enough images to compare the
 // difference between the generated files.

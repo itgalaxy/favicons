@@ -1,6 +1,6 @@
-const favicons = require("../src").stream;
-const gulp = require("gulp");
-const { logo_png } = require("./util");
+import { stream as favicons } from "../src";
+import gulp from "gulp";
+import { logo_png } from "./util";
 
 test("should provide stream interface", async () => {
   expect.assertions(1);

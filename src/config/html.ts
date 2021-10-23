@@ -1,5 +1,5 @@
 /* eslint-disable */
-const escapeHtml = require("escape-html");
+import escapeHtml from "escape-html";
 
 const appleIconSizes = [57, 60, 72, 76, 114, 120, 144, 152, 167, 180, 1024];
 
@@ -206,32 +206,10 @@ const coastSizes = [228];
 
 const faviconSizes = [16, 32, 48];
 
-function hasAll(arr) {
-  return function (icons) {
-    if (Array.isArray(icons)) return arr.every((item) => icons.includes(item));
-    return icons;
-  };
-}
-
-function hasAny(arr) {
-  return function (icons) {
-    if (Array.isArray(icons)) return arr.some((item) => icons.include(item));
-
-    return icons;
-  };
-}
-
 function ctxHasIcons(icons, icon) {
   if (Array.isArray(icons)) return icons.includes(icon);
   return icons;
 }
-
-const allAppleIcons = hasAll(
-  appleIconSizes.map((size) => `apple-touch-icon-${size}x${size}.png`)
-);
-const anyAppleIcon = hasAny(
-  appleIconSizes.map((size) => `apple-touch-icon-${size}x${size}.png`)
-);
 
 function appleIconGen(size, { relative, icons }) {
   const iconName = `apple-touch-icon-${size}x${size}.png`;
@@ -276,7 +254,7 @@ function faviconGen(size, { relative, icons }) {
 }
 
 // prettier-ignore
-module.exports = {
+export const HTML_TEMPLATES = {
   android: [
     ({ relative, loadManifestWithCredentials }) =>
       loadManifestWithCredentials

@@ -59,9 +59,9 @@ var favicons = require("favicons"),
       //   * false - use default
       //   * true - force use default, e.g. set background for Android icons
       //   * color - set background for the specified icons
-      //   * mask - apply mask in order to create circle icon (applied by default for firefox). `boolean`
-      //   * overlayGlow - apply glow effect after mask has been applied (applied by default for firefox). `boolean`
-      //   * overlayShadow - apply drop shadow after mask has been applied .`boolean`
+      // - mask - apply mask in order to create circle icon (applied by default for firefox). `boolean`
+      // - overlayGlow - apply glow effect after mask has been applied (applied by default for firefox). `boolean`
+      // - overlayShadow - apply drop shadow after mask has been applied .`boolean`
       //
       android: true, // Create Android homescreen icon. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }` or an array of sources
       appleIcon: true, // Create Apple touch icons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }` or an array of sources

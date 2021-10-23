@@ -1,5 +1,5 @@
-const favicons = require("../src");
-const { logo_png } = require("./util");
+import favicons from "../src";
+import { logo_png } from "./util";
 
 it("should not prefer any related applications by default", async () => {
   expect.assertions(3);

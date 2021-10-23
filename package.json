@@ -2,6 +2,7 @@
   "name": "favicons",
   "version": "6.2.2",
   "description": "Favicon generator for Node.js",
+  "type": "module",
   "main": "dist/index.js",
   "files": [
     "dist/"
@@ -18,7 +19,9 @@
     "pretest": "npm run lint && npm run fmt-check",
     "test-only": "jest",
     "test": "npm run test-only",
-    "prepare": "gulp"
+    "clean": "rimraf dist/",
+    "build": "tsc && copyfiles -u 1 src/**/*.png dist/",
+    "prepare": "npm run pretest && npm run build"
   },
   "keywords": [
     "favicon",
@@ -41,10 +44,8 @@
     "clone": "^2.1.2",
     "colors": "^1.4.0",
     "escape-html": "^1.0.3",
-    "image-size": "^1.0.0",
     "jsontoxml": "^1.0.1",
     "lodash.defaultsdeep": "^4.6.1",
-    "require-directory": "^2.1.1",
     "sharp": "^0.29.1",
     "through2": "^4.0.2",
     "vinyl": "^2.2.1",
@@ -53,18 +54,22 @@
   "devDependencies": {
     "@babel/core": "^7.15.8",
     "@babel/preset-env": "^7.15.8",
-    "del": "^6.0.0",
+    "@babel/preset-typescript": "^7.15.0",
+    "@types/sharp": "^0.29.2",
+    "@typescript-eslint/eslint-plugin": "^5.1.0",
+    "@typescript-eslint/parser": "^5.1.0",
+    "copyfiles": "^2.4.1",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-jest": "^25.2.2",
     "eslint-plugin-prettier": "^3.4.1",
     "gulp": "^4.0.2",
-    "gulp-babel": "^8.0.0",
-    "gulp-eslint": "^6.0.0",
     "icojs": "^0.16.1",
     "jest": "^27.3.1",
     "jest-image-snapshot": "^4.5.1",
-    "prettier": "^2.4.1"
+    "prettier": "^2.4.1",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.4.4"
   },
   "jest": {
     "testTimeout": 180000,
@@ -73,6 +78,7 @@
     ],
     "collectCoverage": true,
     "collectCoverageFrom": [
+      "src/**/*.ts",
       "src/**/*.js"
     ],
     "coverageDirectory": "<rootDir>/coverage",

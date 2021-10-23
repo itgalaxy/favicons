@@ -1,5 +1,5 @@
-const favicons = require("../src");
-const { logo_png } = require("./util");
+import favicons from "../src";
+import { logo_png } from "./util";
 
 test("should allow configuring 'overlayShadow'", async () => {
   expect.assertions(1);

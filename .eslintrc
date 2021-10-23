@@ -1,5 +1,9 @@
 {
-  "extends": ["eslint:recommended", "plugin:prettier/recommended"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
 
   "parserOptions": {
     "ecmaVersion": 9
@@ -11,7 +15,7 @@
     "jest/globals": true
   },
 
-  "plugins": ["jest"],
+  "plugins": ["@typescript-eslint", "jest"],
 
   "rules": {
     "no-console": 0,
@@ -111,7 +115,6 @@
     "no-label-var": 2,
     "no-shadow-restricted-names": 2,
     "no-undef-init": 2,
-    "no-undefined": 2,
 
     "callback-return": [2, ["callback", "cb", "next"]],
     "global-require": 2,
