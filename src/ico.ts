@@ -1,11 +1,12 @@
 /* eslint-disable no-magic-numbers */
+import { RawImage } from "./helpers";
 
 const HEADER_SIZE = 6;
 const DIRECTORY_SIZE = 16;
 const COLOR_MODE = 0;
 const BITMAP_SIZE = 40;
 
-function createHeader(n) {
+function createHeader(n: number) {
   const buf = Buffer.alloc(HEADER_SIZE);
 
   buf.writeUInt16LE(0, 0);
@@ -14,7 +15,7 @@ function createHeader(n) {
   return buf;
 }
 
-function createDirectory(image, offset) {
+function createDirectory(image: RawImage, offset: number) {
   const buf = Buffer.alloc(DIRECTORY_SIZE);
   const { width, height } = image.info;
   const size = width * height * 4 + BITMAP_SIZE;
@@ -31,7 +32,7 @@ function createDirectory(image, offset) {
   return buf;
 }
 
-function createBitmap(image, compression) {
+function createBitmap(image: RawImage, compression: number) {
   const buf = Buffer.alloc(BITMAP_SIZE);
   const { width, height } = image.info;
 
@@ -49,7 +50,7 @@ function createBitmap(image, compression) {
   return buf;
 }
 
-function createDib(image) {
+function createDib(image: RawImage) {
   const { width, height } = image.info;
   const imageData = image.data;
   const buf = Buffer.alloc(width * height * 4);
@@ -72,7 +73,7 @@ function createDib(image) {
   return buf;
 }
 
-function toIco(images) {
+export function toIco(images: RawImage[]) {
   const header = createHeader(images.length);
   let arr = [header];
 
@@ -99,7 +100,3 @@ function toIco(images) {
 
   return Buffer.concat(arr);
 }
-
-module.exports = {
-  toIco,
-};

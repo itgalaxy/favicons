@@ -1,51 +1,152 @@
-const path = require("path");
-const url = require("url");
-const fs = require("fs");
-const { promisify } = require("util");
-const colors = require("colors");
-const jsonxml = require("jsontoxml");
-const sizeOf = require("image-size");
-const sharp = require("sharp");
-const xml2js = require("xml2js");
-const PLATFORM_OPTIONS = require("./config/platform-options.json");
+import * as path from "path";
+import * as url from "url";
+import * as fs from "fs";
+import { promisify } from "util";
+import { magenta, green, yellow } from "colors";
+import jsonxml from "jsontoxml";
+import sharp from "sharp";
+import xml2js from "xml2js";
 
-function arrayComparator(a, b) {
-  a = [a].flat(Infinity);
-  b = [b].flat(Infinity);
-  for (let i = 0; i < Math.max(a.length, b.length); ++i) {
-    if (i >= a.length) return -1;
-    if (i >= b.length) return 1;
-    if (a[i] !== b[i]) {
-      return a[i] < b[i] ? -1 : 1;
+export type Dictionary<T> = { [key: string]: T };
+
+export type SourceImage = { data: Buffer; metadata: sharp.Metadata };
+
+export type RawImage = { data: Buffer; info: sharp.OutputInfo };
+
+export interface IconPlaneOptions {
+  readonly width: number;
+  readonly height: number;
+  readonly offset?: number;
+  readonly background?: string;
+  readonly transparent: boolean;
+  readonly rotate: boolean;
+  readonly mask: boolean;
+  readonly overlayGlow: boolean;
+  readonly overlayShadow: boolean;
+}
+
+const readFileAsync = promisify(fs.readFile);
+
+function arrayComparator(a: unknown, b: unknown): number {
+  const aArr = [a].flat(Infinity);
+  const bArr = [b].flat(Infinity);
+
+  for (let i = 0; i < Math.max(aArr.length, bArr.length); ++i) {
+    if (i >= aArr.length) return -1;
+    if (i >= bArr.length) return 1;
+    if (aArr[i] !== bArr[i]) {
+      return aArr[i] < bArr[i] ? -1 : 1;
     }
   }
   return 0;
 }
 
-function minBy(array, comparator) {
+function minBy<T>(array: T[], comparator: (a: T, b: T) => number): T {
   return array.reduce((acc, cur) => (comparator(acc, cur) < 0 ? acc : cur));
 }
 
-function minByKey(array, keyFn) {
+function minByKey<T>(array: T[], keyFn: (e: T) => unknown) {
   return minBy(array, (a, b) => arrayComparator(keyFn(a), keyFn(b)));
 }
 
-module.exports = function (options) {
-  function directory(path) {
+export function mapValues<T, U>(
+  dict: Dictionary<T>,
+  mapper: (value: T, key: string) => U
+): Dictionary<U> {
+  return Object.fromEntries(
+    Object.entries(dict).map(([key, value]) => [key, mapper(value, key)])
+  );
+}
+
+export function filterKeys<T>(
+  dict: Dictionary<T>,
+  predicate: (key: string) => boolean
+): Dictionary<T> {
+  return Object.fromEntries(
+    Object.entries(dict).filter((pair) => predicate(pair[0]))
+  );
+}
+
+export function asString(arg: unknown): string | undefined {
+  return typeof arg === "string" || arg instanceof String
+    ? arg.toString()
+    : undefined;
+}
+
+export async function sourceImages(
+  src: string | string[] | Buffer | Buffer[]
+): Promise<SourceImage[]> {
+  if (Buffer.isBuffer(src)) {
+    try {
+      return [
+        {
+          data: src,
+          metadata: await sharp(src).metadata(),
+        },
+      ];
+    } catch (error) {
+      return Promise.reject(new Error("Invalid image buffer"));
+    }
+  } else if (typeof src === "string") {
+    const buffer = await readFileAsync(src);
+
+    return await sourceImages(buffer);
+  } else if (Array.isArray(src) && !src.some(Array.isArray)) {
+    if (!src.length) {
+      throw new Error("No source provided");
+    }
+    const images = await Promise.all(src.map(sourceImages));
+
+    return images.flat();
+  } else {
+    throw new Error("Invalid source type provided");
+  }
+}
+
+export interface BlankImageProps {
+  readonly width: number;
+  readonly height: number;
+  readonly background?: string | boolean;
+  readonly transparent?: boolean;
+}
+
+export async function createBlankImage(
+  properties: BlankImageProps
+): Promise<Buffer> {
+  const transparent =
+    properties.transparent ||
+    !properties.background ||
+    properties.background === "transparent";
+
+  let image = sharp({
+    create: {
+      width: properties.width,
+      height: properties.height,
+      channels: transparent ? 4 : 3,
+      background: transparent ? "#00000000" : (properties.background as string),
+    },
+  });
+
+  if (transparent) {
+    image = image.ensureAlpha();
+  }
+  return await image.png().toBuffer();
+}
+
+export function helpers(options) {
+  function directory(path: string): string {
     return path.substr(-1) === "/" ? path : `${path}/`;
   }
 
-  function relative(path, relativeToPath = false) {
+  function relative(path: string, relativeToPath = false): string {
     return url.resolve(
       (!relativeToPath && options.path && directory(options.path)) || "",
       path
     );
   }
 
-  function log(context, message) {
+  function log(context: string, message: string) {
     if (options.logging) {
-      const { magenta, green, yellow } = colors;
-
       message = message.replace(/ \d+(x\d+)?/g, (item) => magenta(item));
       message = message.replace(/#([0-9a-f]{3}){1,2}/g, (item) =>
         magenta(item)
@@ -70,13 +171,17 @@ module.exports = function (options) {
   // For further information, see:
   // https://github.com/itgalaxy/favicons/issues/264
   const svgtool = {
-    ensureSize(svgSource, width, height) {
-      let svgWidth = svgSource.size.width;
-      let svgHeight = svgSource.size.height;
+    async ensureSize(
+      svgSource: SourceImage,
+      width: number,
+      height: number
+    ): Promise<Buffer> {
+      let svgWidth = svgSource.metadata.width;
+      let svgHeight = svgSource.metadata.height;
 
       if (svgWidth >= width && svgHeight >= height) {
         // If the base SVG is large enough, it does not need to be modified.
-        return Promise.resolve(svgSource.file);
+        return svgSource.data;
       } else if (width > height) {
         svgHeight = Math.round(svgHeight * (width / svgWidth));
         svgWidth = width;
@@ -89,87 +194,28 @@ module.exports = function (options) {
       // Modify the source SVG's width and height attributes for sharp to render
       // it correctly.
       log("svgtool:ensureSize", `Resizing SVG to ${svgWidth}x${svgHeight}`);
-      return this.resize(svgSource.file, svgWidth, svgHeight);
+      return await this.resize(svgSource.data, svgWidth, svgHeight);
     },
 
-    resize(svgFile, width, height) {
-      return new Promise((resolve, reject) => {
-        xml2js.parseString(svgFile, (err, xmlDoc) => {
-          if (err) {
-            return reject(err);
-          }
+    async resize(
+      svgFile: Buffer,
+      width: number,
+      height: number
+    ): Promise<Buffer> {
+      const xmlDoc = await xml2js.parseStringPromise(svgFile);
 
-          xmlDoc.svg.$.width = width;
-          xmlDoc.svg.$.height = height;
+      xmlDoc.svg.$.width = width;
+      xmlDoc.svg.$.height = height;
 
-          const builder = new xml2js.Builder();
-          const modifiedSvg = builder.buildObject(xmlDoc);
+      const builder = new xml2js.Builder();
+      const modifiedSvg = builder.buildObject(xmlDoc);
 
-          resolve(Buffer.from(modifiedSvg));
-        });
-      });
+      return Buffer.from(modifiedSvg);
     },
   };
 
   return {
-    General: {
-      source(src) {
-        log("General:source", `Source type is ${typeof src}`);
-
-        if (Buffer.isBuffer(src)) {
-          try {
-            return Promise.resolve([{ size: sizeOf(src), file: src }]);
-          } catch (error) {
-            return Promise.reject(new Error("Invalid image buffer"));
-          }
-        } else if (typeof src === "string") {
-          return promisify(fs.readFile)(src).then(this.source.bind(this));
-        } else if (Array.isArray(src) && !src.some(Array.isArray)) {
-          if (!src.length) {
-            return Promise.reject(new Error("No source provided"));
-          }
-
-          return Promise.all(src.map(this.source.bind(this))).then((results) =>
-            [].concat(...results)
-          );
-        } else {
-          return Promise.reject(new Error("Invalid source type provided"));
-        }
-      },
-
-      preparePlatformOptions(platform) {
-        const icons = options.icons[platform];
-        const parameters =
-          typeof icons === "object" && !Array.isArray(icons) ? icons : {};
-
-        for (const key of Object.keys(parameters)) {
-          if (
-            !(key in PLATFORM_OPTIONS) ||
-            !PLATFORM_OPTIONS[key].platforms.includes(platform)
-          ) {
-            throw new Error(
-              `Unsupported option '${key}' on platform '${platform}'`
-            );
-          }
-        }
-
-        for (const key of Object.keys(PLATFORM_OPTIONS)) {
-          const platformOption = PLATFORM_OPTIONS[key];
-          const { platforms, defaultTo } = platformOption;
-
-          if (!(key in parameters) && platforms.includes(platform)) {
-            parameters[key] =
-              platform in platformOption ? platformOption[platform] : defaultTo;
-          }
-        }
-
-        if (parameters.background === true) {
-          parameters.background = options.background;
-        }
-
-        return parameters;
-      },
-    },
+    log,
 
     HTML: {
       render(htmlTemplate) {
@@ -280,60 +326,43 @@ module.exports = function (options) {
     },
 
     Images: {
-      create(properties) {
-        log(
-          "Image:create",
-          `Creating empty ${properties.width}x${
-            properties.height
-          } canvas with ${
-            properties.transparent ? "transparent" : properties.background
-          } background`
-        );
-
-        let image = sharp({
-          create: {
-            width: properties.width,
-            height: properties.height,
-            channels: properties.transparent ? 4 : 3,
-            background: properties.transparent
-              ? "#00000000"
-              : properties.background,
-          },
-        });
-
-        if (properties.transparent) {
-          image = image.ensureAlpha();
-        }
-        return image.png().toBuffer();
-      },
-
-      async render(sourceset, properties, offset) {
-        log(
-          "Image:render",
-          `Find nearest icon to ${properties.width}x${properties.height} with offset ${offset}`
-        );
-
+      async render(
+        sourceset: SourceImage[],
+        properties: IconPlaneOptions
+      ): Promise<Buffer> {
+        const maximum = Math.max(properties.width, properties.height);
+        const offset = Math.round((maximum / 100) * properties.offset) || 0;
         const width = properties.width - offset * 2;
         const height = properties.height - offset * 2;
+
         const svgSource = sourceset.find(
-          (source) => source.size.type === "svg"
+          (source) => source.metadata.format === "svg"
         );
 
         if (svgSource) {
           log("Image:render", `Rendering SVG to ${width}x${height}`);
           const svgBuffer = await svgtool.ensureSize(svgSource, width, height);
 
-          return await sharp(svgBuffer).resize({
-            background: "#00000000",
-            width,
-            height,
-            fit: sharp.fit.contain,
-          });
+          return await sharp(svgBuffer)
+            .resize({
+              width,
+              height,
+              fit: sharp.fit.contain,
+              background: "#00000000",
+            })
+            .toBuffer();
         }
 
+        log(
+          "Image:render",
+          `Find nearest icon to ${width}x${height} with offset ${offset}`
+        );
         const sideSize = Math.max(width, height);
-        const nearestIcon = minByKey(sourceset, (icon) => {
-          const iconSideSize = Math.max(icon.size.width, icon.size.height);
+        const nearest = minByKey(sourceset, (icon) => {
+          const iconSideSize = Math.max(
+            icon.metadata.width,
+            icon.metadata.height
+          );
 
           return [
             iconSideSize >= sideSize ? 0 : 1,
@@ -343,21 +372,23 @@ module.exports = function (options) {
 
         log("Images:render", `Resizing PNG to ${width}x${height}`);
 
-        const image = await sharp(nearestIcon.file).ensureAlpha();
+        const image = await sharp(nearest.data).ensureAlpha();
         const metadata = await image.metadata();
 
-        return image.resize({
-          width,
-          height,
-          fit: sharp.fit.contain,
-          background: "#00000000",
-          kernel:
-            options.pixel_art &&
-            width >= metadata.width &&
-            height >= metadata.height
-              ? "nearest"
-              : "lanczos3",
-        });
+        return await image
+          .resize({
+            width,
+            height,
+            fit: sharp.fit.contain,
+            background: "#00000000",
+            kernel:
+              options.pixel_art &&
+              width >= metadata.width &&
+              height >= metadata.height
+                ? "nearest"
+                : "lanczos3",
+          })
+          .toBuffer();
       },
 
       mask: path.join(__dirname, "mask.png"),
@@ -365,7 +396,7 @@ module.exports = function (options) {
       // Gimp drop shadow filter: input: mask.png, config: X: 2, Y: 5, Offset: 5, Color: black, Opacity: 20
       overlayShadow: path.join(__dirname, "overlay-shadow.png"),
 
-      async maskImage(image, mask) {
+      async maskImage(image: Buffer, mask: string): Promise<Buffer> {
         const pipeline = sharp(image);
         const meta = await pipeline.metadata();
 
@@ -382,7 +413,7 @@ module.exports = function (options) {
         return await pipeline.joinChannel(maskBuffer).png().toBuffer();
       },
 
-      async overlay(image, coverPath) {
+      async overlay(image: Buffer, coverPath: string): Promise<Buffer> {
         const pipeline = sharp(image);
         const meta = await pipeline.metadata();
 
@@ -401,39 +432,29 @@ module.exports = function (options) {
           .toBuffer();
       },
 
-      async composite(canvas, image, properties, offset) {
-        if (properties.mask) {
-          log("Images:composite", "Masking composite image on circle");
-
-          canvas = await this.maskImage(canvas, this.mask);
-
-          if (properties.overlayGlow) {
-            canvas = await this.overlay(canvas, this.overlayGlow);
-          }
-          if (properties.overlayShadow) {
-            canvas = await this.overlay(canvas, this.overlayShadow);
-          }
-        }
-
+      async composite(
+        canvas: Buffer,
+        image: Buffer,
+        properties: IconPlaneOptions,
+        raw = false
+      ): Promise<RawImage | Buffer> {
         log(
           "Images:composite",
-          `Compositing favicon on ${properties.width}x${properties.height} canvas with offset ${offset}`
+          `Compositing favicon on ${properties.width}x${properties.height} canvas with offset ${properties.offset}`
         );
 
-        const input = await image.toBuffer();
-
         let pipeline = sharp(canvas).composite([
-          { input, left: offset, top: offset },
+          { input: image, left: properties.offset, top: properties.offset },
         ]);
 
         if (properties.rotate) {
           const degrees = 90;
 
           log("Images:render", `Rotating image by ${degrees}`);
-          pipeline = pipeline.rotate(degrees, false);
+          pipeline = pipeline.rotate(degrees);
         }
 
-        if (properties.raw) {
+        if (raw) {
           return await pipeline
             .toColorspace("srgb")
             .raw({ depth: "uchar" })
@@ -443,4 +464,4 @@ module.exports = function (options) {
       },
     },
   };
-};
+}

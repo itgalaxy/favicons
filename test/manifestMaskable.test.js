@@ -1,6 +1,6 @@
-const favicons = require("../src");
-const fs = require("fs");
-const { logo_png, logo_svg } = require("./util");
+import favicons from "../src";
+import * as fs from "fs";
+import { logo_png, logo_svg } from "./util";
 
 test("should add `maskable` to manifest purpose when manifestMaskable is true", async () => {
   expect.assertions(1);

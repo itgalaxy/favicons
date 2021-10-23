@@ -40,7 +40,7 @@
 *.sql text
 *.styl text
 *.tag text
-*.ts text
+*.ts text eol=lf
 *.tsx text
 *.xml text
 *.xhtml text

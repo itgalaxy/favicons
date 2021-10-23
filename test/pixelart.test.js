@@ -1,5 +1,5 @@
-const favicons = require("../src");
-const { pixel_art } = require("./util");
+import favicons from "../src";
+import { pixel_art } from "./util";
 
 test("should support pixel art", async () => {
   expect.assertions(1);

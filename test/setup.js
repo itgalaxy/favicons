@@ -1,9 +1,9 @@
 /* eslint-disable no-magic-numbers */
 
-const { toMatchSnapshot } = require("jest-snapshot");
-const { toMatchImageSnapshot } = require("jest-image-snapshot");
-const path = require("path");
-const ICO = require("icojs");
+import * as path from "path";
+import { toMatchSnapshot } from "jest-snapshot";
+import { toMatchImageSnapshot } from "jest-image-snapshot";
+import ICO from "icojs";
 
 expect.extend({ toMatchImageSnapshot });
 
