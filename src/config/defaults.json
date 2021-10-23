@@ -19,6 +19,7 @@
   "loadManifestWithCredentials": false,
   "manifestRelativePaths": false,
   "manifestMaskable": false,
+  "preferRelatedApplications": false,
   "icons": {
     "android": true,
     "appleIcon": true,
