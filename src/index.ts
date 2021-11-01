@@ -35,7 +35,7 @@ export interface FaviconFile {
   readonly contents: string;
 }
 
-const configDefaults = {
+export const config = {
   defaults: defaultOptions,
   files: FILES_OPTIONS,
   html: HTML_TEMPLATES,
@@ -51,27 +51,23 @@ export interface FaviconResponse {
 }
 
 /**
- * @typedef FaviconResponse
- * @type {object}
- * @property {FaviconImage[]} images
- * @property {FaviconFile[]} files
- * @property {FaviconHtmlElement[]} html
- */
-
-/**
  * @typedef FaviconCallback
  * @type {(error: Error|null, response: FaviconResponse) => any}
  */
 
 /**
  * Build favicons
- * @param {string} source - The path to the source image to generate icons from
+ * @param {string|string[]|Buffer|Buffer[]} source - The path to the source image to generate icons from
  * @param {Partial<FaviconOptions>|undefined} options - The options used to build favicons
  * @param {FaviconCallback|undefined} next - The callback to execute after processing
  * @returns {Promise|Promise<FaviconResponse>}
  */
 // eslint-disable-next-line no-undefined
-function favicons(source, options: FaviconOptions = {}, next = undefined) {
+export function favicons(
+  source: string | string[] | Buffer | Buffer[],
+  options: FaviconOptions = {},
+  next = undefined
+) {
   if (next) {
     return favicons(source, options)
       .then((response) => next(null, response))
@@ -80,7 +76,7 @@ function favicons(source, options: FaviconOptions = {}, next = undefined) {
 
   options = defaultsDeep(options, defaultOptions);
 
-  const config = clone(configDefaults);
+  const configCopy = clone(config);
   const µ = helpers(options);
 
   async function createFavicon(
@@ -145,21 +141,23 @@ function favicons(source, options: FaviconOptions = {}, next = undefined) {
 
   async function createHTML(platform): Promise<string[]> {
     if (!options.output.html) return [];
-    return await Promise.all((config.html[platform] || []).map(µ.HTML.render));
+    return await Promise.all(
+      (configCopy.html[platform] || []).map(µ.HTML.render)
+    );
   }
 
   function createFiles(platform) {
     if (!options.output.files) return [];
     return Promise.all(
-      Object.keys(config.files[platform] || {}).map((name) =>
-        µ.Files.create(config.files[platform][name], name)
+      Object.keys(configCopy.files[platform] || {}).map((name) =>
+        µ.Files.create(configCopy.files[platform][name], name)
       )
     );
   }
 
   function uniformIconOptions(platform: string): Dictionary<IconOptions> {
     const platformConfig: Dictionary<IconOptions> =
-      config.icons[platform] ?? {};
+      configCopy.icons[platform] ?? {};
 
     const iconsChoice = options.icons[platform];
 
@@ -264,7 +262,9 @@ function favicons(source, options: FaviconOptions = {}, next = undefined) {
   return sourceImages(source).then(create);
 }
 
-function stream(params, handleHtml) {
+export default favicons;
+
+export function stream(params, handleHtml) {
   /* eslint no-invalid-this: 0 */
   return through2.obj(function (file, encoding, callback) {
     if (file.isNull()) {
@@ -308,7 +308,3 @@ function stream(params, handleHtml) {
       .catch(callback);
   });
 }
-
-module.exports = favicons;
-module.exports.config = configDefaults;
-module.exports.stream = stream;
