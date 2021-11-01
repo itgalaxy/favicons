@@ -3,6 +3,8 @@
     "moduleResolution": "node",
     "outDir": "./dist",
     "target": "es2019",
+    "module": "commonjs",
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true
   },
   "include": ["./src/**/*"]
