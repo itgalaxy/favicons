@@ -42,10 +42,13 @@ expect.extend({
         }
       }
     }
-    const withoutImages = received.images.map((image) => ({
-      ...image,
-      contents: null,
-    }));
+    const withoutImages = {
+      ...received,
+      images: received.images.map((image) => ({
+        ...image,
+        contents: null,
+      })),
+    };
 
     return toMatchSnapshot.call(this, withoutImages);
   },
