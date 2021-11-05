@@ -1,5 +1,4 @@
 import * as path from "path";
-import * as url from "url";
 import * as fs from "fs";
 import { promisify } from "util";
 import { magenta, green, yellow } from "colors";
@@ -133,18 +132,18 @@ export async function createBlankImage(
   return await image.png().toBuffer();
 }
 
+function relativeTo(base: string | undefined | null, path: string): string {
+  if (!base) {
+    return path;
+  }
+
+  const directory = base.substr(-1) === "/" ? base : `${base}/`;
+  const url = new URL(path, new URL(directory, "resolve://"));
+
+  return url.protocol === "resolve:" ? url.pathname : url.toString();
+}
+
 export function helpers(options) {
-  function directory(path: string): string {
-    return path.substr(-1) === "/" ? path : `${path}/`;
-  }
-
-  function relative(path: string, relativeToPath = false): string {
-    return url.resolve(
-      (!relativeToPath && options.path && directory(options.path)) || "",
-      path
-    );
-  }
-
   function log(context: string, message: string) {
     if (options.logging) {
       message = message.replace(/ \d+(x\d+)?/g, (item) => magenta(item));
@@ -219,13 +218,20 @@ export function helpers(options) {
 
     HTML: {
       render(htmlTemplate) {
-        return htmlTemplate(Object.assign({}, options, { relative }));
+        return htmlTemplate({
+          ...options,
+          relative(path: string): string {
+            return relativeTo(options.path, path);
+          },
+        });
       },
     },
 
     Files: {
       create(properties, name) {
         log("Files:create", `Creating file: ${name}`);
+        const basePath = options.manifestRelativePaths ? null : options.path;
+
         if (name === "manifest.json") {
           properties.name = options.appName;
           properties.short_name = options.appShortName || options.appName;
@@ -253,7 +259,7 @@ export function helpers(options) {
           }
 
           properties.icons.forEach((icon) => {
-            icon.src = relative(icon.src, options.manifestRelativePaths);
+            icon.src = relativeTo(basePath, icon.src);
             icon.purpose =
               options.manifestMaskable === true ? "any maskable" : "any";
           });
@@ -282,15 +288,8 @@ export function helpers(options) {
           properties.description = options.appDescription;
           properties.developer.name = options.developerName;
           properties.developer.url = options.developerURL;
-          properties.icons = Object.keys(properties.icons).reduce(
-            (obj, key) =>
-              Object.assign(obj, {
-                [key]: relative(
-                  properties.icons[key],
-                  options.manifestRelativePaths
-                ),
-              }),
-            {}
+          properties.icons = mapValues(properties.icons, (icon: string) =>
+            relativeTo(basePath, icon)
           );
           properties = JSON.stringify(properties, null, 2);
         } else if (name === "browserconfig.xml") {
@@ -298,10 +297,7 @@ export function helpers(options) {
             if (property.name === "TileColor") {
               property.text = options.background;
             } else {
-              property.attrs.src = relative(
-                property.attrs.src,
-                options.manifestRelativePaths
-              );
+              property.attrs.src = relativeTo(basePath, property.attrs.src);
             }
           });
           properties = jsonxml(properties, {
@@ -312,10 +308,7 @@ export function helpers(options) {
         } else if (name === "yandex-browser-manifest.json") {
           properties.version = options.version;
           properties.api_version = 1;
-          properties.layout.logo = relative(
-            properties.layout.logo,
-            options.manifestRelativePaths
-          );
+          properties.layout.logo = relativeTo(basePath, properties.layout.logo);
           properties.layout.color = options.background;
           properties = JSON.stringify(properties, null, 2);
         } else {
