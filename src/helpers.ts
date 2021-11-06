@@ -113,9 +113,7 @@ export async function createBlankImage(
   properties: BlankImageProps
 ): Promise<Buffer> {
   const transparent =
-    properties.transparent ||
-    !properties.background ||
-    properties.background === "transparent";
+    !properties.background || properties.background === "transparent";
 
   let image = sharp({
     create: {
@@ -130,6 +128,12 @@ export async function createBlankImage(
     image = image.ensureAlpha();
   }
   return await image.png().toBuffer();
+}
+
+function offsetPixels(properties: IconPlaneOptions): number {
+  const maximum = Math.max(properties.width, properties.height);
+
+  return Math.round((maximum / 100) * properties.offset) || 0;
 }
 
 function relativeTo(base: string | undefined | null, path: string): string {
@@ -323,8 +327,7 @@ export function helpers(options) {
         sourceset: SourceImage[],
         properties: IconPlaneOptions
       ): Promise<Buffer> {
-        const maximum = Math.max(properties.width, properties.height);
-        const offset = Math.round((maximum / 100) * properties.offset) || 0;
+        const offset = offsetPixels(properties);
         const width = properties.width - offset * 2;
         const height = properties.height - offset * 2;
 
@@ -436,8 +439,9 @@ export function helpers(options) {
           `Compositing favicon on ${properties.width}x${properties.height} canvas with offset ${properties.offset}`
         );
 
+        const offset = offsetPixels(properties);
         let pipeline = sharp(canvas).composite([
-          { input: image, left: properties.offset, top: properties.offset },
+          { input: image, left: offset, top: offset },
         ]);
 
         if (properties.rotate) {

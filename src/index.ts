@@ -175,6 +175,7 @@ export function favicons(
   function flattenIconOptions(iconOptions: IconOptions): IconPlaneOptions[] {
     return iconOptions.sizes.map((size) => ({
       ...size,
+      offset: iconOptions.offset ?? 0,
       background:
         iconOptions.background === true
           ? options.background
