@@ -8,3 +8,4 @@ export const logo_png = fixture("logo.png");
 export const logo_svg = fixture("logo.svg");
 export const logo_small_svg = fixture("logo_small.svg");
 export const pixel_art = fixture("pixel_art.png");
+export const chess_8x6 = fixture("chess_8x6.png");
