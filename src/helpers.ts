@@ -1,10 +1,11 @@
 import * as path from "path";
 import * as fs from "fs";
-import { promisify } from "util";
-import { magenta, green, yellow } from "colors";
-import jsonxml from "jsontoxml";
 import sharp from "sharp";
-import xml2js from "xml2js";
+import { toIco } from "./ico";
+import { FaviconImage } from ".";
+import { IconOptions } from "./config/defaults";
+import { SvgTool } from "./svgtool";
+import { logContext, Logger } from "./logger";
 
 export type Dictionary<T> = { [key: string]: T };
 
@@ -16,6 +17,7 @@ export interface IconPlaneOptions {
   readonly width: number;
   readonly height: number;
   readonly offset?: number;
+  readonly pixelArt: boolean;
   readonly background?: string;
   readonly transparent: boolean;
   readonly rotate: boolean;
@@ -23,8 +25,6 @@ export interface IconPlaneOptions {
   readonly overlayGlow: boolean;
   readonly overlayShadow: boolean;
 }
-
-const readFileAsync = promisify(fs.readFile);
 
 function arrayComparator(a: unknown, b: unknown): number {
   const aArr = [a].flat(Infinity);
@@ -87,7 +87,7 @@ export async function sourceImages(
       return Promise.reject(new Error("Invalid image buffer"));
     }
   } else if (typeof src === "string") {
-    const buffer = await readFileAsync(src);
+    const buffer = await fs.promises.readFile(src);
 
     return await sourceImages(buffer);
   } else if (Array.isArray(src) && !src.some(Array.isArray)) {
@@ -102,41 +102,24 @@ export async function sourceImages(
   }
 }
 
-export interface BlankImageProps {
-  readonly width: number;
-  readonly height: number;
-  readonly background?: string | boolean;
-  readonly transparent?: boolean;
+function flattenIconOptions(iconOptions: IconOptions): IconPlaneOptions[] {
+  return iconOptions.sizes.map((size) => ({
+    ...size,
+    offset: iconOptions.offset ?? 0,
+    pixelArt: iconOptions.pixelArt ?? false,
+    background: asString(iconOptions.background),
+    transparent: iconOptions.transparent,
+    mask: iconOptions.mask ?? false,
+    overlayGlow: iconOptions.overlayGlow ?? false,
+    overlayShadow: iconOptions.overlayShadow ?? false,
+    rotate: iconOptions.rotate,
+  }));
 }
 
-export async function createBlankImage(
-  properties: BlankImageProps
-): Promise<Buffer> {
-  const transparent =
-    !properties.background || properties.background === "transparent";
-
-  let image = sharp({
-    create: {
-      width: properties.width,
-      height: properties.height,
-      channels: transparent ? 4 : 3,
-      background: transparent ? "#00000000" : (properties.background as string),
-    },
-  });
-
-  if (transparent) {
-    image = image.ensureAlpha();
-  }
-  return await image.png().toBuffer();
-}
-
-function offsetPixels(properties: IconPlaneOptions): number {
-  const maximum = Math.max(properties.width, properties.height);
-
-  return Math.round((maximum / 100) * properties.offset) || 0;
-}
-
-function relativeTo(base: string | undefined | null, path: string): string {
+export function relativeTo(
+  base: string | undefined | null,
+  path: string
+): string {
   if (!base) {
     return path;
   }
@@ -147,318 +130,226 @@ function relativeTo(base: string | undefined | null, path: string): string {
   return url.protocol === "resolve:" ? url.pathname : url.toString();
 }
 
-export function helpers(options) {
-  function log(context: string, message: string) {
-    if (options.logging) {
-      message = message.replace(/ \d+(x\d+)?/g, (item) => magenta(item));
-      message = message.replace(/#([0-9a-f]{3}){1,2}/g, (item) =>
-        magenta(item)
-      );
-      console.log(`${green("[Favicons]")} ${yellow(context)}: ${message}...`);
-    }
+export class Images {
+  #log: Logger;
+  #svgtool: SvgTool;
+
+  constructor(logger: Logger) {
+    this.#log = logContext(logger, "Image");
+    this.#svgtool = new SvgTool(logger);
   }
 
-  // sharp renders the SVG in its source width and height with 72 DPI which can
-  // cause a blurry result in case the source SVG is defined in lower size than
-  // the target size. To avoid this, resize the source SVG to the needed size
-  // before passing it to sharp by increasing its width and/or height
-  // attributes.
-  //
-  // Currently it seems this won't be fixed in sharp, so we need a workaround:
-  // https://github.com/lovell/sharp/issues/729#issuecomment-284708688
-  //
-  // They suggest setting the image density to a "resized" density based on the
-  // target render size but this does not seem to work with favicons and may
-  // cause other errors with "unnecessarily high" image density values.
-  //
-  // For further information, see:
-  // https://github.com/itgalaxy/favicons/issues/264
-  const svgtool = {
-    async ensureSize(
-      svgSource: SourceImage,
-      width: number,
-      height: number
-    ): Promise<Buffer> {
-      let svgWidth = svgSource.metadata.width;
-      let svgHeight = svgSource.metadata.height;
+  bestSource(
+    sourceset: SourceImage[],
+    width: number,
+    height: number
+  ): SourceImage {
+    this.#log("bestSource", `Find nearest icon to ${width}x${height}`);
+    const sideSize = Math.max(width, height);
+    return minByKey(sourceset, (icon) => {
+      const iconSideSize = Math.max(icon.metadata.width, icon.metadata.height);
+      return [
+        icon.metadata.format === "svg" ? 0 : 1, // prefer SVG
+        iconSideSize >= sideSize ? 0 : 1, // prefer downscale
+        Math.abs(iconSideSize - sideSize), // prefer closest size
+      ];
+    });
+  }
 
-      if (svgWidth >= width && svgHeight >= height) {
-        // If the base SVG is large enough, it does not need to be modified.
-        return svgSource.data;
-      } else if (width > height) {
-        svgHeight = Math.round(svgHeight * (width / svgWidth));
-        svgWidth = width;
-      } else {
-        // width <= height
-        svgWidth = Math.round(svgWidth * (height / svgHeight));
-        svgHeight = height;
+  async resize(
+    source: SourceImage,
+    width: number,
+    height: number,
+    pixelArt: boolean
+  ): Promise<Buffer> {
+    this.#log("render", `Resizing to ${width}x${height}`);
+
+    if (source.metadata.format === "svg") {
+      this.#log("render", `Rendering SVG to ${width}x${height}`);
+      const svgBuffer = await this.#svgtool.ensureSize(source, width, height);
+      return await sharp(svgBuffer)
+        .resize({
+          width,
+          height,
+          fit: sharp.fit.contain,
+          background: "#00000000",
+        })
+        .toBuffer();
+    }
+
+    return await sharp(source.data)
+      .ensureAlpha()
+      .resize({
+        width,
+        height,
+        fit: sharp.fit.contain,
+        background: "#00000000",
+        kernel:
+          pixelArt &&
+          width >= source.metadata.width &&
+          height >= source.metadata.height
+            ? "nearest"
+            : "lanczos3",
+      })
+      .toBuffer();
+  }
+
+  async createBlankImage(
+    width: number,
+    height: number,
+    background?: string
+  ): Promise<Buffer> {
+    const transparent = !background || background === "transparent";
+
+    let image = sharp({
+      create: {
+        width,
+        height,
+        channels: transparent ? 4 : 3,
+        background: transparent ? "#00000000" : background,
+      },
+    });
+
+    if (transparent) {
+      image = image.ensureAlpha();
+    }
+    return await image.png().toBuffer();
+  }
+
+  mask() {
+    return path.join(__dirname, "mask.png");
+  }
+
+  overlayGlow() {
+    return path.join(__dirname, "overlay-glow.png");
+  }
+
+  overlayShadow() {
+    // Gimp drop shadow filter: input: mask.png, config: X: 2, Y: 5, Offset: 5, Color: black, Opacity: 20
+    return path.join(__dirname, "overlay-shadow.png");
+  }
+
+  async maskImage(image: Buffer, mask: string): Promise<Buffer> {
+    const pipeline = sharp(image);
+    const meta = await pipeline.metadata();
+
+    const maskBuffer = await sharp(mask)
+      .resize({
+        width: meta.width,
+        height: meta.height,
+        fit: sharp.fit.contain,
+        background: "#00000000",
+      })
+      .toColourspace("b-w")
+      .toBuffer();
+
+    return await pipeline.joinChannel(maskBuffer).png().toBuffer();
+  }
+
+  async overlay(image: Buffer, coverPath: string): Promise<Buffer> {
+    const pipeline = sharp(image);
+    const meta = await pipeline.metadata();
+
+    const cover = await sharp(coverPath)
+      .resize({
+        width: meta.width,
+        height: meta.height,
+        fit: sharp.fit.contain,
+      })
+      .png()
+      .toBuffer();
+
+    return await pipeline
+      .composite([{ input: cover, left: 0, top: 0 }])
+      .png()
+      .toBuffer();
+  }
+
+  async createPlaneFavicon(
+    sourceset: SourceImage[],
+    options: IconPlaneOptions,
+    name: string,
+    raw = false
+  ): Promise<FaviconImage> {
+    this.#log(
+      "createPlaneFavicon",
+      `Creating empty ${options.width}x${options.height} canvas with ${options.background} background`
+    );
+
+    const offset =
+      Math.round(
+        (Math.max(options.width, options.height) * options.offset) / 100
+      ) || 0;
+    const width = options.width - offset * 2;
+    const height = options.height - offset * 2;
+
+    const source = this.bestSource(sourceset, width, height);
+    const image = await this.resize(source, width, height, options.pixelArt);
+
+    let canvas = await this.createBlankImage(
+      options.width,
+      options.height,
+      options.background
+    );
+    if (options.mask) {
+      this.#log("createPlaneFavicon", "Masking composite image on circle");
+
+      canvas = await this.maskImage(canvas, this.mask());
+
+      if (options.overlayGlow) {
+        canvas = await this.overlay(canvas, this.overlayGlow());
       }
+      if (options.overlayShadow) {
+        canvas = await this.overlay(canvas, this.overlayShadow());
+      }
+    }
 
-      // Modify the source SVG's width and height attributes for sharp to render
-      // it correctly.
-      log("svgtool:ensureSize", `Resizing SVG to ${svgWidth}x${svgHeight}`);
-      return await this.resize(svgSource.data, svgWidth, svgHeight);
-    },
+    let pipeline = sharp(canvas).composite([
+      { input: image, left: offset, top: offset },
+    ]);
 
-    async resize(
-      svgFile: Buffer,
-      width: number,
-      height: number
-    ): Promise<Buffer> {
-      const xmlDoc = await xml2js.parseStringPromise(svgFile);
+    if (options.rotate) {
+      const degrees = 90;
+      this.#log("createPlaneFavicon", `Rotating image by ${degrees}`);
+      pipeline = pipeline.rotate(degrees);
+    }
 
-      xmlDoc.svg.$.width = width;
-      xmlDoc.svg.$.height = height;
+    const contents = raw
+      ? await pipeline
+          .toColorspace("srgb")
+          .raw({ depth: "uchar" })
+          .toBuffer({ resolveWithObject: true })
+      : await pipeline.png().toBuffer();
 
-      const builder = new xml2js.Builder();
-      const modifiedSvg = builder.buildObject(xmlDoc);
+    return { name, contents };
+  }
 
-      return Buffer.from(modifiedSvg);
-    },
-  };
+  async createFavicon(
+    sourceset: SourceImage[],
+    name: string,
+    iconOptions: IconOptions
+  ): Promise<FaviconImage> {
+    const properties = flattenIconOptions(iconOptions);
 
-  return {
-    log,
+    if (path.extname(name) === ".ico" || properties.length !== 1) {
+      const images = await Promise.all(
+        properties.map((props) =>
+          this.createPlaneFavicon(
+            sourceset,
+            props,
+            `${props.width}x${props.height}.rawdata`,
+            true
+          )
+        )
+      );
+      const contents = toIco(images.map((image) => image.contents as RawImage));
 
-    HTML: {
-      render(htmlTemplate) {
-        return htmlTemplate({
-          ...options,
-          relative(path: string): string {
-            return relativeTo(options.path, path);
-          },
-        });
-      },
-    },
+      return {
+        name,
+        contents,
+      };
+    }
 
-    Files: {
-      create(properties, name) {
-        log("Files:create", `Creating file: ${name}`);
-        const basePath = options.manifestRelativePaths ? null : options.path;
-
-        if (name === "manifest.json") {
-          properties.name = options.appName;
-          properties.short_name = options.appShortName || options.appName;
-          properties.description = options.appDescription;
-          properties.dir = options.dir;
-          properties.lang = options.lang;
-          properties.display = options.display;
-          properties.orientation = options.orientation;
-          properties.scope = options.scope;
-          properties.start_url = options.start_url;
-          properties.background_color = options.background;
-          properties.theme_color = options.theme_color;
-
-          // Defaults to false, so omit the value https://developer.mozilla.org/en-US/docs/Web/Manifest/prefer_related_applications
-          if (options.preferRelatedApplications) {
-            properties.prefer_related_applications =
-              options.preferRelatedApplications;
-          }
-          // Only include related_applications if a lengthy array is provided.
-          if (
-            Array.isArray(options.relatedApplications) &&
-            options.relatedApplications.length > 0
-          ) {
-            properties.related_applications = options.relatedApplications;
-          }
-
-          properties.icons.forEach((icon) => {
-            icon.src = relativeTo(basePath, icon.src);
-            icon.purpose =
-              options.manifestMaskable === true ? "any maskable" : "any";
-          });
-          // If manifestMaskable is set but is not a boolean
-          // assume a file (or an array) is passed, and we should link
-          // the generated files with maskable as purpose.
-          if (
-            options.manifestMaskable &&
-            typeof options.manifestMaskable !== "boolean"
-          ) {
-            const maskableIcons = properties.icons.map((icon) => ({
-              ...icon,
-              src: icon.src.replace(
-                /android-chrome-(.+)\.png$/,
-                "android-chrome-maskable-$1.png"
-              ),
-              purpose: "maskable",
-            }));
-
-            properties.icons = [...properties.icons, ...maskableIcons];
-          }
-          properties = JSON.stringify(properties, null, 2);
-        } else if (name === "manifest.webapp") {
-          properties.version = options.version;
-          properties.name = options.appName;
-          properties.description = options.appDescription;
-          properties.developer.name = options.developerName;
-          properties.developer.url = options.developerURL;
-          properties.icons = mapValues(properties.icons, (icon: string) =>
-            relativeTo(basePath, icon)
-          );
-          properties = JSON.stringify(properties, null, 2);
-        } else if (name === "browserconfig.xml") {
-          properties[0].children[0].children[0].children.map((property) => {
-            if (property.name === "TileColor") {
-              property.text = options.background;
-            } else {
-              property.attrs.src = relativeTo(basePath, property.attrs.src);
-            }
-          });
-          properties = jsonxml(properties, {
-            prettyPrint: true,
-            xmlHeader: true,
-            indent: "  ",
-          });
-        } else if (name === "yandex-browser-manifest.json") {
-          properties.version = options.version;
-          properties.api_version = 1;
-          properties.layout.logo = relativeTo(basePath, properties.layout.logo);
-          properties.layout.color = options.background;
-          properties = JSON.stringify(properties, null, 2);
-        } else {
-          return Promise.reject(`Unknown format of file ${name}.`);
-        }
-        return Promise.resolve({ name, contents: properties });
-      },
-    },
-
-    Images: {
-      async render(
-        sourceset: SourceImage[],
-        properties: IconPlaneOptions
-      ): Promise<Buffer> {
-        const offset = offsetPixels(properties);
-        const width = properties.width - offset * 2;
-        const height = properties.height - offset * 2;
-
-        const svgSource = sourceset.find(
-          (source) => source.metadata.format === "svg"
-        );
-
-        if (svgSource) {
-          log("Image:render", `Rendering SVG to ${width}x${height}`);
-          const svgBuffer = await svgtool.ensureSize(svgSource, width, height);
-
-          return await sharp(svgBuffer)
-            .resize({
-              width,
-              height,
-              fit: sharp.fit.contain,
-              background: "#00000000",
-            })
-            .toBuffer();
-        }
-
-        log(
-          "Image:render",
-          `Find nearest icon to ${width}x${height} with offset ${offset}`
-        );
-        const sideSize = Math.max(width, height);
-        const nearest = minByKey(sourceset, (icon) => {
-          const iconSideSize = Math.max(
-            icon.metadata.width,
-            icon.metadata.height
-          );
-
-          return [
-            iconSideSize >= sideSize ? 0 : 1,
-            Math.abs(iconSideSize - sideSize),
-          ];
-        });
-
-        log("Images:render", `Resizing PNG to ${width}x${height}`);
-
-        const image = await sharp(nearest.data).ensureAlpha();
-        const metadata = await image.metadata();
-
-        return await image
-          .resize({
-            width,
-            height,
-            fit: sharp.fit.contain,
-            background: "#00000000",
-            kernel:
-              options.pixel_art &&
-              width >= metadata.width &&
-              height >= metadata.height
-                ? "nearest"
-                : "lanczos3",
-          })
-          .toBuffer();
-      },
-
-      mask: path.join(__dirname, "mask.png"),
-      overlayGlow: path.join(__dirname, "overlay-glow.png"),
-      // Gimp drop shadow filter: input: mask.png, config: X: 2, Y: 5, Offset: 5, Color: black, Opacity: 20
-      overlayShadow: path.join(__dirname, "overlay-shadow.png"),
-
-      async maskImage(image: Buffer, mask: string): Promise<Buffer> {
-        const pipeline = sharp(image);
-        const meta = await pipeline.metadata();
-
-        const maskBuffer = await sharp(mask)
-          .resize({
-            width: meta.width,
-            height: meta.height,
-            fit: sharp.fit.contain,
-            background: "#00000000",
-          })
-          .toColourspace("b-w")
-          .toBuffer();
-
-        return await pipeline.joinChannel(maskBuffer).png().toBuffer();
-      },
-
-      async overlay(image: Buffer, coverPath: string): Promise<Buffer> {
-        const pipeline = sharp(image);
-        const meta = await pipeline.metadata();
-
-        const cover = await sharp(coverPath)
-          .resize({
-            width: meta.width,
-            height: meta.height,
-            fit: sharp.fit.contain,
-          })
-          .png()
-          .toBuffer();
-
-        return await pipeline
-          .composite([{ input: cover, left: 0, top: 0 }])
-          .png()
-          .toBuffer();
-      },
-
-      async composite(
-        canvas: Buffer,
-        image: Buffer,
-        properties: IconPlaneOptions,
-        raw = false
-      ): Promise<RawImage | Buffer> {
-        log(
-          "Images:composite",
-          `Compositing favicon on ${properties.width}x${properties.height} canvas with offset ${properties.offset}`
-        );
-
-        const offset = offsetPixels(properties);
-        let pipeline = sharp(canvas).composite([
-          { input: image, left: offset, top: offset },
-        ]);
-
-        if (properties.rotate) {
-          const degrees = 90;
-
-          log("Images:render", `Rotating image by ${degrees}`);
-          pipeline = pipeline.rotate(degrees);
-        }
-
-        if (raw) {
-          return await pipeline
-            .toColorspace("srgb")
-            .raw({ depth: "uchar" })
-            .toBuffer({ resolveWithObject: true });
-        }
-        return await pipeline.png().toBuffer();
-      },
-    },
-  };
+    return await this.createPlaneFavicon(sourceset, properties[0], name, false);
+  }
 }

@@ -57,13 +57,6 @@
     "no-iterator": 2,
     "no-lone-blocks": 2,
     "no-loop-func": 2,
-    "no-magic-numbers": [
-      2,
-      {
-        "ignore": [-1, 0, 1, 2, 3, 4, 100, 255],
-        "ignoreArrayIndexes": true
-      }
-    ],
     "no-multi-str": 2,
     "no-native-reassign": [
       2,
@@ -134,7 +127,6 @@
     ],
     "linebreak-style": [2, "unix"],
     "max-nested-callbacks": [2, 5],
-    "newline-after-var": [2, "always"],
     "no-array-constructor": 2,
     "no-lonely-if": 2,
     "no-negated-condition": 2,

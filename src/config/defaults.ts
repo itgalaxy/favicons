@@ -14,6 +14,8 @@ export interface IconOptions {
   readonly mask?: boolean;
   readonly overlayGlow?: boolean;
   readonly overlayShadow?: boolean;
+  readonly purpose?: string;
+  readonly pixelArt?: boolean;
 }
 
 export interface Application {
@@ -42,6 +44,7 @@ export interface FaviconOptions {
   readonly appleStatusBarStyle?: string;
   readonly display?: string;
   readonly orientation?: string;
+  readonly scope?: string;
   readonly start_url?: string;
   readonly version?: string;
   readonly logging?: boolean;
