@@ -3,27 +3,12 @@
 // TO_DO: More comments to know what's going on, for future maintainers
 
 import through2 from "through2";
-import clone from "clone";
 import defaultsDeep from "lodash.defaultsdeep";
-import * as path from "path";
 import File from "vinyl";
-import { FaviconOptions, defaultOptions, IconOptions } from "./config/defaults";
-import { FILES_OPTIONS } from "./config/files";
-import { HTML_TEMPLATES } from "./config/html";
-import { ICONS_OPTIONS } from "./config/icons";
-import {
-  asString,
-  createBlankImage,
-  Dictionary,
-  filterKeys,
-  helpers,
-  IconPlaneOptions,
-  mapValues,
-  RawImage,
-  SourceImage,
-  sourceImages,
-} from "./helpers";
-import { toIco } from "./ico";
+import { FaviconOptions, defaultOptions } from "./config/defaults";
+import { RawImage, sourceImages } from "./helpers";
+import { getPlatform } from "./platforms";
+import { dummyLog, Logger, prettyLog } from "./logger";
 
 export interface FaviconImage {
   readonly name: string;
@@ -37,9 +22,6 @@ export interface FaviconFile {
 
 export const config = {
   defaults: defaultOptions,
-  files: FILES_OPTIONS,
-  html: HTML_TEMPLATES,
-  icons: ICONS_OPTIONS,
 };
 
 export type FaviconHtmlElement = string;
@@ -48,6 +30,40 @@ export interface FaviconResponse {
   readonly images: FaviconImage[];
   readonly files: FaviconFile[];
   readonly html: FaviconHtmlElement[];
+}
+
+async function createFavicons(
+  source: string | string[] | Buffer | Buffer[],
+  options: FaviconOptions
+): Promise<FaviconResponse> {
+  options = defaultsDeep(options, defaultOptions);
+
+  const log: Logger = options.logging ? prettyLog : dummyLog;
+
+  log("General:source", `Source type is ${typeof source}`);
+  const sourceset = await sourceImages(source);
+
+  const platforms = Object.keys(options.icons)
+    .filter((platform) => options.icons[platform])
+    .sort((a, b) => {
+      if (a === "favicons") return -1;
+      if (b === "favicons") return 1;
+      return a.localeCompare(b);
+    });
+
+  const responses = [];
+
+  for (const platformName of platforms) {
+    const platform = getPlatform(platformName, options, log);
+
+    responses.push(await platform.create(sourceset));
+  }
+
+  return {
+    images: responses.flatMap((r) => r.images),
+    files: responses.flatMap((r) => r.files),
+    html: responses.flatMap((r) => r.html),
+  };
 }
 
 /**
@@ -73,194 +89,7 @@ export function favicons(
       .then((response) => next(null, response))
       .catch(next);
   }
-
-  options = defaultsDeep(options, defaultOptions);
-
-  const configCopy = clone(config);
-  const µ = helpers(options);
-
-  async function createFavicon(
-    sourceset: SourceImage[],
-    properties: IconPlaneOptions[],
-    name: string,
-    raw = false
-  ): Promise<FaviconImage> {
-    if (path.extname(name) === ".ico" || properties.length !== 1) {
-      const images = await Promise.all(
-        properties.map((props) =>
-          createPlaneFavicon(
-            sourceset,
-            props,
-            `${props.width}x${props.height}.rawdata`,
-            true
-          )
-        )
-      );
-      const contents = toIco(images.map((image) => image.contents as RawImage));
-
-      return {
-        name,
-        contents,
-      };
-    }
-
-    return await createPlaneFavicon(sourceset, properties[0], name, raw);
-  }
-
-  async function createPlaneFavicon(
-    sourceset: SourceImage[],
-    properties: IconPlaneOptions,
-    name: string,
-    raw = false
-  ): Promise<FaviconImage> {
-    µ.log(
-      "Image:create",
-      `Creating empty ${properties.width}x${properties.height} canvas with ${properties.background} background`
-    );
-
-    let canvas = await createBlankImage(properties);
-
-    if (properties.mask) {
-      µ.log("Images:composite", "Masking composite image on circle");
-
-      canvas = await µ.Images.maskImage(canvas, µ.Images.mask);
-
-      if (properties.overlayGlow) {
-        canvas = await µ.Images.overlay(canvas, µ.Images.overlayGlow);
-      }
-      if (properties.overlayShadow) {
-        canvas = await µ.Images.overlay(canvas, µ.Images.overlayShadow);
-      }
-    }
-
-    const image = await µ.Images.render(sourceset, properties);
-    const contents = await µ.Images.composite(canvas, image, properties, raw);
-
-    return { name, contents };
-  }
-
-  async function createHTML(platform): Promise<string[]> {
-    if (!options.output.html) return [];
-    return await Promise.all(
-      (configCopy.html[platform] || []).map(µ.HTML.render)
-    );
-  }
-
-  function createFiles(platform) {
-    if (!options.output.files) return [];
-    return Promise.all(
-      Object.keys(configCopy.files[platform] || {}).map((name) =>
-        µ.Files.create(configCopy.files[platform][name], name)
-      )
-    );
-  }
-
-  function uniformIconOptions(platform: string): Dictionary<IconOptions> {
-    const platformConfig: Dictionary<IconOptions> =
-      configCopy.icons[platform] ?? {};
-
-    const iconsChoice = options.icons[platform];
-
-    if (Array.isArray(iconsChoice)) {
-      return filterKeys(platformConfig, (name) => iconsChoice.includes(name));
-    } else if (typeof iconsChoice === "object") {
-      return mapValues(platformConfig, (iconOptions: IconOptions) => ({
-        ...iconOptions,
-        ...iconsChoice,
-      }));
-    }
-    return platformConfig;
-  }
-
-  function flattenIconOptions(iconOptions: IconOptions): IconPlaneOptions[] {
-    return iconOptions.sizes.map((size) => ({
-      ...size,
-      offset: iconOptions.offset ?? 0,
-      background:
-        iconOptions.background === true
-          ? options.background
-          : asString(iconOptions.background),
-      transparent: iconOptions.transparent,
-      mask: iconOptions.mask ?? false,
-      overlayGlow: iconOptions.overlayGlow ?? false,
-      overlayShadow: iconOptions.overlayShadow ?? false,
-      rotate: iconOptions.rotate,
-    }));
-  }
-
-  async function createFavicons(
-    sourceset: SourceImage[],
-    platform: string
-  ): Promise<FaviconImage[]> {
-    if (!options.output.images) return [];
-
-    const iconOptions = uniformIconOptions(platform);
-
-    return await Promise.all(
-      Object.entries(iconOptions).map(([iconName, iconOptions]) => {
-        const iconPlaneOptions = flattenIconOptions(iconOptions);
-
-        return createFavicon(sourceset, iconPlaneOptions, iconName);
-      })
-    );
-  }
-
-  async function createPlatform(
-    sourceset: SourceImage[],
-    platform
-  ): Promise<FaviconResponse> {
-    const imagesPromise = createFavicons(sourceset, platform);
-    const filesPromise = createFiles(platform);
-    const htmlPromise = createHTML(platform);
-
-    return {
-      images: await imagesPromise,
-      files: await filesPromise,
-      html: await htmlPromise,
-    };
-  }
-
-  async function create(sourceset: SourceImage[]): Promise<FaviconResponse> {
-    const responses = [];
-
-    const platforms = Object.keys(options.icons)
-      .filter((platform) => options.icons[platform])
-      .sort((a, b) => {
-        if (a === "favicons") return -1;
-        if (b === "favicons") return 1;
-        return a.localeCompare(b);
-      });
-
-    for (const platform of platforms) {
-      responses.push(await createPlatform(sourceset, platform));
-    }
-
-    // Generate android maskable images from a different source set
-    if (
-      options.icons.android &&
-      options.manifestMaskable &&
-      typeof options.manifestMaskable !== "boolean"
-    ) {
-      µ.log(
-        "General:source",
-        `Maskable source type is ${typeof options.manifestMaskable}`
-      );
-      const maskableSourceset = await sourceImages(options.manifestMaskable);
-
-      responses.push(
-        await createPlatform(maskableSourceset, "android_maskable")
-      );
-    }
-
-    return {
-      images: responses.flatMap((r) => r.images),
-      files: responses.flatMap((r) => r.files),
-      html: responses.flatMap((r) => r.html),
-    };
-  }
-
-  µ.log("General:source", `Source type is ${typeof source}`);
-  return sourceImages(source).then(create);
+  return createFavicons(source, options);
 }
 
 export default favicons;

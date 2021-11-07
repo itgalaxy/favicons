@@ -1,10 +1,36 @@
-/* eslint-disable */
-import escapeHtml from "escape-html";
+import { FaviconHtmlElement } from "..";
+import { FaviconOptions, IconOptions, IconSize } from "../config/defaults";
+import { opaqueIcon } from "../config/icons";
+import { Dictionary } from "../helpers";
+import { logContext, Logger } from "../logger";
+import { Platform, uniformIconOptions } from "./base";
 
-const appleIconSizes = [57, 60, 72, 76, 114, 120, 144, 152, 167, 180, 1024];
+const ICONS_OPTIONS: Dictionary<IconOptions> = {
+  "apple-touch-startup-image-640x1136.png": opaqueIcon(640, 1136),
+  "apple-touch-startup-image-750x1334.png": opaqueIcon(750, 1334),
+  "apple-touch-startup-image-828x1792.png": opaqueIcon(828, 1792),
+  "apple-touch-startup-image-1125x2436.png": opaqueIcon(1125, 2436),
+  "apple-touch-startup-image-1242x2208.png": opaqueIcon(1242, 2208),
+  "apple-touch-startup-image-1242x2688.png": opaqueIcon(1242, 2688),
+  "apple-touch-startup-image-1536x2048.png": opaqueIcon(1536, 2048),
+  "apple-touch-startup-image-1668x2224.png": opaqueIcon(1668, 2224),
+  "apple-touch-startup-image-1668x2388.png": opaqueIcon(1668, 2388),
+  "apple-touch-startup-image-2048x2732.png": opaqueIcon(2048, 2732),
+  "apple-touch-startup-image-1136x640.png": opaqueIcon(1136, 640),
+  "apple-touch-startup-image-2160x1620.png": opaqueIcon(2160, 1620),
+  "apple-touch-startup-image-1620x2160.png": opaqueIcon(1620, 2160),
+  "apple-touch-startup-image-1334x750.png": opaqueIcon(1334, 750),
+  "apple-touch-startup-image-1792x828.png": opaqueIcon(1792, 828),
+  "apple-touch-startup-image-2436x1125.png": opaqueIcon(2436, 1125),
+  "apple-touch-startup-image-2208x1242.png": opaqueIcon(2208, 1242),
+  "apple-touch-startup-image-2688x1242.png": opaqueIcon(2688, 1242),
+  "apple-touch-startup-image-2048x1536.png": opaqueIcon(2048, 1536),
+  "apple-touch-startup-image-2224x1668.png": opaqueIcon(2224, 1668),
+  "apple-touch-startup-image-2388x1668.png": opaqueIcon(2388, 1668),
+  "apple-touch-startup-image-2732x2048.png": opaqueIcon(2732, 2048),
+};
 
-const appleStartupItems = [
-  //
+const ITEMS = [
   // Device              Portrait size      Landscape size     Screen size        Pixel ratio
   // iPhone SE            640px × 1136px    1136px ×  640px     320px ×  568px    2
   // iPhone 8             750px × 1334px    1334px ×  750px     375px ×  667px    2
@@ -111,7 +137,6 @@ const appleStartupItems = [
     width: 1620,
     height: 2160,
   },
-
   {
     dwidth: 320,
     dheight: 568,
@@ -202,86 +227,31 @@ const appleStartupItems = [
   },
 ];
 
-const coastSizes = [228];
+export class AppleStartupPlatform extends Platform {
+  constructor(options: FaviconOptions, logger: Logger) {
+    super(
+      options,
+      uniformIconOptions(options, options.icons.appleStartup, ICONS_OPTIONS),
+      logContext(logger, "appleStartup")
+    );
+  }
 
-const faviconSizes = [16, 32, 48];
+  findBySize({ width, height }: IconSize): [string, IconOptions] | undefined {
+    return Object.entries(this.iconOptions).find((entry) =>
+      entry[1].sizes.find(
+        (size) => size.width === width && size.height === height
+      )
+    );
+  }
 
-function ctxHasIcons(icons, icon) {
-  if (Array.isArray(icons)) return icons.includes(icon);
-  return icons;
+  async createHtml(): Promise<FaviconHtmlElement[]> {
+    return ITEMS.map((item) => {
+      const icon = this.findBySize(item);
+
+      // prettier-ignore
+      return icon
+        ? `<link rel="apple-touch-startup-image" media="(device-width: ${item.dwidth}px) and (device-height: ${item.dheight}px) and (-webkit-device-pixel-ratio: ${item.pixelRatio}) and (orientation: ${item.orientation})" href="${this.relative(icon[0])}">`
+        : "";
+    });
+  }
 }
-
-function appleIconGen(size, { relative, icons }) {
-  const iconName = `apple-touch-icon-${size}x${size}.png`;
-
-  return !ctxHasIcons(icons.appleIcon, iconName)
-    ? ""
-    : `<link rel="apple-touch-icon" sizes="${size}x${size}" href="${relative(
-        iconName
-      )}">`;
-}
-
-function appleStartupGen(
-  { width, height, dwidth, dheight, pixelRatio, orientation },
-  { relative, icons }
-) {
-  const iconName = `apple-touch-startup-image-${width}x${height}.png`;
-
-  return !ctxHasIcons(icons.appleStartup, iconName)
-    ? ""
-    : `<link rel="apple-touch-startup-image" media="(device-width: ${dwidth}px) and (device-height: ${dheight}px) and (-webkit-device-pixel-ratio: ${pixelRatio}) and (orientation: ${orientation})" href="${relative(
-        iconName
-      )}">`;
-}
-
-function coastGen(size, { relative, icons }) {
-  const iconName = `coast-${size}x${size}.png`;
-
-  return !ctxHasIcons(icons.coast, iconName)
-    ? ""
-    : `<link rel="icon" type="image/png" sizes="${size}x${size}" href="${relative(
-        iconName
-      )}">`;
-}
-
-function faviconGen(size, { relative, icons }) {
-  const iconName = `favicon-${size}x${size}.png`;
-  return !ctxHasIcons(icons.favicons, iconName)
-    ? ""
-    : `<link rel="icon" type="image/png" sizes="${size}x${size}" href="${relative(
-        iconName
-      )}">`;
-}
-
-// prettier-ignore
-export const HTML_TEMPLATES = {
-  android: [
-    ({ relative, loadManifestWithCredentials }) =>
-      loadManifestWithCredentials
-        ? `<link rel="manifest" href="${relative("manifest.json")}" crossOrigin="use-credentials">`
-        : `<link rel="manifest" href="${relative("manifest.json")}">`,
-    () => `<meta name="mobile-web-app-capable" content="yes">`,
-    ({ theme_color, background }) => `<meta name="theme-color" content="${theme_color || background}">`,
-    ({ appName }) => appName ? `<meta name="application-name" content="${escapeHtml(appName)}">` : `<meta name="application-name">`
-  ],
-  appleIcon: [
-    ...appleIconSizes.map(size => ctx => appleIconGen(size, ctx)),
-    () => `<meta name="apple-mobile-web-app-capable" content="yes">`,
-    ({ appleStatusBarStyle }) => `<meta name="apple-mobile-web-app-status-bar-style" content="${appleStatusBarStyle}">`,
-    ({ appShortName, appName }) => (appShortName || appName) ? `<meta name="apple-mobile-web-app-title" content="${escapeHtml(appShortName || appName)}">` : `<meta name="apple-mobile-web-app-title">`
-  ],
-  appleStartup: appleStartupItems.map(item => ctx => appleStartupGen(item, ctx)),
-  coast: coastSizes.map(size => ctx => coastGen(size, ctx)),
-  favicons: [
-    ({ relative, icons }) => !ctxHasIcons(icons.favicons, "favicon.ico") ? "" : `<link rel="shortcut icon" href="${relative("favicon.ico")}">`,
-    ...faviconSizes.map(size => ctx => faviconGen(size, ctx)),
-  ],
-  windows: [
-    ({ background }) => `<meta name="msapplication-TileColor" content="${background}">`,
-    ({ relative, icons }) => !ctxHasIcons(icons.windows, "mstile-144x144.png") ? "" : `<meta name="msapplication-TileImage" content="${relative("mstile-144x144.png")}">`,
-    ({ relative }) => `<meta name="msapplication-config" content="${relative("browserconfig.xml")}">`
-  ],
-  yandex: [
-    ({ relative }) => `<link rel="yandex-tableau-widget" href="${relative("yandex-browser-manifest.json")}">`
-  ]
-};

@@ -41,10 +41,8 @@
     "node": ">=10.13.0"
   },
   "dependencies": {
-    "clone": "^2.1.2",
     "colors": "^1.4.0",
     "escape-html": "^1.0.3",
-    "jsontoxml": "^1.0.1",
     "lodash.defaultsdeep": "^4.6.1",
     "sharp": "^0.29.1",
     "through2": "^4.0.2",
