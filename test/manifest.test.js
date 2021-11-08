@@ -50,3 +50,41 @@ it("should list preferrable related applications", async () => {
   expect(manifest).toHaveProperty("prefer_related_applications");
   expect(manifest.related_applications).toStrictEqual(relatedApplications);
 });
+
+it("should allow renaming of manifest", async () => {
+  // expect.assertions(2);
+
+  const result = await favicons(logo_png, {
+    output: { images: false, html: false },
+  });
+  const filenames = result.files.map((file) => file.name);
+
+  expect(new Set(filenames)).toEqual(
+    new Set([
+      "manifest.json",
+      "manifest.webapp",
+      "browserconfig.xml",
+      "yandex-browser-manifest.json",
+    ])
+  );
+
+  const result2 = await favicons(logo_png, {
+    output: { images: false, html: false },
+    files: {
+      android: { manifestFileName: "android-manifest.json" },
+      firefox: { manifestFileName: "firefox-manifest.webapp" },
+      windows: { manifestFileName: "windows-browserconfig.xml" },
+      yandex: { manifestFileName: "yandex-manifest.json" },
+    },
+  });
+  const filenames2 = result2.files.map((file) => file.name);
+
+  expect(new Set(filenames2)).toEqual(
+    new Set([
+      "android-manifest.json",
+      "firefox-manifest.webapp",
+      "windows-browserconfig.xml",
+      "yandex-manifest.json",
+    ])
+  );
+});

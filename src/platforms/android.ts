@@ -36,73 +36,6 @@ const ICONS_OPTIONS_MASKABLE: Dictionary<IconOptions> = {
   "android-chrome-maskable-512x512.png": maskable(transparentIcon(512)),
 };
 
-function androidManifest(
-  options: FaviconOptions,
-  iconOptions: Dictionary<IconOptions>
-): FaviconFile {
-  const basePath = options.manifestRelativePaths ? null : options.path;
-
-  const properties: Dictionary<unknown> = {
-    name: options.appName,
-    short_name: options.appShortName || options.appName,
-    description: options.appDescription,
-    dir: options.dir,
-    lang: options.lang,
-    display: options.display,
-    orientation: options.orientation,
-    scope: options.scope,
-    start_url: options.start_url,
-    background_color: options.background,
-    theme_color: options.theme_color,
-  };
-
-  // Defaults to false, so omit the value https://developer.mozilla.org/en-US/docs/Web/Manifest/prefer_related_applications
-  if (options.preferRelatedApplications) {
-    properties.prefer_related_applications = options.preferRelatedApplications;
-  }
-  // Only include related_applications if a lengthy array is provided.
-  if (
-    Array.isArray(options.relatedApplications) &&
-    options.relatedApplications.length > 0
-  ) {
-    properties.related_applications = options.relatedApplications;
-  }
-
-  let icons = iconOptions;
-
-  // If manifestMaskable is set but is not a boolean
-  // assume a file (or an array) is passed, and we should link
-  // the generated files with maskable as purpose.
-  if (
-    options.manifestMaskable &&
-    typeof options.manifestMaskable !== "boolean"
-  ) {
-    icons = {
-      ...icons,
-      ...ICONS_OPTIONS_MASKABLE,
-    };
-  }
-
-  const defaultPurpose =
-    options.manifestMaskable === true ? "any maskable" : "any";
-
-  properties.icons = Object.entries(icons).map(([name, iconOptions]) => {
-    const { width, height } = iconOptions.sizes[0];
-
-    return {
-      src: relativeTo(basePath, name),
-      sizes: `${width}x${height}`,
-      type: "image/png",
-      purpose: iconOptions.purpose ?? defaultPurpose,
-    };
-  });
-
-  return {
-    name: "manifest.json",
-    contents: JSON.stringify(properties, null, 2),
-  };
-}
-
 export class AndroidPlatform extends Platform {
   constructor(options: FaviconOptions, logger: Logger) {
     super(
@@ -147,20 +80,90 @@ export class AndroidPlatform extends Platform {
   }
 
   async createFiles(): Promise<FaviconFile[]> {
-    return [androidManifest(this.options, this.iconOptions)];
+    return [this.manifest()];
   }
 
   async createHtml(): Promise<FaviconHtmlElement[]> {
     // prettier-ignore
     return [
       this.options.loadManifestWithCredentials
-        ? `<link rel="manifest" href="${this.relative("manifest.json")}" crossOrigin="use-credentials">`
-        : `<link rel="manifest" href="${this.relative("manifest.json")}">`,
+        ? `<link rel="manifest" href="${this.relative(this.manifestFileName())}" crossOrigin="use-credentials">`
+        : `<link rel="manifest" href="${this.relative(this.manifestFileName())}">`,
       `<meta name="mobile-web-app-capable" content="yes">`,
       `<meta name="theme-color" content="${this.options.theme_color || this.options.background}">`,
       this.options.appName
         ? `<meta name="application-name" content="${escapeHtml(this.options.appName)}">`
         : `<meta name="application-name">`,
     ];
+  }
+
+  private manifestFileName(): string {
+    return this.options.files?.android?.manifestFileName ?? "manifest.json";
+  }
+
+  private manifest(): FaviconFile {
+    const { options } = this;
+    const basePath = options.manifestRelativePaths ? null : options.path;
+
+    const properties: Dictionary<unknown> = {
+      name: options.appName,
+      short_name: options.appShortName || options.appName,
+      description: options.appDescription,
+      dir: options.dir,
+      lang: options.lang,
+      display: options.display,
+      orientation: options.orientation,
+      scope: options.scope,
+      start_url: options.start_url,
+      background_color: options.background,
+      theme_color: options.theme_color,
+    };
+
+    // Defaults to false, so omit the value https://developer.mozilla.org/en-US/docs/Web/Manifest/prefer_related_applications
+    if (options.preferRelatedApplications) {
+      properties.prefer_related_applications =
+        options.preferRelatedApplications;
+    }
+    // Only include related_applications if a lengthy array is provided.
+    if (
+      Array.isArray(options.relatedApplications) &&
+      options.relatedApplications.length > 0
+    ) {
+      properties.related_applications = options.relatedApplications;
+    }
+
+    let icons = this.iconOptions;
+
+    // If manifestMaskable is set but is not a boolean
+    // assume a file (or an array) is passed, and we should link
+    // the generated files with maskable as purpose.
+    if (
+      options.manifestMaskable &&
+      typeof options.manifestMaskable !== "boolean"
+    ) {
+      icons = {
+        ...icons,
+        ...ICONS_OPTIONS_MASKABLE,
+      };
+    }
+
+    const defaultPurpose =
+      options.manifestMaskable === true ? "any maskable" : "any";
+
+    properties.icons = Object.entries(icons).map(([name, iconOptions]) => {
+      const { width, height } = iconOptions.sizes[0];
+
+      return {
+        src: relativeTo(basePath, name),
+        sizes: `${width}x${height}`,
+        type: "image/png",
+        purpose: iconOptions.purpose ?? defaultPurpose,
+      };
+    });
+
+    return {
+      name: this.manifestFileName(),
+      contents: JSON.stringify(properties, null, 2),
+    };
   }
 }

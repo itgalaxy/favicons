@@ -18,6 +18,10 @@ export interface IconOptions {
   readonly pixelArt?: boolean;
 }
 
+export interface FileOptions {
+  readonly manifestFileName?: string;
+}
+
 export interface Application {
   readonly platform?: string;
   readonly url?: string;
@@ -55,6 +59,7 @@ export interface FaviconOptions {
   readonly preferRelatedApplications?: boolean;
   readonly relatedApplications?: Application[];
   readonly icons?: Dictionary<IconOptions | boolean | string[]>;
+  readonly files?: Dictionary<FileOptions>;
   readonly output?: OutputOptions;
 }
 
