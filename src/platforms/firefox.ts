@@ -34,7 +34,7 @@ function firefoxManifest(
   }
 
   return {
-    name: "manifest.webapp",
+    name: options.files?.firefox?.manifestFileName ?? "manifest.webapp",
     contents: JSON.stringify(properties, null, 2),
   };
 }

@@ -29,41 +29,6 @@ function hasSize(size: IconSize, icon: IconOptions): boolean {
   );
 }
 
-function browserConfig(
-  options: FaviconOptions,
-  iconOptions: Dictionary<IconOptions>
-): FaviconFile {
-  const basePath = options.manifestRelativePaths ? null : options.path;
-
-  const tile: Dictionary<unknown> = {};
-
-  for (const { name, ...size } of SUPPORTED_TILES) {
-    const icon = Object.entries(iconOptions).find((icon) =>
-      hasSize(size, icon[1])
-    );
-
-    if (icon) {
-      tile[name] = {
-        $: { src: relativeTo(basePath, icon[0]) },
-      };
-    }
-  }
-
-  const browserconfig = {
-    browserconfig: {
-      msapplication: {
-        tile: { ...tile, TileColor: { _: options.background } },
-      },
-    },
-  };
-
-  const contents = new xml2js.Builder({
-    xmldec: { version: "1.0", encoding: "utf-8", standalone: null },
-  }).buildObject(browserconfig);
-
-  return { name: "browserconfig.xml", contents };
-}
-
 export class WindowsPlatform extends Platform {
   constructor(options: FaviconOptions, logger: Logger) {
     super(
@@ -74,7 +39,7 @@ export class WindowsPlatform extends Platform {
   }
 
   async createFiles(): Promise<FaviconFile[]> {
-    return [browserConfig(this.options, this.iconOptions)];
+    return [this.browserConfig()];
   }
 
   async createHtml(): Promise<FaviconHtmlElement[]> {
@@ -86,7 +51,45 @@ export class WindowsPlatform extends Platform {
       tile in this.iconOptions
         ? `<meta name="msapplication-TileImage" content="${this.relative(tile)}">`
         : "",
-      `<meta name="msapplication-config" content="${this.relative("browserconfig.xml")}">`,
+      `<meta name="msapplication-config" content="${this.relative(this.manifestFileName())}">`,
     ];
+  }
+
+  private manifestFileName(): string {
+    return this.options.files?.windows?.manifestFileName ?? "browserconfig.xml";
+  }
+
+  private browserConfig(): FaviconFile {
+    const basePath = this.options.manifestRelativePaths
+      ? null
+      : this.options.path;
+
+    const tile: Dictionary<unknown> = {};
+
+    for (const { name, ...size } of SUPPORTED_TILES) {
+      const icon = Object.entries(this.iconOptions).find((icon) =>
+        hasSize(size, icon[1])
+      );
+
+      if (icon) {
+        tile[name] = {
+          $: { src: relativeTo(basePath, icon[0]) },
+        };
+      }
+    }
+
+    const browserconfig = {
+      browserconfig: {
+        msapplication: {
+          tile: { ...tile, TileColor: { _: this.options.background } },
+        },
+      },
+    };
+
+    const contents = new xml2js.Builder({
+      xmldec: { version: "1.0", encoding: "utf-8", standalone: null },
+    }).buildObject(browserconfig);
+
+    return { name: this.manifestFileName(), contents };
   }
 }
