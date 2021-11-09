@@ -31,14 +31,12 @@ const favicons = require("../dist/index.js"),
     pixel_art: false, // Keeps pixels "sharp" when scaling up, for pixel art.  Only supported in offline mode.
     loadManifestWithCredentials: false, // Browsers don't send cookies when fetching a manifest, enable this to fix that. `boolean`
     icons: {
-      android: true, // Create Android homescreen icon. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
-      appleIcon: true, // Create Apple touch icons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
-      appleStartup: true, // Create Apple startup images. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
-      coast: true, // Create Opera Coast icon. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
-      favicons: true, // Create regular favicons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
-      firefox: true, // Create Firefox OS icons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
-      windows: true, // Create Windows 8 tile icons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
-      yandex: true, // Create Yandex browser icon. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
+      android: true, // Create Android homescreen icon. `boolean` or `{ offset, background }`
+      appleIcon: true, // Create Apple touch icons. `boolean` or `{ offset, background }`
+      appleStartup: true, // Create Apple startup images. `boolean` or `{ offset, background }`
+      favicons: true, // Create regular favicons. `boolean` or `{ offset, background }`
+      windows: true, // Create Windows 8 tile icons. `boolean` or `{ offset, background }`
+      yandex: true, // Create Yandex browser icon. `boolean` or `{ offset, background }`
     },
   },
   callback = (error, response) => {

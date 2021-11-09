@@ -50,8 +50,7 @@ var favicons = require("favicons"),
     logging: false, // Print logs to console? `boolean`
     pixel_art: false, // Keeps pixels "sharp" when scaling up, for pixel art.  Only supported in offline mode.
     loadManifestWithCredentials: false, // Browsers don't send cookies when fetching a manifest, enable this to fix that. `boolean`
-    manifestMaskable: false, // Maskable source image(s) for manifest.json. "true" to use default source. `boolean`, `string`, `buffer` or array of `string`
-    // This is different than the mask applied on the icons. More information at https://web.dev/maskable-icon/
+    manifestMaskable: false, // Maskable source image(s) for manifest.json. "true" to use default source. More information at https://web.dev/maskable-icon/. `boolean`, `string`, `buffer` or array of `string`
     icons: {
       // Platform Options:
       // - offset - offset in percentage
@@ -59,18 +58,13 @@ var favicons = require("favicons"),
       //   * false - use default
       //   * true - force use default, e.g. set background for Android icons
       //   * color - set background for the specified icons
-      // - mask - apply mask in order to create circle icon (applied by default for firefox). `boolean`
-      // - overlayGlow - apply glow effect after mask has been applied (applied by default for firefox). `boolean`
-      // - overlayShadow - apply drop shadow after mask has been applied .`boolean`
       //
-      android: true, // Create Android homescreen icon. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }` or an array of sources
-      appleIcon: true, // Create Apple touch icons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }` or an array of sources
-      appleStartup: true, // Create Apple startup images. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }` or an array of sources
-      coast: true, // Create Opera Coast icon. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }` or an array of sources
-      favicons: true, // Create regular favicons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }` or an array of sources
-      firefox: true, // Create Firefox OS icons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }` or an array of sources
-      windows: true, // Create Windows 8 tile icons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }` or an array of sources
-      yandex: true, // Create Yandex browser icon. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }` or an array of sources
+      android: true, // Create Android homescreen icon. `boolean` or `{ offset, background }` or an array of sources
+      appleIcon: true, // Create Apple touch icons. `boolean` or `{ offset, background }` or an array of sources
+      appleStartup: true, // Create Apple startup images. `boolean` or `{ offset, background }` or an array of sources
+      favicons: true, // Create regular favicons. `boolean` or `{ offset, background }` or an array of sources
+      windows: true, // Create Windows 8 tile icons. `boolean` or `{ offset, background }` or an array of sources
+      yandex: true, // Create Yandex browser icon. `boolean` or `{ offset, background }` or an array of sources
     },
   },
   callback = function (error, response) {
@@ -140,19 +134,11 @@ The default sources are as follow (groupped by platform):
     "apple-touch-startup-image-750x1334.png",
     "apple-touch-startup-image-828x1792.png"
   ],
-  "coast": [
-    "coast-228x228.png"
-  ],
   "favicons": [
     "favicon-16x16.png",
     "favicon-32x32.png",
     "favicon-48x48.png",
     "favicon.ico"
-  ],
-  "firefox": [
-    "firefox_app_128x128.png",
-    "firefox_app_512x512.png",
-    "firefox_app_60x60.png"
   ],
   "windows": [
     "mstile-144x144.png",

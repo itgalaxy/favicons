@@ -11,9 +11,6 @@ export interface IconOptions {
   readonly background?: string | boolean;
   readonly transparent: boolean;
   readonly rotate: boolean;
-  readonly mask?: boolean;
-  readonly overlayGlow?: boolean;
-  readonly overlayShadow?: boolean;
   readonly purpose?: string;
   readonly pixelArt?: boolean;
 }
@@ -89,9 +86,7 @@ export const defaultOptions: FaviconOptions = {
     android: true,
     appleIcon: true,
     appleStartup: true,
-    coast: true,
     favicons: true,
-    firefox: true,
     windows: true,
     yandex: true,
   },

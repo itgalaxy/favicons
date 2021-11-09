@@ -20,7 +20,7 @@
     "test-only": "jest",
     "test": "npm run test-only",
     "clean": "rimraf dist/",
-    "build": "tsc && copyfiles -u 1 src/**/*.png dist/",
+    "build": "tsc",
     "prepare": "npm run pretest && npm run build"
   },
   "keywords": [
@@ -56,7 +56,6 @@
     "@types/sharp": "^0.29.2",
     "@typescript-eslint/eslint-plugin": "^5.1.0",
     "@typescript-eslint/parser": "^5.1.0",
-    "copyfiles": "^2.4.1",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-jest": "^25.2.2",

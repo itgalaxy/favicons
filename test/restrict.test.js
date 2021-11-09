@@ -9,8 +9,6 @@ const options = {
     android: false,
     appleIcon: false,
     appleStartup: false,
-    coast: false,
-    firefox: false,
     windows: false,
     yandex: false,
   },
@@ -95,26 +93,10 @@ test("should allow to restrict the HTML tags taking into account manifests and o
         android: ["android-chrome-48x48.png"],
         appleIcon: false,
         appleStartup: false,
-        coast: false,
-        firefox: false,
         windows: false,
         yandex: false,
       },
       expectedLength: 4, // (manifest + capable + theme color + app name)
-    },
-    {
-      // firefox
-      testOptions: {
-        favicons: false,
-        android: false,
-        appleIcon: false,
-        appleStartup: false,
-        coast: false,
-        firefox: ["firefox_app_128x128.png"],
-        windows: false,
-        yandex: false,
-      },
-      expectedLength: 0, // nothing
     },
     {
       // appleIcon
@@ -123,8 +105,6 @@ test("should allow to restrict the HTML tags taking into account manifests and o
         android: false,
         appleIcon: ["apple-touch-icon-60x60.png"],
         appleStartup: false,
-        coast: false,
-        firefox: false,
         windows: false,
         yandex: false,
       },

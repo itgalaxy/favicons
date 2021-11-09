@@ -62,7 +62,6 @@ it("should allow renaming of manifest", async () => {
   expect(new Set(filenames)).toEqual(
     new Set([
       "manifest.json",
-      "manifest.webapp",
       "browserconfig.xml",
       "yandex-browser-manifest.json",
     ])
@@ -72,7 +71,6 @@ it("should allow renaming of manifest", async () => {
     output: { images: false, html: false },
     files: {
       android: { manifestFileName: "android-manifest.json" },
-      firefox: { manifestFileName: "firefox-manifest.webapp" },
       windows: { manifestFileName: "windows-browserconfig.xml" },
       yandex: { manifestFileName: "yandex-manifest.json" },
     },
@@ -82,7 +80,6 @@ it("should allow renaming of manifest", async () => {
   expect(new Set(filenames2)).toEqual(
     new Set([
       "android-manifest.json",
-      "firefox-manifest.webapp",
       "windows-browserconfig.xml",
       "yandex-manifest.json",
     ])

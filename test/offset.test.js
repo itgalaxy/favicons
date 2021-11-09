@@ -9,8 +9,6 @@ test("should allow offsetting the icon on selected platforms", async () => {
       android: { offset: 10 },
       appleIcon: { offset: 10 },
       appleStartup: { offset: 10 },
-      coast: { offset: 10 },
-      firefox: { offset: 10 },
     },
   });
 

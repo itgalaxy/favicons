@@ -21,9 +21,6 @@ export interface IconPlaneOptions {
   readonly background?: string;
   readonly transparent: boolean;
   readonly rotate: boolean;
-  readonly mask: boolean;
-  readonly overlayGlow: boolean;
-  readonly overlayShadow: boolean;
 }
 
 function arrayComparator(a: unknown, b: unknown): number {
@@ -109,9 +106,6 @@ function flattenIconOptions(iconOptions: IconOptions): IconPlaneOptions[] {
     pixelArt: iconOptions.pixelArt ?? false,
     background: asString(iconOptions.background),
     transparent: iconOptions.transparent,
-    mask: iconOptions.mask ?? false,
-    overlayGlow: iconOptions.overlayGlow ?? false,
-    overlayShadow: iconOptions.overlayShadow ?? false,
     rotate: iconOptions.rotate,
   }));
 }
@@ -194,11 +188,11 @@ export class Images {
       .toBuffer();
   }
 
-  async createBlankImage(
+  createBlankImage(
     width: number,
     height: number,
     background?: string
-  ): Promise<Buffer> {
+  ): sharp.Sharp {
     const transparent = !background || background === "transparent";
 
     let image = sharp({
@@ -213,56 +207,7 @@ export class Images {
     if (transparent) {
       image = image.ensureAlpha();
     }
-    return await image.png().toBuffer();
-  }
-
-  mask() {
-    return path.join(__dirname, "mask.png");
-  }
-
-  overlayGlow() {
-    return path.join(__dirname, "overlay-glow.png");
-  }
-
-  overlayShadow() {
-    // Gimp drop shadow filter: input: mask.png, config: X: 2, Y: 5, Offset: 5, Color: black, Opacity: 20
-    return path.join(__dirname, "overlay-shadow.png");
-  }
-
-  async maskImage(image: Buffer, mask: string): Promise<Buffer> {
-    const pipeline = sharp(image);
-    const meta = await pipeline.metadata();
-
-    const maskBuffer = await sharp(mask)
-      .resize({
-        width: meta.width,
-        height: meta.height,
-        fit: sharp.fit.contain,
-        background: "#00000000",
-      })
-      .toColourspace("b-w")
-      .toBuffer();
-
-    return await pipeline.joinChannel(maskBuffer).png().toBuffer();
-  }
-
-  async overlay(image: Buffer, coverPath: string): Promise<Buffer> {
-    const pipeline = sharp(image);
-    const meta = await pipeline.metadata();
-
-    const cover = await sharp(coverPath)
-      .resize({
-        width: meta.width,
-        height: meta.height,
-        fit: sharp.fit.contain,
-      })
-      .png()
-      .toBuffer();
-
-    return await pipeline
-      .composite([{ input: cover, left: 0, top: 0 }])
-      .png()
-      .toBuffer();
+    return image;
   }
 
   async createPlaneFavicon(
@@ -286,27 +231,11 @@ export class Images {
     const source = this.bestSource(sourceset, width, height);
     const image = await this.resize(source, width, height, options.pixelArt);
 
-    let canvas = await this.createBlankImage(
+    let pipeline = this.createBlankImage(
       options.width,
       options.height,
       options.background
-    );
-    if (options.mask) {
-      this.#log("createPlaneFavicon", "Masking composite image on circle");
-
-      canvas = await this.maskImage(canvas, this.mask());
-
-      if (options.overlayGlow) {
-        canvas = await this.overlay(canvas, this.overlayGlow());
-      }
-      if (options.overlayShadow) {
-        canvas = await this.overlay(canvas, this.overlayShadow());
-      }
-    }
-
-    let pipeline = sharp(canvas).composite([
-      { input: image, left: offset, top: offset },
-    ]);
+    ).composite([{ input: image, left: offset, top: offset }]);
 
     if (options.rotate) {
       const degrees = 90;
