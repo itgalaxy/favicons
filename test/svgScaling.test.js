@@ -7,9 +7,7 @@ const icons = {
   android: false,
   appleIcon: true,
   appleStartup: false,
-  coast: false,
   favicons: false,
-  firefox: false,
   windows: false,
   yandex: false,
 };

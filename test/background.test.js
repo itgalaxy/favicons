@@ -9,8 +9,6 @@ test("should allow configuring background color on selected platforms", async ()
       android: { background: true },
       appleIcon: { background: true },
       appleStartup: { background: true },
-      coast: { background: true },
-      firefox: { background: true },
       windows: { background: true },
       yandex: { background: true },
     },

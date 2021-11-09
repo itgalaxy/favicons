@@ -9,12 +9,10 @@ test("should images without options.path to manifests when manifestRelativePaths
     path: "favicons/",
     icons: {
       android: true,
-      firefox: true,
       windows: true,
       yandex: true,
       appleIcon: false,
       appleStartup: false,
-      coast: false,
       favicons: false,
     },
   });

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`should allow specifying metadata 63`] = `
+exports[`should allow specifying metadata 59`] = `
 Object {
   "files": Array [
     Object {
@@ -76,23 +76,6 @@ Object {
       "name": "manifest.json",
     },
     Object {
-      "contents": "{
-  \\"version\\": \\"3.2.1\\",
-  \\"name\\": \\"PWA\\",
-  \\"description\\": \\"Progressive Web App\\",
-  \\"icons\\": {
-    \\"60\\": \\"/firefox_app_60x60.png\\",
-    \\"128\\": \\"/firefox_app_128x128.png\\",
-    \\"512\\": \\"/firefox_app_512x512.png\\"
-  },
-  \\"developer\\": {
-    \\"name\\": \\"John Doe\\",
-    \\"url\\": \\"https://john.doe.com\\"
-  }
-}",
-      "name": "manifest.webapp",
-    },
-    Object {
       "contents": "<?xml version=\\"1.0\\" encoding=\\"utf-8\\"?>
 <browserconfig>
   <msapplication>
@@ -165,7 +148,6 @@ Object {
     "<link rel=\\"apple-touch-startup-image\\" media=\\"(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)\\" href=\\"/apple-touch-startup-image-2388x1668.png\\">",
     "<link rel=\\"apple-touch-startup-image\\" media=\\"(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)\\" href=\\"/apple-touch-startup-image-2732x2048.png\\">",
     "<link rel=\\"apple-touch-startup-image\\" media=\\"(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)\\" href=\\"/apple-touch-startup-image-2160x1620.png\\">",
-    "<link rel=\\"icon\\" type=\\"image/png\\" sizes=\\"228x228\\" href=\\"/coast-228x228.png\\">",
     "<meta name=\\"msapplication-TileColor\\" content=\\"#333\\">",
     "<meta name=\\"msapplication-TileImage\\" content=\\"/mstile-144x144.png\\">",
     "<meta name=\\"msapplication-config\\" content=\\"/browserconfig.xml\\">",
@@ -363,22 +345,6 @@ Object {
     Object {
       "contents": null,
       "name": "apple-touch-startup-image-2732x2048.png",
-    },
-    Object {
-      "contents": null,
-      "name": "coast-228x228.png",
-    },
-    Object {
-      "contents": null,
-      "name": "firefox_app_60x60.png",
-    },
-    Object {
-      "contents": null,
-      "name": "firefox_app_128x128.png",
-    },
-    Object {
-      "contents": null,
-      "name": "firefox_app_512x512.png",
     },
     Object {
       "contents": null,

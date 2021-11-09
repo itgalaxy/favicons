@@ -5,12 +5,10 @@ test("should not generate images", async () => {
   expect.assertions(3);
   const { images, files, html } = await favicons(logo_png, {
     icons: {
-      android: false,
+      android: true,
       appleIcon: false,
       appleStartup: false,
-      coast: false,
       favicons: true,
-      firefox: true,
       windows: false,
       yandex: false,
     },
@@ -28,12 +26,10 @@ test("should not generate files", async () => {
   expect.assertions(3);
   const { images, files, html } = await favicons(logo_png, {
     icons: {
-      android: false,
+      android: true,
       appleIcon: false,
       appleStartup: false,
-      coast: false,
       favicons: true,
-      firefox: true,
       windows: false,
       yandex: false,
     },
@@ -51,12 +47,10 @@ test("should not generate html", async () => {
   expect.assertions(3);
   const { images, files, html } = await favicons(logo_png, {
     icons: {
-      android: false,
+      android: true,
       appleIcon: false,
       appleStartup: false,
-      coast: false,
       favicons: true,
-      firefox: true,
       windows: false,
       yandex: false,
     },

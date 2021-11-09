@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`should images without options.path to manifests when manifestRelativePaths is true 19`] = `
+exports[`should images without options.path to manifests when manifestRelativePaths is true 16`] = `
 Object {
   "files": Array [
     Object {
@@ -73,23 +73,6 @@ Object {
   ]
 }",
       "name": "manifest.json",
-    },
-    Object {
-      "contents": "{
-  \\"version\\": \\"1.0\\",
-  \\"name\\": null,
-  \\"description\\": null,
-  \\"icons\\": {
-    \\"60\\": \\"firefox_app_60x60.png\\",
-    \\"128\\": \\"firefox_app_128x128.png\\",
-    \\"512\\": \\"firefox_app_512x512.png\\"
-  },
-  \\"developer\\": {
-    \\"name\\": null,
-    \\"url\\": null
-  }
-}",
-      "name": "manifest.webapp",
     },
     Object {
       "contents": "<?xml version=\\"1.0\\" encoding=\\"utf-8\\"?>
@@ -165,18 +148,6 @@ Object {
     Object {
       "contents": null,
       "name": "android-chrome-512x512.png",
-    },
-    Object {
-      "contents": null,
-      "name": "firefox_app_60x60.png",
-    },
-    Object {
-      "contents": null,
-      "name": "firefox_app_128x128.png",
-    },
-    Object {
-      "contents": null,
-      "name": "firefox_app_512x512.png",
     },
     Object {
       "contents": null,

@@ -7,9 +7,6 @@ export function transparentIcon(width: number, height?: number): IconOptions {
     background: false,
     transparent: true,
     rotate: false,
-    mask: false,
-    overlayGlow: false,
-    overlayShadow: false,
   };
 }
 
@@ -20,9 +17,6 @@ export function transparentIcons(...sizes: number[]): IconOptions {
     background: false,
     transparent: true,
     rotate: false,
-    mask: false,
-    overlayGlow: false,
-    overlayShadow: false,
   };
 }
 
@@ -33,22 +27,6 @@ export function opaqueIcon(width: number, height?: number): IconOptions {
     background: true,
     transparent: false,
     rotate: false,
-    mask: false,
-    overlayGlow: false,
-    overlayShadow: false,
-  };
-}
-
-export function glowIcon(width: number, height?: number): IconOptions {
-  return {
-    sizes: [{ width, height: height ?? width }],
-    offset: 0,
-    background: true,
-    transparent: false,
-    rotate: false,
-    mask: true,
-    overlayGlow: true,
-    overlayShadow: false,
   };
 }
 
