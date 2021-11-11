@@ -34,7 +34,7 @@ expect.extend({
           failureThreshold: 5,
           failureThresholdType: "percent",
           customSnapshotIdentifier: (context) =>
-            `${context.currentTestName}${path.sep}${context.counter}_${plane.name}`,
+            `${context.currentTestName}${path.sep}${plane.name}`,
         });
 
         if (!imageResult.pass) {
