@@ -16,22 +16,22 @@ import {
 } from "../helpers";
 import { Logger } from "../logger";
 
-export function uniformIconOptions(
+export function uniformIconOptions<T extends IconOptions>(
   options: FaviconOptions,
   iconsChoice: IconOptions | boolean | string[] | undefined,
-  platformConfig: Dictionary<IconOptions>
-): Dictionary<IconOptions> {
+  platformConfig: Dictionary<T>
+): Dictionary<T> {
   let result = platformConfig;
   if (Array.isArray(iconsChoice)) {
     result = filterKeys(platformConfig, (name) => iconsChoice.includes(name));
   } else if (typeof iconsChoice === "object") {
-    result = mapValues(platformConfig, (iconOptions: IconOptions) => ({
+    result = mapValues(platformConfig, (iconOptions: T) => ({
       ...iconOptions,
       ...iconsChoice,
     }));
   }
 
-  result = mapValues(result, (iconOptions: IconOptions) => ({
+  result = mapValues(result, (iconOptions: T) => ({
     pixelArt: options.pixel_art,
     ...iconOptions,
     background:
@@ -43,14 +43,14 @@ export function uniformIconOptions(
   return result;
 }
 
-export class Platform {
+export class Platform<IO extends IconOptions = IconOptions> {
   protected options: FaviconOptions;
-  protected iconOptions: Dictionary<IconOptions>;
+  protected iconOptions: Dictionary<IO>;
   protected log: Logger;
 
   constructor(
     options: FaviconOptions,
-    iconOptions: Dictionary<IconOptions>,
+    iconOptions: Dictionary<IO>,
     logger: Logger
   ) {
     this.options = options;
