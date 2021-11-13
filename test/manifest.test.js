@@ -8,7 +8,7 @@ it("should not prefer any related applications by default", async () => {
     output: { images: false, html: false },
   });
   const manifestFile = result.files.find(
-    (file) => file.name === "manifest.json"
+    (file) => file.name === "manifest.webmanifest"
   );
 
   expect(manifestFile).toBeDefined();
@@ -39,7 +39,7 @@ it("should list preferrable related applications", async () => {
     output: { images: false, html: false },
   });
   const manifestFile = result.files.find(
-    (file) => file.name === "manifest.json"
+    (file) => file.name === "manifest.webmanifest"
   );
 
   expect(manifestFile).toBeDefined();
@@ -52,7 +52,7 @@ it("should list preferrable related applications", async () => {
 });
 
 it("should allow renaming of manifest", async () => {
-  // expect.assertions(2);
+  expect.assertions(2);
 
   const result = await favicons(logo_png, {
     output: { images: false, html: false },
@@ -61,7 +61,7 @@ it("should allow renaming of manifest", async () => {
 
   expect(new Set(filenames)).toEqual(
     new Set([
-      "manifest.json",
+      "manifest.webmanifest",
       "browserconfig.xml",
       "yandex-browser-manifest.json",
     ])
@@ -70,7 +70,7 @@ it("should allow renaming of manifest", async () => {
   const result2 = await favicons(logo_png, {
     output: { images: false, html: false },
     files: {
-      android: { manifestFileName: "android-manifest.json" },
+      android: { manifestFileName: "android-manifest.webmanifest" },
       windows: { manifestFileName: "windows-browserconfig.xml" },
       yandex: { manifestFileName: "yandex-manifest.json" },
     },
@@ -79,7 +79,7 @@ it("should allow renaming of manifest", async () => {
 
   expect(new Set(filenames2)).toEqual(
     new Set([
-      "android-manifest.json",
+      "android-manifest.webmanifest",
       "windows-browserconfig.xml",
       "yandex-manifest.json",
     ])
