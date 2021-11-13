@@ -98,7 +98,9 @@ export class AndroidPlatform extends Platform {
   }
 
   private manifestFileName(): string {
-    return this.options.files?.android?.manifestFileName ?? "manifest.json";
+    return (
+      this.options.files?.android?.manifestFileName ?? "manifest.webmanifest"
+    );
   }
 
   private manifest(): FaviconFile {

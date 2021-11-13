@@ -72,7 +72,7 @@ Object {
     }
   ]
 }",
-      "name": "manifest.json",
+      "name": "manifest.webmanifest",
     },
     Object {
       "contents": "<?xml version=\\"1.0\\" encoding=\\"utf-8\\"?>
@@ -107,7 +107,7 @@ Object {
     "<link rel=\\"icon\\" type=\\"image/png\\" sizes=\\"16x16\\" href=\\"/favicon-16x16.png\\">",
     "<link rel=\\"icon\\" type=\\"image/png\\" sizes=\\"32x32\\" href=\\"/favicon-32x32.png\\">",
     "<link rel=\\"icon\\" type=\\"image/png\\" sizes=\\"48x48\\" href=\\"/favicon-48x48.png\\">",
-    "<link rel=\\"manifest\\" href=\\"/manifest.json\\">",
+    "<link rel=\\"manifest\\" href=\\"/manifest.webmanifest\\">",
     "<meta name=\\"mobile-web-app-capable\\" content=\\"yes\\">",
     "<meta name=\\"theme-color\\" content=\\"#fff\\">",
     "<meta name=\\"application-name\\">",

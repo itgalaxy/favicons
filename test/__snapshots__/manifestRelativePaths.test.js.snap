@@ -72,7 +72,7 @@ Object {
     }
   ]
 }",
-      "name": "manifest.json",
+      "name": "manifest.webmanifest",
     },
     Object {
       "contents": "<?xml version=\\"1.0\\" encoding=\\"utf-8\\"?>
@@ -103,7 +103,7 @@ Object {
     },
   ],
   "html": Array [
-    "<link rel=\\"manifest\\" href=\\"/favicons/manifest.json\\">",
+    "<link rel=\\"manifest\\" href=\\"/favicons/manifest.webmanifest\\">",
     "<meta name=\\"mobile-web-app-capable\\" content=\\"yes\\">",
     "<meta name=\\"theme-color\\" content=\\"#fff\\">",
     "<meta name=\\"application-name\\">",
