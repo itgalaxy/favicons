@@ -1,12 +1,12 @@
-import { FaviconOptions } from "../config/defaults";
-import { Logger } from "../logger";
-import { Platform } from "./base";
-import { AndroidPlatform } from "./android";
-import { AppleIconPlatform } from "./appleIcon";
-import { AppleStartupPlatform } from "./appleStartup";
-import { FaviconsPlatform } from "./favicons";
-import { WindowsPlatform } from "./windows";
-import { YandexPlatform } from "./yandex";
+import { FaviconOptions } from "../config/defaults.js";
+import { Logger } from "../logger.js";
+import { Platform } from "./base.js";
+import { AndroidPlatform } from "./android.js";
+import { AppleIconPlatform } from "./appleIcon.js";
+import { AppleStartupPlatform } from "./appleStartup.js";
+import { FaviconsPlatform } from "./favicons.js";
+import { WindowsPlatform } from "./windows.js";
+import { YandexPlatform } from "./yandex.js";
 
 export function getPlatform(
   name: string,

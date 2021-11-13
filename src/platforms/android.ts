@@ -1,16 +1,16 @@
 import escapeHtml from "escape-html";
-import { FaviconFile, FaviconHtmlElement, FaviconImage } from "..";
-import { FaviconOptions, IconOptions } from "../config/defaults";
-import { maskable, transparentIcon } from "../config/icons";
+import { FaviconFile, FaviconHtmlElement, FaviconImage } from "../index.js";
+import { FaviconOptions, IconOptions } from "../config/defaults.js";
+import { maskable, transparentIcon } from "../config/icons.js";
 import {
   Dictionary,
   Images,
   relativeTo,
   SourceImage,
   sourceImages,
-} from "../helpers";
-import { logContext, Logger } from "../logger";
-import { Platform, uniformIconOptions } from "./base";
+} from "../helpers.js";
+import { logContext, Logger } from "../logger.js";
+import { Platform, uniformIconOptions } from "./base.js";
 
 const ICONS_OPTIONS: Dictionary<IconOptions> = {
   "android-chrome-36x36.png": transparentIcon(36),

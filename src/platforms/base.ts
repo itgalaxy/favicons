@@ -3,8 +3,8 @@ import {
   FaviconHtmlElement,
   FaviconImage,
   FaviconResponse,
-} from "..";
-import { FaviconOptions, IconOptions } from "../config/defaults";
+} from "../index.js";
+import { FaviconOptions, IconOptions } from "../config/defaults.js";
 import {
   asString,
   Dictionary,
@@ -13,8 +13,8 @@ import {
   mapValues,
   relativeTo,
   SourceImage,
-} from "../helpers";
-import { Logger } from "../logger";
+} from "../helpers.js";
+import { Logger } from "../logger.js";
 
 export function uniformIconOptions<T extends IconOptions>(
   options: FaviconOptions,

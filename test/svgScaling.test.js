@@ -1,4 +1,4 @@
-import favicons from "../src";
+import favicons from "..";
 import { logo_small_svg } from "./util";
 
 // Only one iconset is required that contains large enough images to compare the

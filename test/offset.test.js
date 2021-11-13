@@ -1,4 +1,4 @@
-import favicons from "../src";
+import favicons from "..";
 import { logo_png } from "./util";
 
 test("should allow offsetting the icon on selected platforms", async () => {

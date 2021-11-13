@@ -1,4 +1,4 @@
-import favicons from "../src";
+import favicons from "..";
 import { logo_svg } from "./util";
 
 test("should support svg images", async () => {

@@ -5,10 +5,10 @@
 import through2 from "through2";
 import defaultsDeep from "lodash.defaultsdeep";
 import File from "vinyl";
-import { FaviconOptions, defaultOptions } from "./config/defaults";
-import { RawImage, sourceImages } from "./helpers";
-import { getPlatform } from "./platforms";
-import { dummyLog, Logger, prettyLog } from "./logger";
+import { FaviconOptions, defaultOptions } from "./config/defaults.js";
+import { RawImage, sourceImages } from "./helpers.js";
+import { getPlatform } from "./platforms/index.js";
+import { dummyLog, Logger, prettyLog } from "./logger.js";
 
 export interface FaviconImage {
   readonly name: string;

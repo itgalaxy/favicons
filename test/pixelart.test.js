@@ -1,4 +1,4 @@
-import favicons from "../src";
+import favicons from "..";
 import { pixel_art } from "./util";
 
 test("should support pixel art", async () => {
