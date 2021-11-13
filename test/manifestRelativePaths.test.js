@@ -1,4 +1,4 @@
-import favicons from "../src";
+import favicons from "..";
 import { logo_png } from "./util";
 
 test("should images without options.path to manifests when manifestRelativePaths is true", async () => {

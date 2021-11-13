@@ -1,4 +1,4 @@
-import { stream as favicons } from "../src";
+import { stream as favicons } from "..";
 import gulp from "gulp";
 import { logo_png } from "./util";
 

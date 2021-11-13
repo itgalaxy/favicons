@@ -17,7 +17,7 @@
     "lint": "eslint . --ignore-path .gitignore",
     "fix": "npm run lint -- --fix && npm run fmt",
     "pretest": "npm run lint && npm run fmt-check",
-    "test-only": "jest",
+    "test-only": "npm run build && jest",
     "test": "npm run test-only",
     "clean": "rimraf dist/",
     "build": "tsc",

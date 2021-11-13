@@ -1,9 +1,9 @@
-import { FaviconHtmlElement } from "..";
-import { FaviconOptions, IconOptions } from "../config/defaults";
-import { transparentIcon, transparentIcons } from "../config/icons";
-import { Dictionary } from "../helpers";
-import { logContext, Logger } from "../logger";
-import { Platform, uniformIconOptions } from "./base";
+import { FaviconHtmlElement } from "../index.js";
+import { FaviconOptions, IconOptions } from "../config/defaults.js";
+import { transparentIcon, transparentIcons } from "../config/icons.js";
+import { Dictionary } from "../helpers.js";
+import { logContext, Logger } from "../logger.js";
+import { Platform, uniformIconOptions } from "./base.js";
 
 const ICONS_OPTIONS: Dictionary<IconOptions> = {
   "favicon.ico": transparentIcons(16, 24, 32, 48, 64),

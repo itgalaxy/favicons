@@ -1,6 +1,6 @@
 import xml2js from "xml2js";
-import { SourceImage } from "./helpers";
-import { logContext, Logger } from "./logger";
+import { SourceImage } from "./helpers.js";
+import { logContext, Logger } from "./logger.js";
 
 // sharp renders the SVG in its source width and height with 72 DPI which can
 // cause a blurry result in case the source SVG is defined in lower size than

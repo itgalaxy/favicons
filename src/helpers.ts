@@ -1,11 +1,11 @@
 import * as path from "path";
 import * as fs from "fs";
 import sharp from "sharp";
-import { toIco } from "./ico";
-import { FaviconImage } from ".";
-import { IconOptions } from "./config/defaults";
-import { SvgTool } from "./svgtool";
-import { logContext, Logger } from "./logger";
+import { toIco } from "./ico.js";
+import { FaviconImage } from "./index.js";
+import { IconOptions } from "./config/defaults.js";
+import { SvgTool } from "./svgtool.js";
+import { logContext, Logger } from "./logger.js";
 
 export type Dictionary<T> = { [key: string]: T };
 

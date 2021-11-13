@@ -1,4 +1,4 @@
-import favicons from "../src";
+import favicons from "..";
 import * as fs from "fs";
 import { logo_png, logo_svg, pixel_art } from "./util";
 
