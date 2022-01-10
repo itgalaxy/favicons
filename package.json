@@ -41,7 +41,7 @@
     "node": ">=10.13.0"
   },
   "dependencies": {
-    "colors": "^1.4.0",
+    "colors": "1.4.0",
     "escape-html": "^1.0.3",
     "lodash.defaultsdeep": "^4.6.1",
     "sharp": "^0.29.3",
