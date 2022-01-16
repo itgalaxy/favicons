@@ -125,7 +125,6 @@
         "allowArrowFunctions": false
       }
     ],
-    "linebreak-style": [2, "unix"],
     "max-nested-callbacks": [2, 5],
     "no-array-constructor": 2,
     "no-lonely-if": 2,
