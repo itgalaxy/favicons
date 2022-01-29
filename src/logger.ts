@@ -1,4 +1,4 @@
-import colors from "colors";
+import chalk from "chalk";
 
 export type Logger = (context: string, message: string) => void;
 
@@ -7,12 +7,15 @@ export function dummyLog() {
 }
 
 export function prettyLog(context: string, message: string) {
-  message = message.replace(/ \d+(x\d+)?/g, (item) => colors.magenta(item));
-  message = message.replace(/#([0-9a-f]{3}){1,2}/g, (item) =>
-    colors.magenta(item)
-  );
+  function highlight(item) {
+    return chalk.magenta(item);
+  }
+
+  message = message.replace(/ \d+(x\d+)?/g, highlight);
+  message = message.replace(/#([0-9a-f]{3}){1,2}/g, highlight);
+
   console.log(
-    `${colors.green("[Favicons]")} ${colors.yellow(context)}: ${message}...`
+    `${chalk.green("[Favicons]")} ${chalk.yellow(context)}: ${message}`
   );
 }
 
