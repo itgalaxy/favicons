@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 /**
-    Make sure you have the lates build. Run `gulp` to rebuild.
+    Make sure you have the lates build. Run `npm run build` to rebuild.
     Run `node createExamples.js` to create the icons, splashs and files.
 **/
 

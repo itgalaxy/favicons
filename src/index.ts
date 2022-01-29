@@ -2,9 +2,8 @@
 
 // TO_DO: More comments to know what's going on, for future maintainers
 
-import through2 from "through2";
+import { Transform } from "stream";
 import defaultsDeep from "lodash.defaultsdeep";
-import File from "vinyl";
 import { FaviconOptions, defaultOptions } from "./config/defaults.js";
 import { RawImage, sourceImages } from "./helpers.js";
 import { getPlatform } from "./platforms/index.js";
@@ -94,47 +93,59 @@ export function favicons(
 
 export default favicons;
 
-export function stream(params, handleHtml) {
-  /* eslint no-invalid-this: 0 */
-  return through2.obj(function (file, encoding, callback) {
-    if (file.isNull()) {
-      return callback(null, file);
-    }
+export interface FaviconStreamOptions extends FaviconOptions {
+  readonly html?: string;
+  readonly pipeHTML?: boolean;
+  readonly emitBuffers?: boolean;
+}
 
-    if (file.isStream()) {
-      return callback(new Error("Streaming not supported"));
-    }
+export type HandleHTML = (html: FaviconHtmlElement[]) => void;
 
-    const { html: path, pipeHTML, ...options } = params;
+class FaviconStream extends Transform {
+  #options: FaviconStreamOptions;
+  #handleHTML: HandleHTML;
 
-    favicons(file.contents, options)
+  constructor(options: FaviconStreamOptions, handleHTML: HandleHTML) {
+    super({ objectMode: true });
+    this.#options = options;
+    this.#handleHTML = handleHTML;
+  }
+
+  _transform(file, _encoding, callback) {
+    const { html: htmlPath, pipeHTML, ...options } = this.#options;
+
+    favicons(file, options)
       .then(({ images, files, html }) => {
-        for (const asset of [...images, ...files]) {
-          this.push(
-            new File({
-              path: asset.name,
-              contents: Buffer.isBuffer(asset.contents)
-                ? asset.contents
-                : Buffer.from(asset.contents),
-            })
-          );
+        for (const { name, contents } of [...images, ...files]) {
+          this.push({
+            name,
+            contents: this.#convertContent(contents),
+          });
         }
 
-        if (handleHtml) {
-          handleHtml(html);
+        if (this.#handleHTML) {
+          this.#handleHTML(html);
         }
 
         if (pipeHTML) {
-          this.push(
-            new File({
-              path,
-              contents: Buffer.from(html.join("\n")),
-            })
-          );
+          this.push({
+            name: htmlPath,
+            contents: this.#convertContent(html.join("\n")),
+          });
         }
 
         callback(null);
       })
       .catch(callback);
-  });
+  }
+
+  #convertContent(contents: string | Buffer): string | Buffer {
+    return (this.#options.emitBuffers ?? true) && !Buffer.isBuffer(contents)
+      ? Buffer.from(contents)
+      : contents;
+  }
+}
+
+export function stream(options: FaviconStreamOptions, handleHTML: HandleHTML) {
+  return new FaviconStream(options, handleHTML);
 }
