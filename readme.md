@@ -19,8 +19,6 @@ npm install favicons
 
 To use Favicons, require the appropriate module and call it, optionally specifying configuration and callback objects. A sample is shown on the right. The full list of options can be found on GitHub.
 
-The Gulp / Grunt wrapper modules have a few extra properties. You can also configure and use Favicons from the terminal with dot syntax.
-
 Favicons generates its icons locally using pure Javascript with no external dependencies.
 
 Please note: Favicons is tested on Node 10.13 and above.
@@ -158,43 +156,6 @@ You can programmatically access Favicons configuration (icon filenames, HTML, ma
 
 ```js
 var config = require("favicons").config;
-```
-
-### Gulp
-
-To use Favicons with Gulp, you can either use the [gulp-plugin](https://github.com/rejas/gulp-favicons) or call it manually as follows:
-
-```js
-var favicons = require("favicons").stream,
-  log = require("fancy-log");
-
-gulp.task("default", function () {
-  return gulp
-    .src("logo.png")
-    .pipe(
-      favicons({
-        appName: "My App",
-        appShortName: "App",
-        appDescription: "This is my application",
-        developerName: "Hayden Bleasel",
-        developerURL: "http://haydenbleasel.com/",
-        background: "#020307",
-        path: "favicons/",
-        url: "http://haydenbleasel.com/",
-        display: "standalone",
-        orientation: "portrait",
-        scope: "/",
-        start_url: "/?homescreen=1",
-        version: 1.0,
-        logging: false,
-        html: "index.html",
-        pipeHTML: true,
-        replace: true,
-      })
-    )
-    .on("error", log)
-    .pipe(gulp.dest("./"));
-});
 ```
 
 ## Output

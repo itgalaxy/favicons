@@ -28,8 +28,7 @@
     "ico",
     "generator",
     "node",
-    "realfavicongenerator",
-    "gulpfriendly"
+    "realfavicongenerator"
   ],
   "author": "Hayden Bleasel <haydenbleasel@gmail.com>",
   "license": "MIT",
@@ -45,8 +44,6 @@
     "escape-html": "^1.0.3",
     "lodash.defaultsdeep": "^4.6.1",
     "sharp": "^0.29.3",
-    "through2": "^4.0.2",
-    "vinyl": "^2.2.1",
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
@@ -60,7 +57,6 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-jest": "^25.3.4",
     "eslint-plugin-prettier": "^4.0.0",
-    "gulp": "^4.0.2",
     "icojs": "^0.16.1",
     "jest": "^27.4.7",
     "jest-image-snapshot": "^4.5.1",

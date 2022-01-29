@@ -1,58 +1,62 @@
+import { pipeline, Readable, Writable } from "stream";
 import { stream as favicons } from "..";
-import gulp from "gulp";
 import { logo_png } from "./util";
 
-test("should provide stream interface", async () => {
-  expect.assertions(1);
-
-  const result = {
-    images: [],
-    files: [],
-  };
-
-  function isImage(file) {
-    return /\.(png|ico|jpg|jpeg|svg)$/i.test(file.path);
+class Sink extends Writable {
+  constructor() {
+    super({ objectMode: true });
+    this.result = [];
   }
 
-  await new Promise((resolve) => {
-    gulp
-      .src(logo_png)
-      .pipe(favicons({}, (html) => (result["index.html"] = html)))
-      .on("data", (chunk) => {
-        if (isImage(chunk)) {
-          result.images.push({
-            name: chunk.path,
-            contents: chunk.contents,
-          });
+  _write(chunk, _encoding, callback) {
+    this.result.push(chunk);
+    callback();
+  }
+}
+
+function classify(name) {
+  if (/\.(png|ico|jpg|jpeg|svg)$/i.test(name)) {
+    return "image";
+  } else if (/\.html$/i.test(name)) {
+    return "html";
+  } else {
+    return "other";
+  }
+}
+
+function stat(array) {
+  return array.reduce(
+    (acc, type) => ({ ...acc, [type]: (acc[type] ?? 0) + 1 }),
+    {}
+  );
+}
+
+test("should provide stream interface", async () => {
+  expect.assertions(4);
+
+  const sink = new Sink();
+
+  await new Promise((resolve, reject) => {
+    pipeline(
+      Readable.from([logo_png]),
+      favicons({ pipeHTML: true, html: "foo.html" }),
+      sink,
+      (err) => {
+        if (err) {
+          reject(err);
         } else {
-          result.files.push({
-            name: chunk.path,
-            contents: chunk.contents,
-          });
+          resolve();
         }
-      })
-      .on("end", () => {
-        resolve();
-      });
+      }
+    );
   });
 
-  await expect(result).toMatchFaviconsSnapshot();
-});
+  expect(
+    sink.result.every((chunk) => Buffer.isBuffer(chunk.contents))
+  ).toBeTruthy();
 
-test("should stream html file", async () => {
-  let found = false;
-
-  await new Promise((resolve) => {
-    gulp
-      .src(logo_png)
-      .pipe(favicons({ pipeHTML: true, html: "foo.html" }))
-      .on("data", (chunk) => {
-        if (chunk.basename === "foo.html") {
-          found = true;
-        }
-      })
-      .on("end", () => resolve());
-  });
-
-  expect(found).toBe(true);
+  const types = stat(sink.result.map((chunk) => classify(chunk.name)));
+  expect(types.html).toBe(1);
+  expect(types.image).toBeGreaterThan(1);
+  expect(types.other).toBeGreaterThan(1);
 });
