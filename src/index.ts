@@ -3,7 +3,6 @@
 // TO_DO: More comments to know what's going on, for future maintainers
 
 import { Transform } from "stream";
-import defaultsDeep from "lodash.defaultsdeep";
 import { FaviconOptions, defaultOptions } from "./config/defaults.js";
 import { RawImage, sourceImages } from "./helpers.js";
 import { getPlatform } from "./platforms/index.js";
@@ -35,7 +34,12 @@ async function createFavicons(
   source: string | string[] | Buffer | Buffer[],
   options: FaviconOptions
 ): Promise<FaviconResponse> {
-  options = defaultsDeep(options, defaultOptions);
+  options = {
+    ...defaultOptions,
+    ...options,
+    icons: { ...defaultOptions.icons, ...options.icons },
+    output: { ...defaultOptions.output, ...options.output },
+  };
 
   const log: Logger = options.logging ? prettyLog : dummyLog;
 
