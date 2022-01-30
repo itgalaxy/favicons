@@ -9,7 +9,6 @@ import {
   SourceImage,
   sourceImages,
 } from "../helpers.js";
-import { logContext, Logger } from "../logger.js";
 import { Platform, uniformIconOptions } from "./base.js";
 
 const ICONS_OPTIONS: Dictionary<IconOptions> = {
@@ -37,16 +36,15 @@ const ICONS_OPTIONS_MASKABLE: Dictionary<IconOptions> = {
 };
 
 export class AndroidPlatform extends Platform {
-  constructor(options: FaviconOptions, logger: Logger) {
+  constructor(options: FaviconOptions) {
     super(
       options,
-      uniformIconOptions(options, options.icons.android, ICONS_OPTIONS),
-      logContext(logger, "android")
+      uniformIconOptions(options, options.icons.android, ICONS_OPTIONS)
     );
   }
 
   async createImages(sourceset: SourceImage[]): Promise<FaviconImage[]> {
-    const images = new Images(this.log);
+    const images = new Images();
 
     let icons = await Promise.all(
       Object.entries(this.iconOptions).map(([iconName, iconOption]) =>
@@ -59,10 +57,6 @@ export class AndroidPlatform extends Platform {
       this.options.manifestMaskable &&
       typeof this.options.manifestMaskable !== "boolean"
     ) {
-      this.log(
-        "General:source",
-        `Maskable source type is ${typeof this.options.manifestMaskable}`
-      );
       const maskableSourceset = await sourceImages(
         this.options.manifestMaskable
       );

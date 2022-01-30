@@ -6,7 +6,6 @@ import { Transform } from "stream";
 import { FaviconOptions, defaultOptions } from "./config/defaults.js";
 import { RawImage, sourceImages } from "./helpers.js";
 import { getPlatform } from "./platforms/index.js";
-import { dummyLog, Logger, prettyLog } from "./logger.js";
 
 export interface FaviconImage {
   readonly name: string;
@@ -41,9 +40,6 @@ async function createFavicons(
     output: { ...defaultOptions.output, ...options.output },
   };
 
-  const log: Logger = options.logging ? prettyLog : dummyLog;
-
-  log("General:source", `Source type is ${typeof source}`);
   const sourceset = await sourceImages(source);
 
   const platforms = Object.keys(options.icons)
@@ -57,7 +53,7 @@ async function createFavicons(
   const responses = [];
 
   for (const platformName of platforms) {
-    const platform = getPlatform(platformName, options, log);
+    const platform = getPlatform(platformName, options);
 
     responses.push(await platform.create(sourceset));
   }

@@ -14,7 +14,6 @@ import {
   relativeTo,
   SourceImage,
 } from "../helpers.js";
-import { Logger } from "../logger.js";
 
 export function uniformIconOptions<T extends IconOptions>(
   options: FaviconOptions,
@@ -46,16 +45,10 @@ export function uniformIconOptions<T extends IconOptions>(
 export class Platform<IO extends IconOptions = IconOptions> {
   protected options: FaviconOptions;
   protected iconOptions: Dictionary<IO>;
-  protected log: Logger;
 
-  constructor(
-    options: FaviconOptions,
-    iconOptions: Dictionary<IO>,
-    logger: Logger
-  ) {
+  constructor(options: FaviconOptions, iconOptions: Dictionary<IO>) {
     this.options = options;
     this.iconOptions = iconOptions;
-    this.log = logger;
   }
 
   async create(sourceset: SourceImage[]): Promise<FaviconResponse> {
@@ -68,7 +61,7 @@ export class Platform<IO extends IconOptions = IconOptions> {
   }
 
   async createImages(sourceset: SourceImage[]): Promise<FaviconImage[]> {
-    const images = new Images(this.log);
+    const images = new Images();
     return await Promise.all(
       Object.entries(this.iconOptions).map(([iconName, iconOption]) =>
         images.createFavicon(sourceset, iconName, iconOption)

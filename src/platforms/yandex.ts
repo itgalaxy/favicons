@@ -2,7 +2,6 @@ import { FaviconFile, FaviconHtmlElement } from "../index.js";
 import { FaviconOptions, IconOptions } from "../config/defaults.js";
 import { transparentIcon } from "../config/icons.js";
 import { Dictionary, relativeTo } from "../helpers.js";
-import { logContext, Logger } from "../logger.js";
 import { Platform, uniformIconOptions } from "./base.js";
 
 const ICONS_OPTIONS: Dictionary<IconOptions> = {
@@ -10,11 +9,10 @@ const ICONS_OPTIONS: Dictionary<IconOptions> = {
 };
 
 export class YandexPlatform extends Platform {
-  constructor(options: FaviconOptions, logger: Logger) {
+  constructor(options: FaviconOptions) {
     super(
       options,
-      uniformIconOptions(options, options.icons.yandex, ICONS_OPTIONS),
-      logContext(logger, "yandex")
+      uniformIconOptions(options, options.icons.yandex, ICONS_OPTIONS)
     );
   }
 

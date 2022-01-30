@@ -1,5 +1,4 @@
 import { FaviconOptions } from "../config/defaults.js";
-import { Logger } from "../logger.js";
 import { Platform } from "./base.js";
 import { AndroidPlatform } from "./android.js";
 import { AppleIconPlatform } from "./appleIcon.js";
@@ -8,24 +7,20 @@ import { FaviconsPlatform } from "./favicons.js";
 import { WindowsPlatform } from "./windows.js";
 import { YandexPlatform } from "./yandex.js";
 
-export function getPlatform(
-  name: string,
-  options: FaviconOptions,
-  logger: Logger
-): Platform {
+export function getPlatform(name: string, options: FaviconOptions): Platform {
   switch (name) {
     case "android":
-      return new AndroidPlatform(options, logger);
+      return new AndroidPlatform(options);
     case "appleIcon":
-      return new AppleIconPlatform(options, logger);
+      return new AppleIconPlatform(options);
     case "appleStartup":
-      return new AppleStartupPlatform(options, logger);
+      return new AppleStartupPlatform(options);
     case "favicons":
-      return new FaviconsPlatform(options, logger);
+      return new FaviconsPlatform(options);
     case "windows":
-      return new WindowsPlatform(options, logger);
+      return new WindowsPlatform(options);
     case "yandex":
-      return new YandexPlatform(options, logger);
+      return new YandexPlatform(options);
     default:
       throw new Error(`Unsupported platform ${name}`);
   }
