@@ -117,7 +117,7 @@ export function relativeTo(
     return path;
   }
 
-  const directory = base.substr(-1) === "/" ? base : `${base}/`;
+  const directory = base.endsWith("/") ? base : `${base}/`;
   const url = new URL(path, new URL(directory, "resolve://"));
 
   return url.protocol === "resolve:" ? url.pathname : url.toString();
