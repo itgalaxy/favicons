@@ -2,7 +2,6 @@ import { FaviconHtmlElement } from "../index.js";
 import { FaviconOptions, IconOptions } from "../config/defaults.js";
 import { opaqueIcon } from "../config/icons.js";
 import { Dictionary } from "../helpers.js";
-import { logContext, Logger } from "../logger.js";
 import { Platform, uniformIconOptions } from "./base.js";
 
 interface ScreenSize {
@@ -56,11 +55,10 @@ function iconOptions(): Dictionary<AppleStartupImage> {
 const ICONS_OPTIONS: Dictionary<AppleStartupImage> = iconOptions();
 
 export class AppleStartupPlatform extends Platform<AppleStartupImage> {
-  constructor(options: FaviconOptions, logger: Logger) {
+  constructor(options: FaviconOptions) {
     super(
       options,
-      uniformIconOptions(options, options.icons.appleStartup, ICONS_OPTIONS),
-      logContext(logger, "appleStartup")
+      uniformIconOptions(options, options.icons.appleStartup, ICONS_OPTIONS)
     );
   }
 

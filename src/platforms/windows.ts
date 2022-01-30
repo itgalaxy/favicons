@@ -3,7 +3,6 @@ import { FaviconFile, FaviconHtmlElement } from "../index.js";
 import { FaviconOptions, IconOptions, IconSize } from "../config/defaults.js";
 import { transparentIcon } from "../config/icons.js";
 import { Dictionary, relativeTo } from "../helpers.js";
-import { logContext, Logger } from "../logger.js";
 import { Platform, uniformIconOptions } from "./base.js";
 
 const ICONS_OPTIONS: Dictionary<IconOptions> = {
@@ -30,11 +29,10 @@ function hasSize(size: IconSize, icon: IconOptions): boolean {
 }
 
 export class WindowsPlatform extends Platform {
-  constructor(options: FaviconOptions, logger: Logger) {
+  constructor(options: FaviconOptions) {
     super(
       options,
-      uniformIconOptions(options, options.icons.windows, ICONS_OPTIONS),
-      logContext(logger, "windows")
+      uniformIconOptions(options, options.icons.windows, ICONS_OPTIONS)
     );
   }
 

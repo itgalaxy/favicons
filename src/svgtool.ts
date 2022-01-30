@@ -1,6 +1,5 @@
 import xml2js from "xml2js";
 import { SourceImage } from "./helpers.js";
-import { logContext, Logger } from "./logger.js";
 
 // sharp renders the SVG in its source width and height with 72 DPI which can
 // cause a blurry result in case the source SVG is defined in lower size than
@@ -18,12 +17,6 @@ import { logContext, Logger } from "./logger.js";
 // For further information, see:
 // https://github.com/itgalaxy/favicons/issues/264
 export class SvgTool {
-  #log: Logger;
-
-  constructor(logger: Logger) {
-    this.#log = logContext(logger, "svgtool");
-  }
-
   async ensureSize(
     svgSource: SourceImage,
     width: number,
@@ -46,7 +39,6 @@ export class SvgTool {
 
     // Modify the source SVG's width and height attributes for sharp to render
     // it correctly.
-    this.#log("ensureSize", `Resizing SVG to ${svgWidth}x${svgHeight}`);
     return await this.resize(svgSource.data, svgWidth, svgHeight);
   }
 

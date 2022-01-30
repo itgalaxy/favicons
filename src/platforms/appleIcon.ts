@@ -3,7 +3,6 @@ import { FaviconHtmlElement } from "../index.js";
 import { FaviconOptions, IconOptions } from "../config/defaults.js";
 import { opaqueIcon } from "../config/icons.js";
 import { Dictionary } from "../helpers.js";
-import { logContext, Logger } from "../logger.js";
 import { Platform, uniformIconOptions } from "./base.js";
 
 const ICONS_OPTIONS: Dictionary<IconOptions> = {
@@ -23,11 +22,10 @@ const ICONS_OPTIONS: Dictionary<IconOptions> = {
 };
 
 export class AppleIconPlatform extends Platform {
-  constructor(options: FaviconOptions, logger: Logger) {
+  constructor(options: FaviconOptions) {
     super(
       options,
-      uniformIconOptions(options, options.icons.appleIcon, ICONS_OPTIONS),
-      logContext(logger, "appleIcon")
+      uniformIconOptions(options, options.icons.appleIcon, ICONS_OPTIONS)
     );
   }
 

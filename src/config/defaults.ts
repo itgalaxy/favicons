@@ -48,7 +48,6 @@ export interface FaviconOptions {
   readonly scope?: string;
   readonly start_url?: string;
   readonly version?: string;
-  readonly logging?: boolean;
   readonly pixel_art?: boolean;
   readonly loadManifestWithCredentials?: boolean;
   readonly manifestRelativePaths?: boolean;
@@ -76,7 +75,6 @@ export const defaultOptions: FaviconOptions = {
   orientation: "any",
   start_url: "/?homescreen=1",
   version: "1.0",
-  logging: false,
   pixel_art: false,
   loadManifestWithCredentials: false,
   manifestRelativePaths: false,

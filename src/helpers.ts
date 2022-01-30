@@ -5,7 +5,6 @@ import { toIco } from "./ico.js";
 import { FaviconImage } from "./index.js";
 import { IconOptions } from "./config/defaults.js";
 import { SvgTool } from "./svgtool.js";
-import { logContext, Logger } from "./logger.js";
 
 export type Dictionary<T> = { [key: string]: T };
 
@@ -125,12 +124,10 @@ export function relativeTo(
 }
 
 export class Images {
-  #log: Logger;
   #svgtool: SvgTool;
 
-  constructor(logger: Logger) {
-    this.#log = logContext(logger, "Image");
-    this.#svgtool = new SvgTool(logger);
+  constructor() {
+    this.#svgtool = new SvgTool();
   }
 
   bestSource(
@@ -138,7 +135,6 @@ export class Images {
     width: number,
     height: number
   ): SourceImage {
-    this.#log("bestSource", `Find nearest icon to ${width}x${height}`);
     const sideSize = Math.max(width, height);
     return minByKey(sourceset, (icon) => {
       const iconSideSize = Math.max(icon.metadata.width, icon.metadata.height);
@@ -156,10 +152,7 @@ export class Images {
     height: number,
     pixelArt: boolean
   ): Promise<Buffer> {
-    this.#log("render", `Resizing to ${width}x${height}`);
-
     if (source.metadata.format === "svg") {
-      this.#log("render", `Rendering SVG to ${width}x${height}`);
       const svgBuffer = await this.#svgtool.ensureSize(source, width, height);
       return await sharp(svgBuffer)
         .resize({
@@ -216,11 +209,6 @@ export class Images {
     name: string,
     raw = false
   ): Promise<FaviconImage> {
-    this.#log(
-      "createPlaneFavicon",
-      `Creating empty ${options.width}x${options.height} canvas with ${options.background} background`
-    );
-
     const offset =
       Math.round(
         (Math.max(options.width, options.height) * options.offset) / 100
@@ -239,7 +227,6 @@ export class Images {
 
     if (options.rotate) {
       const degrees = 90;
-      this.#log("createPlaneFavicon", `Rotating image by ${degrees}`);
       pipeline = pipeline.rotate(degrees);
     }
 
