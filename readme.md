@@ -64,6 +64,18 @@ var favicons = require("favicons"),
       windows: true, // Create Windows 8 tile icons. `boolean` or `{ offset, background }` or an array of sources
       yandex: true, // Create Yandex browser icon. `boolean` or `{ offset, background }` or an array of sources
     },
+    shortcuts: [
+      // Your applications's Shortcuts (see: https://developer.mozilla.org/docs/Web/Manifest/shortcuts)
+      // Array of shortcut objects:
+      {
+        name: "View your Inbox", // The name of the shortcut. `string`
+        short_name: "inbox", // optionally, falls back to name. `string`
+        description: "View your inbox messages", // optionally, not used in any implemention yet. `string`
+        url: "/inbox", // The URL this shortcut should lead to. `string`
+        icon: "test/inbox_shortcut.png", // source image(s) for that shortcut. `string`, `buffer` or array of `string`
+      },
+    ],
+    // more shortcuts objects
   },
   callback = function (error, response) {
     if (error) {
