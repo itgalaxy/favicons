@@ -75,8 +75,8 @@ Object {
     {
       \\"name\\": \\"View your Inbox\\",
       \\"short_name\\": \\"inbox\\",
-      \\"url\\": \\"/inbox\\",
       \\"description\\": \\"View your inbox messages\\",
+      \\"url\\": \\"/inbox\\",
       \\"icons\\": [
         {
           \\"src\\": \\"/shortcut1-36x36.png\\",
@@ -114,7 +114,6 @@ Object {
       \\"name\\": \\"Picture Gallery\\",
       \\"short_name\\": \\"pictures\\",
       \\"url\\": \\"/pictures\\",
-      \\"description\\": \\"View your own Picture Gallery\\",
       \\"icons\\": [
         {
           \\"src\\": \\"/shortcut2-36x36.png\\",

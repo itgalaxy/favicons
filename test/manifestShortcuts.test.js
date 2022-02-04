@@ -17,7 +17,6 @@ test("manifest should support shortcuts", async () => {
       {
         name: "Picture Gallery",
         short_name: "pictures",
-        description: "View your own Picture Gallery",
         url: "/pictures",
         icon: logo_svg,
       },

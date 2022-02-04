@@ -20,9 +20,9 @@ interface Icon {
 interface Shortcut {
   readonly name: string;
   readonly short_name: string;
-  description?: string;
+  readonly description?: string;
   readonly url: string;
-  icons?: Icon[];
+  readonly icons?: Icon[];
 }
 
 const ICONS_OPTIONS: Dictionary<IconOptions> = {
@@ -220,28 +220,27 @@ export class AndroidPlatform extends Platform {
     return this.options.shortcuts
       .map((shortcut, index) => {
         if (!shortcut.name || !shortcut.url) return null; // skip if required name or url missing
-        const result: Shortcut = {
+        return {
           name: shortcut.name,
           short_name: shortcut.short_name || shortcut.name, // fallback to name
+          description: shortcut.description, // optional
           url: shortcut.url,
+          icons: shortcut.icon
+            ? Object.entries(SHORTCUT_ICONS_OPTIONS).map(
+                ([shortcutName, option]) => {
+                  const { width, height } = option.sizes[0];
+                  return {
+                    src: relativeTo(
+                      basePath,
+                      `shortcut${index + 1}-${shortcutName}`
+                    ),
+                    sizes: `${width}x${height}`,
+                    type: "image/png",
+                  };
+                }
+              )
+            : undefined,
         };
-        if (shortcut.description) result.description = shortcut.description;
-        if (shortcut.icon) {
-          result.icons = Object.entries(SHORTCUT_ICONS_OPTIONS).map(
-            ([shortcutName, option]) => {
-              const { width, height } = option.sizes[0];
-              return {
-                src: relativeTo(
-                  basePath,
-                  `shortcut${index + 1}-${shortcutName}`
-                ),
-                sizes: `${width}x${height}`,
-                type: "image/png",
-              };
-            }
-          );
-        }
-        return result;
       })
       .filter((x) => x !== null);
   }
