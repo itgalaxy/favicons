@@ -19,6 +19,14 @@ export interface FileOptions {
   readonly manifestFileName?: string;
 }
 
+export interface ShortcutOptions {
+  readonly name: string;
+  readonly short_name?: string;
+  readonly description?: string;
+  readonly url: string;
+  readonly icon?: string | string[] | Buffer | Buffer[];
+}
+
 export interface Application {
   readonly platform?: string;
   readonly url?: string;
@@ -51,11 +59,12 @@ export interface FaviconOptions {
   readonly pixel_art?: boolean;
   readonly loadManifestWithCredentials?: boolean;
   readonly manifestRelativePaths?: boolean;
-  readonly manifestMaskable?: boolean;
+  readonly manifestMaskable?: boolean | string | string[] | Buffer | Buffer[];
   readonly preferRelatedApplications?: boolean;
   readonly relatedApplications?: Application[];
   readonly icons?: Dictionary<IconOptions | boolean | string[]>;
   readonly files?: Dictionary<FileOptions>;
+  readonly shortcuts?: ShortcutOptions[];
   readonly output?: OutputOptions;
 }
 

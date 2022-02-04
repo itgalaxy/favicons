@@ -11,6 +11,20 @@ import {
 } from "../helpers.js";
 import { Platform, uniformIconOptions } from "./base.js";
 
+interface Icon {
+  readonly src: string;
+  readonly sizes: string;
+  readonly type: string;
+}
+
+interface Shortcut {
+  readonly name: string;
+  readonly short_name: string;
+  readonly description?: string;
+  readonly url: string;
+  readonly icons?: Icon[];
+}
+
 const ICONS_OPTIONS: Dictionary<IconOptions> = {
   "android-chrome-36x36.png": transparentIcon(36),
   "android-chrome-48x48.png": transparentIcon(48),
@@ -33,6 +47,15 @@ const ICONS_OPTIONS_MASKABLE: Dictionary<IconOptions> = {
   "android-chrome-maskable-256x256.png": maskable(transparentIcon(256)),
   "android-chrome-maskable-384x384.png": maskable(transparentIcon(384)),
   "android-chrome-maskable-512x512.png": maskable(transparentIcon(512)),
+};
+
+const SHORTCUT_ICONS_OPTIONS: Dictionary<IconOptions> = {
+  "36x36.png": transparentIcon(36),
+  "48x48.png": transparentIcon(48),
+  "72x72.png": transparentIcon(72),
+  "96x96.png": transparentIcon(96),
+  "144x144.png": transparentIcon(144),
+  "192x192.png": transparentIcon(192),
 };
 
 export class AndroidPlatform extends Platform {
@@ -69,6 +92,12 @@ export class AndroidPlatform extends Platform {
 
       icons = [...icons, ...maskable];
     }
+    if (
+      Array.isArray(this.options.shortcuts) &&
+      this.options.shortcuts.length > 0
+    ) {
+      icons = [...icons, ...(await this.shortcutIcons())];
+    }
 
     return icons;
   }
@@ -89,6 +118,26 @@ export class AndroidPlatform extends Platform {
         ? `<meta name="application-name" content="${escapeHtml(this.options.appName)}">`
         : `<meta name="application-name">`,
     ];
+  }
+
+  private async shortcutIcons(): Promise<FaviconImage[]> {
+    const images = new Images();
+    const icons = await Promise.all(
+      this.options.shortcuts.map(async (shortcut, index) => {
+        if (!shortcut.name || !shortcut.url || !shortcut.icon) return null;
+        const shortcutSourceset = await sourceImages(shortcut.icon);
+        return Promise.all(
+          Object.entries(SHORTCUT_ICONS_OPTIONS).map(([shortcutName, option]) =>
+            images.createFavicon(
+              shortcutSourceset,
+              `shortcut${index + 1}-${shortcutName}`,
+              option
+            )
+          )
+        );
+      })
+    );
+    return icons.flat();
   }
 
   private manifestFileName(): string {
@@ -157,9 +206,42 @@ export class AndroidPlatform extends Platform {
       };
     });
 
+    if (Array.isArray(options.shortcuts) && options.shortcuts.length > 0) {
+      properties.shortcuts = this.manifestShortcuts(basePath);
+    }
+
     return {
       name: this.manifestFileName(),
       contents: JSON.stringify(properties, null, 2),
     };
+  }
+
+  private manifestShortcuts(basePath: string): Shortcut[] {
+    return this.options.shortcuts
+      .map((shortcut, index) => {
+        if (!shortcut.name || !shortcut.url) return null; // skip if required name or url missing
+        return {
+          name: shortcut.name,
+          short_name: shortcut.short_name || shortcut.name, // fallback to name
+          description: shortcut.description, // optional
+          url: shortcut.url,
+          icons: shortcut.icon
+            ? Object.entries(SHORTCUT_ICONS_OPTIONS).map(
+                ([shortcutName, option]) => {
+                  const { width, height } = option.sizes[0];
+                  return {
+                    src: relativeTo(
+                      basePath,
+                      `shortcut${index + 1}-${shortcutName}`
+                    ),
+                    sizes: `${width}x${height}`,
+                    type: "image/png",
+                  };
+                }
+              )
+            : undefined,
+        };
+      })
+      .filter((x) => x !== null);
   }
 }
