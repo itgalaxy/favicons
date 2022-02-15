@@ -4,7 +4,7 @@ import sharp from "sharp";
 import { toIco } from "./ico.js";
 import { FaviconImage } from "./index.js";
 import { IconOptions } from "./config/defaults.js";
-import { SvgTool } from "./svgtool.js";
+import { svgDensity } from "./svgtool.js";
 
 export type Dictionary<T> = { [key: string]: T };
 
@@ -124,12 +124,6 @@ export function relativeTo(
 }
 
 export class Images {
-  #svgtool: SvgTool;
-
-  constructor() {
-    this.#svgtool = new SvgTool();
-  }
-
   bestSource(
     sourceset: SourceImage[],
     width: number,
@@ -153,8 +147,10 @@ export class Images {
     pixelArt: boolean
   ): Promise<Buffer> {
     if (source.metadata.format === "svg") {
-      const svgBuffer = await this.#svgtool.ensureSize(source, width, height);
-      return await sharp(svgBuffer)
+      const options = {
+        density: svgDensity(source.metadata, width, height),
+      };
+      return await sharp(source.data, options)
         .resize({
           width,
           height,
