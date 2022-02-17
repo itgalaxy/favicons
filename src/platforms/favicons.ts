@@ -22,7 +22,9 @@ export class FaviconsPlatform extends Platform {
   async createHtml(): Promise<FaviconHtmlElement[]> {
     return Object.entries(this.iconOptions).map(([name, options]) => {
       if (name.endsWith(".ico")) {
-        return `<link rel="shortcut icon" href="${this.relative(name)}">`;
+        return `<link rel="icon" type="image/x-icon" href="${this.relative(
+          name
+        )}">`;
       }
 
       const { width, height } = options.sizes[0];
