@@ -3,9 +3,9 @@
 // TO_DO: More comments to know what's going on, for future maintainers
 
 import { Transform } from "stream";
-import { FaviconOptions, defaultOptions } from "./config/defaults.js";
-import { RawImage, sourceImages } from "./helpers.js";
-import { getPlatform } from "./platforms/index.js";
+import { FaviconOptions, defaultOptions } from "./config/defaults";
+import { RawImage, sourceImages } from "./helpers";
+import { getPlatform } from "./platforms/index";
 
 export interface FaviconImage {
   readonly name: string;

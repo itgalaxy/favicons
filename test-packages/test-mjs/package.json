@@ -1,0 +1,10 @@
+{
+  "name": "test-mjs",
+  "private": true,
+  "description": "Test favicons import as an EcmaScript module",
+  "type": "module",
+  "main": "index.js",
+  "dependencies": {
+    "favicons": "file:../.."
+  }
+}

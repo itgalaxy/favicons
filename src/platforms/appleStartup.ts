@@ -1,8 +1,8 @@
-import { FaviconHtmlElement } from "../index.js";
-import { FaviconOptions, IconOptions } from "../config/defaults.js";
-import { opaqueIcon } from "../config/icons.js";
-import { Dictionary } from "../helpers.js";
-import { Platform, uniformIconOptions } from "./base.js";
+import { FaviconHtmlElement } from "../index";
+import { FaviconOptions, IconOptions } from "../config/defaults";
+import { opaqueIcon } from "../config/icons";
+import { Dictionary } from "../helpers";
+import { Platform, uniformIconOptions } from "./base";
 
 interface ScreenSize {
   readonly deviceWidth: number;

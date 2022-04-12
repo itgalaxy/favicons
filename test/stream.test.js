@@ -1,5 +1,5 @@
 import { pipeline, Readable, Writable } from "stream";
-import { stream as favicons } from "..";
+import { stream as favicons } from "../src";
 import { logo_png } from "./util";
 
 class Sink extends Writable {

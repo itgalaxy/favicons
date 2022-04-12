@@ -1,4 +1,4 @@
-import favicons from "..";
+import favicons from "../src";
 import { logo_png } from "./util";
 
 it("should not prefer any related applications by default", async () => {

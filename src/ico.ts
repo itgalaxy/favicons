@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers */
-import { RawImage } from "./helpers.js";
+import { RawImage } from "./helpers";
 
 const HEADER_SIZE = 6;
 const DIRECTORY_SIZE = 16;
