@@ -1,10 +1,10 @@
 import * as path from "path";
 import * as fs from "fs";
 import sharp from "sharp";
-import { toIco } from "./ico.js";
-import { FaviconImage } from "./index.js";
-import { IconOptions } from "./config/defaults.js";
-import { svgDensity } from "./svgtool.js";
+import { toIco } from "./ico";
+import { FaviconImage } from "./index";
+import { IconOptions } from "./config/defaults";
+import { svgDensity } from "./svgtool";
 
 export type Dictionary<T> = { [key: string]: T };
 

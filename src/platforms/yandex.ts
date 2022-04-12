@@ -1,8 +1,8 @@
-import { FaviconFile, FaviconHtmlElement } from "../index.js";
-import { FaviconOptions, IconOptions } from "../config/defaults.js";
-import { transparentIcon } from "../config/icons.js";
-import { Dictionary, relativeTo } from "../helpers.js";
-import { Platform, uniformIconOptions } from "./base.js";
+import { FaviconFile, FaviconHtmlElement } from "../index";
+import { FaviconOptions, IconOptions } from "../config/defaults";
+import { transparentIcon } from "../config/icons";
+import { Dictionary, relativeTo } from "../helpers";
+import { Platform, uniformIconOptions } from "./base";
 
 const ICONS_OPTIONS: Dictionary<IconOptions> = {
   "yandex-browser-50x50.png": transparentIcon(50),

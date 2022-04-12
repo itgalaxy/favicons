@@ -1,4 +1,4 @@
-import { Dictionary } from "../helpers.js";
+import { Dictionary } from "../helpers";
 
 export interface IconSize {
   readonly width: number;

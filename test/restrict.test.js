@@ -1,4 +1,4 @@
-import favicons from "..";
+import favicons from "../src";
 import { logo_png } from "./util";
 
 const source = logo_png;

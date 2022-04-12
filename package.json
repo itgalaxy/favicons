@@ -3,7 +3,16 @@
   "version": "7.0.0-beta.3",
   "description": "Favicon generator for Node.js",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "files": [
     "dist/"
   ],
@@ -17,11 +26,13 @@
     "lint": "eslint . --ignore-path .gitignore",
     "fix": "npm run lint -- --fix && npm run fmt",
     "pretest": "npm run lint && npm run fmt-check",
+    "test-import": "node ./test-packages/test-mjs/index.js",
+    "test-require": "node ./test-packages/test-cjs/index.js",
     "test-only": "npm run build && jest",
     "test": "npm run test-only",
     "clean": "rimraf dist/",
-    "build": "tsc",
-    "prepare": "npm run pretest && npm run build"
+    "build": "unbuild",
+    "prepare": "npm run pretest && npm run build && npm run test-import && npm run test-require"
   },
   "keywords": [
     "favicon",
@@ -37,7 +48,7 @@
   },
   "homepage": "https://github.com/itgalaxy/favicons",
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=14.0.0"
   },
   "dependencies": {
     "escape-html": "^1.0.3",
@@ -60,7 +71,8 @@
     "jest-image-snapshot": "^4.5.1",
     "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
-    "typescript": "^4.5.4"
+    "typescript": "^4.5.4",
+    "unbuild": "^0.7.2"
   },
   "jest": {
     "testTimeout": 180000,

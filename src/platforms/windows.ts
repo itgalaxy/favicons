@@ -1,9 +1,9 @@
 import xml2js from "xml2js";
-import { FaviconFile, FaviconHtmlElement } from "../index.js";
-import { FaviconOptions, IconOptions, IconSize } from "../config/defaults.js";
-import { transparentIcon } from "../config/icons.js";
-import { Dictionary, relativeTo } from "../helpers.js";
-import { Platform, uniformIconOptions } from "./base.js";
+import { FaviconFile, FaviconHtmlElement } from "../index";
+import { FaviconOptions, IconOptions, IconSize } from "../config/defaults";
+import { transparentIcon } from "../config/icons";
+import { Dictionary, relativeTo } from "../helpers";
+import { Platform, uniformIconOptions } from "./base";
 
 const ICONS_OPTIONS: Dictionary<IconOptions> = {
   "mstile-70x70.png": transparentIcon(70),

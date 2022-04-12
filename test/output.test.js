@@ -1,4 +1,4 @@
-import favicons from "..";
+import favicons from "../src";
 import { logo_png } from "./util";
 
 test("should not generate images", async () => {

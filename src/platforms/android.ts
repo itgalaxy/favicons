@@ -1,15 +1,15 @@
 import escapeHtml from "escape-html";
-import { FaviconFile, FaviconHtmlElement, FaviconImage } from "../index.js";
-import { FaviconOptions, IconOptions } from "../config/defaults.js";
-import { maskable, transparentIcon } from "../config/icons.js";
+import { FaviconFile, FaviconHtmlElement, FaviconImage } from "../index";
+import { FaviconOptions, IconOptions } from "../config/defaults";
+import { maskable, transparentIcon } from "../config/icons";
 import {
   Dictionary,
   Images,
   relativeTo,
   SourceImage,
   sourceImages,
-} from "../helpers.js";
-import { Platform, uniformIconOptions } from "./base.js";
+} from "../helpers";
+import { Platform, uniformIconOptions } from "./base";
 
 interface Icon {
   readonly src: string;
