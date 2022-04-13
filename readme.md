@@ -17,7 +17,7 @@ To use Favicons, require the appropriate module and call it, optionally specifyi
 
 Favicons generates its icons locally using pure Javascript with no external dependencies.
 
-Please note: Favicons is tested on Node 12 and above.
+Please note: Favicons is tested on Node 14 and above.
 
 ```js
 var favicons = require("favicons"),
