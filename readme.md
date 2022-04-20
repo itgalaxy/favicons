@@ -41,7 +41,6 @@ var favicons = require("favicons"),
     preferRelatedApplications: false, // Should the browser prompt the user to install the native companion app. `boolean`
     relatedApplications: undefined, // Information about the native companion apps. This will only be used if `preferRelatedApplications` is `true`. `Array<{ id: string, url: string, platform: string }>`
     version: "1.0", // Your application's version string. `string`
-    logging: false, // Print logs to console? `boolean`
     pixel_art: false, // Keeps pixels "sharp" when scaling up, for pixel art.  Only supported in offline mode.
     loadManifestWithCredentials: false, // Browsers don't send cookies when fetching a manifest, enable this to fix that. `boolean`
     manifestMaskable: false, // Maskable source image(s) for manifest.json. "true" to use default source. More information at https://web.dev/maskable-icon/. `boolean`, `string`, `buffer` or array of `string`
