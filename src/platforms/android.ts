@@ -3,8 +3,7 @@ import { FaviconFile, FaviconHtmlElement, FaviconImage } from "../index";
 import { FaviconOptions, IconOptions } from "../config/defaults";
 import { maskable, transparentIcon } from "../config/icons";
 import {
-  Dictionary,
-  Images,
+  createFavicon,
   relativeTo,
   SourceImage,
   sourceImages,
@@ -25,7 +24,7 @@ interface Shortcut {
   readonly icons?: Icon[];
 }
 
-const ICONS_OPTIONS: Dictionary<IconOptions> = {
+const ICONS_OPTIONS: Record<string, IconOptions> = {
   "android-chrome-36x36.png": transparentIcon(36),
   "android-chrome-48x48.png": transparentIcon(48),
   "android-chrome-72x72.png": transparentIcon(72),
@@ -37,7 +36,7 @@ const ICONS_OPTIONS: Dictionary<IconOptions> = {
   "android-chrome-512x512.png": transparentIcon(512),
 };
 
-const ICONS_OPTIONS_MASKABLE: Dictionary<IconOptions> = {
+const ICONS_OPTIONS_MASKABLE: Record<string, IconOptions> = {
   "android-chrome-maskable-36x36.png": maskable(transparentIcon(36)),
   "android-chrome-maskable-48x48.png": maskable(transparentIcon(48)),
   "android-chrome-maskable-72x72.png": maskable(transparentIcon(72)),
@@ -49,7 +48,7 @@ const ICONS_OPTIONS_MASKABLE: Dictionary<IconOptions> = {
   "android-chrome-maskable-512x512.png": maskable(transparentIcon(512)),
 };
 
-const SHORTCUT_ICONS_OPTIONS: Dictionary<IconOptions> = {
+const SHORTCUT_ICONS_OPTIONS: Record<string, IconOptions> = {
   "36x36.png": transparentIcon(36),
   "48x48.png": transparentIcon(48),
   "72x72.png": transparentIcon(72),
@@ -66,12 +65,12 @@ export class AndroidPlatform extends Platform {
     );
   }
 
-  async createImages(sourceset: SourceImage[]): Promise<FaviconImage[]> {
-    const images = new Images();
-
+  override async createImages(
+    sourceset: SourceImage[]
+  ): Promise<FaviconImage[]> {
     let icons = await Promise.all(
       Object.entries(this.iconOptions).map(([iconName, iconOption]) =>
-        images.createFavicon(sourceset, iconName, iconOption)
+        createFavicon(sourceset, iconName, iconOption)
       )
     );
 
@@ -86,7 +85,7 @@ export class AndroidPlatform extends Platform {
 
       const maskable = await Promise.all(
         Object.entries(ICONS_OPTIONS_MASKABLE).map(([iconName, iconOption]) =>
-          images.createFavicon(maskableSourceset, iconName, iconOption)
+          createFavicon(maskableSourceset, iconName, iconOption)
         )
       );
 
@@ -102,11 +101,11 @@ export class AndroidPlatform extends Platform {
     return icons;
   }
 
-  async createFiles(): Promise<FaviconFile[]> {
+  override async createFiles(): Promise<FaviconFile[]> {
     return [this.manifest()];
   }
 
-  async createHtml(): Promise<FaviconHtmlElement[]> {
+  override async createHtml(): Promise<FaviconHtmlElement[]> {
     // prettier-ignore
     return [
       this.options.loadManifestWithCredentials
@@ -121,14 +120,13 @@ export class AndroidPlatform extends Platform {
   }
 
   private async shortcutIcons(): Promise<FaviconImage[]> {
-    const images = new Images();
     const icons = await Promise.all(
       this.options.shortcuts.map(async (shortcut, index) => {
         if (!shortcut.name || !shortcut.url || !shortcut.icon) return null;
         const shortcutSourceset = await sourceImages(shortcut.icon);
         return Promise.all(
           Object.entries(SHORTCUT_ICONS_OPTIONS).map(([shortcutName, option]) =>
-            images.createFavicon(
+            createFavicon(
               shortcutSourceset,
               `shortcut${index + 1}-${shortcutName}`,
               option
@@ -150,7 +148,7 @@ export class AndroidPlatform extends Platform {
     const { options } = this;
     const basePath = options.manifestRelativePaths ? null : options.path;
 
-    const properties: Dictionary<unknown> = {
+    const properties: Record<string, unknown> = {
       name: options.appName,
       short_name: options.appShortName || options.appName,
       description: options.appDescription,

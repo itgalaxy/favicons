@@ -1,5 +1,5 @@
 import favicons from "../src";
-import * as fs from "fs";
+import { readFile } from "fs/promises";
 import { logo_png, logo_svg } from "./util";
 
 test("manifest should support shortcuts", async () => {
@@ -12,7 +12,7 @@ test("manifest should support shortcuts", async () => {
         short_name: "inbox",
         description: "View your inbox messages",
         url: "/inbox",
-        icon: [logo_png, fs.readFileSync(logo_png)], // eslint-disable-line no-sync
+        icon: [logo_png, await readFile(logo_png)],
       },
       {
         name: "Picture Gallery",

@@ -1,7 +1,6 @@
 import { FaviconHtmlElement } from "../index";
 import { FaviconOptions, IconOptions } from "../config/defaults";
 import { opaqueIcon } from "../config/icons";
-import { Dictionary } from "../helpers";
 import { Platform, uniformIconOptions } from "./base";
 
 interface ScreenSize {
@@ -32,7 +31,7 @@ interface AppleStartupImage extends IconOptions, ScreenSize {
   readonly orientation: string;
 }
 
-function iconOptions(): Dictionary<AppleStartupImage> {
+function iconOptions(): Record<string, AppleStartupImage> {
   const result = {};
   for (const size of SCREEN_SIZES) {
     const pixelWidth = size.deviceWidth * size.pixelRatio;
@@ -52,7 +51,7 @@ function iconOptions(): Dictionary<AppleStartupImage> {
   return result;
 }
 
-const ICONS_OPTIONS: Dictionary<AppleStartupImage> = iconOptions();
+const ICONS_OPTIONS: Record<string, AppleStartupImage> = iconOptions();
 
 export class AppleStartupPlatform extends Platform<AppleStartupImage> {
   constructor(options: FaviconOptions) {
@@ -62,7 +61,7 @@ export class AppleStartupPlatform extends Platform<AppleStartupImage> {
     );
   }
 
-  async createHtml(): Promise<FaviconHtmlElement[]> {
+  override async createHtml(): Promise<FaviconHtmlElement[]> {
     // prettier-ignore
     return Object.entries(this.iconOptions).map(([name, item]) =>
       `<link rel="apple-touch-startup-image" media="(device-width: ${item.deviceWidth}px) and (device-height: ${item.deviceHeight}px) and (-webkit-device-pixel-ratio: ${item.pixelRatio}) and (orientation: ${item.orientation})" href="${this.relative(name)}">`

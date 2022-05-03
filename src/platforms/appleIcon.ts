@@ -2,10 +2,9 @@ import escapeHtml from "escape-html";
 import { FaviconHtmlElement } from "../index";
 import { FaviconOptions, IconOptions } from "../config/defaults";
 import { opaqueIcon } from "../config/icons";
-import { Dictionary } from "../helpers";
 import { Platform, uniformIconOptions } from "./base";
 
-const ICONS_OPTIONS: Dictionary<IconOptions> = {
+const ICONS_OPTIONS: Record<string, IconOptions> = {
   "apple-touch-icon-57x57.png": opaqueIcon(57),
   "apple-touch-icon-60x60.png": opaqueIcon(60),
   "apple-touch-icon-72x72.png": opaqueIcon(72),
@@ -29,7 +28,7 @@ export class AppleIconPlatform extends Platform {
     );
   }
 
-  async createHtml(): Promise<FaviconHtmlElement[]> {
+  override async createHtml(): Promise<FaviconHtmlElement[]> {
     const icons = Object.entries(this.iconOptions)
       .filter(([name]) => /\d/.test(name)) // with a size in a name
       .map(([name, options]) => {

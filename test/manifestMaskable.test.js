@@ -1,5 +1,5 @@
 import favicons from "../src";
-import * as fs from "fs";
+import { readFile } from "fs/promises";
 import { logo_png, logo_svg } from "./util";
 
 test("should add `maskable` to manifest purpose when manifestMaskable is true", async () => {
@@ -16,8 +16,7 @@ test("manifestMaskable should accept an array of either buffers or paths to sour
   expect.assertions(1);
 
   const result = await favicons(logo_png, {
-    // eslint-disable-next-line no-sync
-    manifestMaskable: [logo_png, fs.readFileSync(logo_svg)],
+    manifestMaskable: [logo_png, await readFile(logo_svg)],
   });
 
   await expect(result).toMatchFaviconsSnapshot();

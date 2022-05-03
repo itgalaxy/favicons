@@ -1,15 +1,11 @@
-// generate README sources:  jq ". | with_entries(.value |= keys)" < icons.json
-
-// TO_DO: More comments to know what's going on, for future maintainers
-
-import { Transform } from "stream";
+import { Transform, TransformCallback } from "stream";
 import { FaviconOptions, defaultOptions } from "./config/defaults";
-import { RawImage, sourceImages } from "./helpers";
+import { sourceImages } from "./helpers";
 import { getPlatform } from "./platforms/index";
 
 export interface FaviconImage {
   readonly name: string;
-  readonly contents: Buffer | RawImage;
+  readonly contents: Buffer;
 }
 
 export interface FaviconFile {
@@ -29,9 +25,9 @@ export interface FaviconResponse {
   readonly html: FaviconHtmlElement[];
 }
 
-async function createFavicons(
+export async function favicons(
   source: string | string[] | Buffer | Buffer[],
-  options: FaviconOptions
+  options: FaviconOptions = {}
 ): Promise<FaviconResponse> {
   options = {
     ...defaultOptions,
@@ -50,7 +46,7 @@ async function createFavicons(
       return a.localeCompare(b);
     });
 
-  const responses = [];
+  const responses: FaviconResponse[] = [];
 
   for (const platformName of platforms) {
     const platform = getPlatform(platformName, options);
@@ -63,32 +59,6 @@ async function createFavicons(
     files: responses.flatMap((r) => r.files),
     html: responses.flatMap((r) => r.html),
   };
-}
-
-/**
- * @typedef FaviconCallback
- * @type {(error: Error|null, response: FaviconResponse) => any}
- */
-
-/**
- * Build favicons
- * @param {string|string[]|Buffer|Buffer[]} source - The path to the source image to generate icons from
- * @param {Partial<FaviconOptions>|undefined} options - The options used to build favicons
- * @param {FaviconCallback|undefined} next - The callback to execute after processing
- * @returns {Promise|Promise<FaviconResponse>}
- */
-// eslint-disable-next-line no-undefined
-export function favicons(
-  source: string | string[] | Buffer | Buffer[],
-  options: FaviconOptions = {},
-  next = undefined
-) {
-  if (next) {
-    return favicons(source, options)
-      .then((response) => next(null, response))
-      .catch(next);
-  }
-  return createFavicons(source, options);
 }
 
 export default favicons;
@@ -111,7 +81,11 @@ class FaviconStream extends Transform {
     this.#handleHTML = handleHTML;
   }
 
-  _transform(file, _encoding, callback) {
+  override _transform(
+    file: any, // eslint-disable-line @typescript-eslint/no-explicit-any -- superclass uses any
+    _encoding: BufferEncoding,
+    callback: TransformCallback
+  ) {
     const { html: htmlPath, pipeHTML, ...options } = this.#options;
 
     favicons(file, options)
