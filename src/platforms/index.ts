@@ -7,6 +7,14 @@ import { FaviconsPlatform } from "./favicons";
 import { WindowsPlatform } from "./windows";
 import { YandexPlatform } from "./yandex";
 
+export type PlatformName =
+  | "android"
+  | "appleIcon"
+  | "appleStartup"
+  | "favicons"
+  | "windows"
+  | "yandex";
+
 export function getPlatform(name: string, options: FaviconOptions): Platform {
   switch (name) {
     case "android":

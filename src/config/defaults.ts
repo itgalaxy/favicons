@@ -1,4 +1,4 @@
-import { Dictionary } from "../helpers";
+import { PlatformName } from "../platforms";
 
 export interface IconSize {
   readonly width: number;
@@ -62,8 +62,8 @@ export interface FaviconOptions {
   readonly manifestMaskable?: boolean | string | string[] | Buffer | Buffer[];
   readonly preferRelatedApplications?: boolean;
   readonly relatedApplications?: Application[];
-  readonly icons?: Dictionary<IconOptions | boolean | string[]>;
-  readonly files?: Dictionary<FileOptions>;
+  readonly icons?: Record<PlatformName, IconOptions | boolean | string[]>;
+  readonly files?: Record<PlatformName, FileOptions>;
   readonly shortcuts?: ShortcutOptions[];
   readonly output?: OutputOptions;
 }

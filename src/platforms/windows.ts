@@ -2,10 +2,10 @@ import xml2js from "xml2js";
 import { FaviconFile, FaviconHtmlElement } from "../index";
 import { FaviconOptions, IconOptions, IconSize } from "../config/defaults";
 import { transparentIcon } from "../config/icons";
-import { Dictionary, relativeTo } from "../helpers";
+import { relativeTo } from "../helpers";
 import { Platform, uniformIconOptions } from "./base";
 
-const ICONS_OPTIONS: Dictionary<IconOptions> = {
+const ICONS_OPTIONS: Record<string, IconOptions> = {
   "mstile-70x70.png": transparentIcon(70),
   "mstile-144x144.png": transparentIcon(144),
   "mstile-150x150.png": transparentIcon(150),
@@ -36,11 +36,11 @@ export class WindowsPlatform extends Platform {
     );
   }
 
-  async createFiles(): Promise<FaviconFile[]> {
+  override async createFiles(): Promise<FaviconFile[]> {
     return [this.browserConfig()];
   }
 
-  async createHtml(): Promise<FaviconHtmlElement[]> {
+  override async createHtml(): Promise<FaviconHtmlElement[]> {
     const tile = "mstile-144x144.png";
 
     // prettier-ignore
@@ -62,7 +62,7 @@ export class WindowsPlatform extends Platform {
       ? null
       : this.options.path;
 
-    const tile: Dictionary<unknown> = {};
+    const tile: Record<string, unknown> = {};
 
     for (const { name, ...size } of SUPPORTED_TILES) {
       const icon = Object.entries(this.iconOptions).find((icon) =>

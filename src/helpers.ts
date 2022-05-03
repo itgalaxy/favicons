@@ -6,8 +6,6 @@ import { FaviconImage } from "./index";
 import { IconOptions } from "./config/defaults";
 import { svgDensity } from "./svgtool";
 
-export type Dictionary<T> = { [key: string]: T };
-
 export type SourceImage = { data: Buffer; metadata: sharp.Metadata };
 
 export type RawImage = { data: Buffer; info: sharp.OutputInfo };
@@ -40,23 +38,23 @@ function minBy<T>(array: T[], comparator: (a: T, b: T) => number): T {
   return array.reduce((acc, cur) => (comparator(acc, cur) < 0 ? acc : cur));
 }
 
-function minByKey<T>(array: T[], keyFn: (e: T) => unknown) {
+function minByKey<T>(array: T[], keyFn: (e: T) => unknown): T {
   return minBy(array, (a, b) => arrayComparator(keyFn(a), keyFn(b)));
 }
 
 export function mapValues<T, U>(
-  dict: Dictionary<T>,
+  dict: Record<string, T>,
   mapper: (value: T, key: string) => U
-): Dictionary<U> {
+): Record<string, U> {
   return Object.fromEntries(
     Object.entries(dict).map(([key, value]) => [key, mapper(value, key)])
   );
 }
 
 export function filterKeys<T>(
-  dict: Dictionary<T>,
+  dict: Record<string, T>,
   predicate: (key: string) => boolean
-): Dictionary<T> {
+): Record<string, T> {
   return Object.fromEntries(
     Object.entries(dict).filter((pair) => predicate(pair[0]))
   );
@@ -123,43 +121,41 @@ export function relativeTo(
   return url.protocol === "resolve:" ? url.pathname : url.toString();
 }
 
-export class Images {
-  bestSource(
-    sourceset: SourceImage[],
-    width: number,
-    height: number
-  ): SourceImage {
-    const sideSize = Math.max(width, height);
-    return minByKey(sourceset, (icon) => {
-      const iconSideSize = Math.max(icon.metadata.width, icon.metadata.height);
-      return [
-        icon.metadata.format === "svg" ? 0 : 1, // prefer SVG
-        iconSideSize >= sideSize ? 0 : 1, // prefer downscale
-        Math.abs(iconSideSize - sideSize), // prefer closest size
-      ];
-    });
-  }
+function bestSource(
+  sourceset: SourceImage[],
+  width: number,
+  height: number
+): SourceImage {
+  const sideSize = Math.max(width, height);
+  return minByKey(sourceset, (icon) => {
+    const iconSideSize = Math.max(icon.metadata.width, icon.metadata.height);
+    return [
+      icon.metadata.format === "svg" ? 0 : 1, // prefer SVG
+      iconSideSize >= sideSize ? 0 : 1, // prefer downscale
+      Math.abs(iconSideSize - sideSize), // prefer closest size
+    ];
+  });
+}
 
-  async resize(
-    source: SourceImage,
-    width: number,
-    height: number,
-    pixelArt: boolean
-  ): Promise<Buffer> {
-    if (source.metadata.format === "svg") {
-      const options = {
-        density: svgDensity(source.metadata, width, height),
-      };
-      return await sharp(source.data, options)
-        .resize({
-          width,
-          height,
-          fit: sharp.fit.contain,
-          background: "#00000000",
-        })
-        .toBuffer();
-    }
-
+async function resize(
+  source: SourceImage,
+  width: number,
+  height: number,
+  pixelArt: boolean
+): Promise<Buffer> {
+  if (source.metadata.format === "svg") {
+    const options = {
+      density: svgDensity(source.metadata, width, height),
+    };
+    return await sharp(source.data, options)
+      .resize({
+        width,
+        height,
+        fit: sharp.fit.contain,
+        background: "#00000000",
+      })
+      .toBuffer();
+  } else {
     return await sharp(source.data)
       .ensureAlpha()
       .resize({
@@ -176,92 +172,84 @@ export class Images {
       })
       .toBuffer();
   }
+}
 
-  createBlankImage(
-    width: number,
-    height: number,
-    background?: string
-  ): sharp.Sharp {
-    const transparent = !background || background === "transparent";
+function createBlankImage(
+  width: number,
+  height: number,
+  background?: string
+): sharp.Sharp {
+  const transparent = !background || background === "transparent";
 
-    let image = sharp({
-      create: {
-        width,
-        height,
-        channels: transparent ? 4 : 3,
-        background: transparent ? "#00000000" : background,
-      },
-    });
+  let image = sharp({
+    create: {
+      width,
+      height,
+      channels: transparent ? 4 : 3,
+      background: transparent ? "#00000000" : background,
+    },
+  });
 
-    if (transparent) {
-      image = image.ensureAlpha();
-    }
-    return image;
+  if (transparent) {
+    image = image.ensureAlpha();
+  }
+  return image;
+}
+
+async function createPlane(
+  sourceset: SourceImage[],
+  options: IconPlaneOptions
+): Promise<sharp.Sharp> {
+  const offset =
+    Math.round(
+      (Math.max(options.width, options.height) * options.offset) / 100
+    ) || 0;
+  const width = options.width - offset * 2;
+  const height = options.height - offset * 2;
+
+  const source = bestSource(sourceset, width, height);
+  const image = await resize(source, width, height, options.pixelArt);
+
+  let pipeline = createBlankImage(
+    options.width,
+    options.height,
+    options.background
+  ).composite([{ input: image, left: offset, top: offset }]);
+
+  if (options.rotate) {
+    const degrees = 90;
+    pipeline = pipeline.rotate(degrees);
   }
 
-  async createPlaneFavicon(
-    sourceset: SourceImage[],
-    options: IconPlaneOptions,
-    name: string,
-    raw = false
-  ): Promise<FaviconImage> {
-    const offset =
-      Math.round(
-        (Math.max(options.width, options.height) * options.offset) / 100
-      ) || 0;
-    const width = options.width - offset * 2;
-    const height = options.height - offset * 2;
+  return pipeline;
+}
 
-    const source = this.bestSource(sourceset, width, height);
-    const image = await this.resize(source, width, height, options.pixelArt);
+function toRawImage(pipeline: sharp.Sharp): Promise<RawImage> {
+  return pipeline
+    .toColorspace("srgb")
+    .raw({ depth: "uchar" })
+    .toBuffer({ resolveWithObject: true });
+}
 
-    let pipeline = this.createBlankImage(
-      options.width,
-      options.height,
-      options.background
-    ).composite([{ input: image, left: offset, top: offset }]);
+function toPng(pipeline: sharp.Sharp): Promise<Buffer> {
+  return pipeline.png().toBuffer();
+}
 
-    if (options.rotate) {
-      const degrees = 90;
-      pipeline = pipeline.rotate(degrees);
-    }
+export async function createFavicon(
+  sourceset: SourceImage[],
+  name: string,
+  iconOptions: IconOptions
+): Promise<FaviconImage> {
+  const properties = flattenIconOptions(iconOptions);
 
-    const contents = raw
-      ? await pipeline
-          .toColorspace("srgb")
-          .raw({ depth: "uchar" })
-          .toBuffer({ resolveWithObject: true })
-      : await pipeline.png().toBuffer();
-
+  if (path.extname(name) === ".ico" || properties.length !== 1) {
+    const images = await Promise.all(
+      properties.map((props) => createPlane(sourceset, props).then(toRawImage))
+    );
+    const contents = toIco(images);
     return { name, contents };
-  }
-
-  async createFavicon(
-    sourceset: SourceImage[],
-    name: string,
-    iconOptions: IconOptions
-  ): Promise<FaviconImage> {
-    const properties = flattenIconOptions(iconOptions);
-
-    if (path.extname(name) === ".ico" || properties.length !== 1) {
-      const images = await Promise.all(
-        properties.map((props) =>
-          this.createPlaneFavicon(
-            sourceset,
-            props,
-            `${props.width}x${props.height}.rawdata`,
-            true
-          )
-        )
-      );
-      const contents = toIco(images.map((image) => image.contents as RawImage));
-
-      return {
-        name,
-        contents,
-      };
-    }
-
-    return await this.createPlaneFavicon(sourceset, properties[0], name, false);
+  } else {
+    const contents = await createPlane(sourceset, properties[0]).then(toPng);
+    return { name, contents };
   }
 }

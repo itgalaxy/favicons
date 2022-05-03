@@ -1,10 +1,10 @@
 import { FaviconFile, FaviconHtmlElement } from "../index";
 import { FaviconOptions, IconOptions } from "../config/defaults";
 import { transparentIcon } from "../config/icons";
-import { Dictionary, relativeTo } from "../helpers";
+import { relativeTo } from "../helpers";
 import { Platform, uniformIconOptions } from "./base";
 
-const ICONS_OPTIONS: Dictionary<IconOptions> = {
+const ICONS_OPTIONS: Record<string, IconOptions> = {
   "yandex-browser-50x50.png": transparentIcon(50),
 };
 
@@ -16,11 +16,11 @@ export class YandexPlatform extends Platform {
     );
   }
 
-  async createFiles(): Promise<FaviconFile[]> {
+  override async createFiles(): Promise<FaviconFile[]> {
     return [this.manifest()];
   }
 
-  async createHtml(): Promise<FaviconHtmlElement[]> {
+  override async createHtml(): Promise<FaviconHtmlElement[]> {
     // prettier-ignore
     return [
       `<link rel="yandex-tableau-widget" href="${this.relative(this.manifestFileName())}">`

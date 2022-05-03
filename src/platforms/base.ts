@@ -7,9 +7,8 @@ import {
 import { FaviconOptions, IconOptions } from "../config/defaults";
 import {
   asString,
-  Dictionary,
   filterKeys,
-  Images,
+  createFavicon,
   mapValues,
   relativeTo,
   SourceImage,
@@ -18,8 +17,8 @@ import {
 export function uniformIconOptions<T extends IconOptions>(
   options: FaviconOptions,
   iconsChoice: IconOptions | boolean | string[] | undefined,
-  platformConfig: Dictionary<T>
-): Dictionary<T> {
+  platformConfig: Record<string, T>
+): Record<string, T> {
   let result = platformConfig;
   if (Array.isArray(iconsChoice)) {
     result = filterKeys(platformConfig, (name) => iconsChoice.includes(name));
@@ -44,9 +43,9 @@ export function uniformIconOptions<T extends IconOptions>(
 
 export class Platform<IO extends IconOptions = IconOptions> {
   protected options: FaviconOptions;
-  protected iconOptions: Dictionary<IO>;
+  protected iconOptions: Record<string, IO>;
 
-  constructor(options: FaviconOptions, iconOptions: Dictionary<IO>) {
+  constructor(options: FaviconOptions, iconOptions: Record<string, IO>) {
     this.options = options;
     this.iconOptions = iconOptions;
   }
@@ -61,10 +60,9 @@ export class Platform<IO extends IconOptions = IconOptions> {
   }
 
   async createImages(sourceset: SourceImage[]): Promise<FaviconImage[]> {
-    const images = new Images();
     return await Promise.all(
       Object.entries(this.iconOptions).map(([iconName, iconOption]) =>
-        images.createFavicon(sourceset, iconName, iconOption)
+        createFavicon(sourceset, iconName, iconOption)
       )
     );
   }
