@@ -1,5 +1,6 @@
 import * as path from "path";
 import * as fs from "fs";
+import { platform } from "process";
 import sharp from "sharp";
 import { toIco } from "./ico";
 import { FaviconImage } from "./index";
@@ -90,7 +91,7 @@ export async function sourceImages(
     if (!src.length) {
       throw new Error("No source provided");
     }
-    const images = await Promise.all(src.map(sourceImages));
+    const images = await mapAsync(src, sourceImages);
 
     return images.flat();
   } else {
@@ -244,14 +245,12 @@ export class Images {
     const properties = flattenIconOptions(iconOptions);
 
     if (path.extname(name) === ".ico" || properties.length !== 1) {
-      const images = await Promise.all(
-        properties.map((props) =>
-          this.createPlaneFavicon(
-            sourceset,
-            props,
-            `${props.width}x${props.height}.rawdata`,
-            true
-          )
+      const images = await mapAsync(properties, (props) =>
+        this.createPlaneFavicon(
+          sourceset,
+          props,
+          `${props.width}x${props.height}.rawdata`,
+          true
         )
       );
       const contents = toIco(images.map((image) => image.contents as RawImage));
@@ -263,5 +262,23 @@ export class Images {
     }
 
     return await this.createPlaneFavicon(sourceset, properties[0], name, false);
+  }
+}
+
+export async function mapAsync<T, U>(
+  inputs: T[],
+  computation: (input: T, index: number) => Promise<U>
+): Promise<U[]> {
+  if (platform === "win32") {
+    // run sequentially
+    const result: U[] = [];
+    let index = 0;
+    for (const input of inputs) {
+      result.push(await computation(input, index));
+      index++;
+    }
+    return result;
+  } else {
+    return await Promise.all(inputs.map(computation));
   }
 }

@@ -5,6 +5,7 @@ import { maskable, transparentIcon } from "../config/icons";
 import {
   Dictionary,
   Images,
+  mapAsync,
   relativeTo,
   SourceImage,
   sourceImages,
@@ -69,10 +70,10 @@ export class AndroidPlatform extends Platform {
   async createImages(sourceset: SourceImage[]): Promise<FaviconImage[]> {
     const images = new Images();
 
-    let icons = await Promise.all(
-      Object.entries(this.iconOptions).map(([iconName, iconOption]) =>
+    let icons = await mapAsync(
+      Object.entries(this.iconOptions),
+      ([iconName, iconOption]) =>
         images.createFavicon(sourceset, iconName, iconOption)
-      )
     );
 
     // Generate android maskable images from a different source set
@@ -84,10 +85,10 @@ export class AndroidPlatform extends Platform {
         this.options.manifestMaskable
       );
 
-      const maskable = await Promise.all(
-        Object.entries(ICONS_OPTIONS_MASKABLE).map(([iconName, iconOption]) =>
+      const maskable = await mapAsync(
+        Object.entries(ICONS_OPTIONS_MASKABLE),
+        ([iconName, iconOption]) =>
           images.createFavicon(maskableSourceset, iconName, iconOption)
-        )
       );
 
       icons = [...icons, ...maskable];
@@ -122,20 +123,21 @@ export class AndroidPlatform extends Platform {
 
   private async shortcutIcons(): Promise<FaviconImage[]> {
     const images = new Images();
-    const icons = await Promise.all(
-      this.options.shortcuts.map(async (shortcut, index) => {
+    const icons = await mapAsync(
+      this.options.shortcuts,
+      async (shortcut, index) => {
         if (!shortcut.name || !shortcut.url || !shortcut.icon) return null;
         const shortcutSourceset = await sourceImages(shortcut.icon);
-        return Promise.all(
-          Object.entries(SHORTCUT_ICONS_OPTIONS).map(([shortcutName, option]) =>
+        return await mapAsync(
+          Object.entries(SHORTCUT_ICONS_OPTIONS),
+          ([shortcutName, option]) =>
             images.createFavicon(
               shortcutSourceset,
               `shortcut${index + 1}-${shortcutName}`,
               option
             )
-          )
         );
-      })
+      }
     );
     return icons.flat();
   }
