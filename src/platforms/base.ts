@@ -11,6 +11,7 @@ import {
   filterKeys,
   Images,
   mapValues,
+  mapAsync,
   relativeTo,
   SourceImage,
 } from "../helpers";
@@ -62,10 +63,10 @@ export class Platform<IO extends IconOptions = IconOptions> {
 
   async createImages(sourceset: SourceImage[]): Promise<FaviconImage[]> {
     const images = new Images();
-    return await Promise.all(
-      Object.entries(this.iconOptions).map(([iconName, iconOption]) =>
+    return await mapAsync(
+      Object.entries(this.iconOptions),
+      ([iconName, iconOption]) =>
         images.createFavicon(sourceset, iconName, iconOption)
-      )
     );
   }
 
