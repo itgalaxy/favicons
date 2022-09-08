@@ -24,9 +24,17 @@ async function imagePlanes(image) {
   return result;
 }
 
+function isSvg(image) {
+  return path.extname(image.name) === ".svg";
+}
+
 expect.extend({
   async toMatchFaviconsSnapshot(received) {
     for (const image of received.images) {
+      if (isSvg(image)) {
+        continue;
+      }
+
       const planes = await imagePlanes(image);
 
       for (const plane of planes) {
@@ -46,7 +54,7 @@ expect.extend({
       ...received,
       images: received.images.map((image) => ({
         ...image,
-        contents: null,
+        contents: isSvg(image) ? image.contents.toString("utf-8") : null,
       })),
     };
 
