@@ -11,6 +11,10 @@ import {
 } from "../config/defaults";
 import { asString, createFavicon, relativeTo, SourceImage } from "../helpers";
 
+export interface OptionalMixin {
+  readonly optional?: boolean;
+}
+
 export function uniformIconOptions<T extends NamedIconOptions>(
   options: FaviconOptions,
   iconsChoice:
@@ -18,7 +22,7 @@ export function uniformIconOptions<T extends NamedIconOptions>(
     | boolean
     | (string | NamedIconOptions)[]
     | undefined,
-  platformConfig: T[]
+  platformConfig: (T & OptionalMixin)[]
 ): T[] {
   let result = [];
   if (Array.isArray(iconsChoice)) {
@@ -36,12 +40,14 @@ export function uniformIconOptions<T extends NamedIconOptions>(
         ...iconsChoices[iconOptions.name],
       }));
   } else if (typeof iconsChoice === "object") {
-    result = platformConfig.map((iconOptions) => ({
-      ...iconOptions,
-      ...iconsChoice,
-    }));
+    result = platformConfig
+      .filter((iconOptions) => !iconOptions.optional)
+      .map((iconOptions) => ({
+        ...iconOptions,
+        ...iconsChoice,
+      }));
   } else {
-    result = platformConfig;
+    result = platformConfig.filter((iconOptions) => !iconOptions.optional);
   }
 
   return result.map((iconOptions) => ({

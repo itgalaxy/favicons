@@ -235,6 +235,26 @@ function toPng(pipeline: sharp.Sharp): Promise<Buffer> {
   return pipeline.png().toBuffer();
 }
 
+async function createSvg(
+  sourceset: SourceImage[],
+  options: IconPlaneOptions
+): Promise<Buffer> {
+  const { width, height } = options;
+  const source = bestSource(sourceset, width, height);
+  if (source.metadata.format === "svg") {
+    return source.data;
+  } else {
+    const pipeline = await createPlane(sourceset, options);
+    const png = await toPng(pipeline);
+    const encodedPng = png.toString("base64");
+    return Buffer.from(
+      `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
+  <image width="${width}" height="${height}" xlink:href="data:image/png;base64,${encodedPng}"/>
+</svg>`
+    );
+  }
+}
+
 export async function createFavicon(
   sourceset: SourceImage[],
   name: string,
@@ -247,6 +267,9 @@ export async function createFavicon(
       properties.map((props) => createPlane(sourceset, props).then(toRawImage))
     );
     const contents = toIco(images);
+    return { name, contents };
+  } else if (path.extname(name) === ".svg") {
+    const contents = await createSvg(sourceset, properties[0]);
     return { name, contents };
   } else {
     const contents = await createPlane(sourceset, properties[0]).then(toPng);
