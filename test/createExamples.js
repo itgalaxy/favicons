@@ -7,9 +7,9 @@
 
 import { favicons } from "../dist/index.mjs";
 import fs from "fs/promises";
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from "url";
 
-const source = fileURLToPath(new URL('fixtures/logo.png', import.meta.url)); // Source image(s). `string`, `buffer` or array of `string`
+const source = fileURLToPath(new URL("fixtures/logo.png", import.meta.url)); // Source image(s). `string`, `buffer` or array of `string`
 
 const configuration = {
   path: "/", // Path for overriding default icons path. `string`
@@ -44,7 +44,7 @@ const configuration = {
 
 const response = await favicons(source, configuration);
 
-const outputDir = fileURLToPath(new URL('tmp/', import.meta.url));
+const outputDir = fileURLToPath(new URL("tmp/", import.meta.url));
 await fs.mkdir(outputDir, { recursive: true });
 
 // Save images
