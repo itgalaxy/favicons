@@ -1,7 +1,9 @@
 import { Transform, TransformCallback } from "stream";
-import { FaviconOptions, defaultOptions } from "./config/defaults";
+import { type FaviconOptions, defaultOptions } from "./config/defaults";
 import { sourceImages } from "./helpers";
 import { getPlatform } from "./platforms/index";
+
+export { FaviconOptions };
 
 export interface FaviconImage {
   readonly name: string;
