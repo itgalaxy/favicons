@@ -76,7 +76,7 @@ const configuration = {
 };
 
 try {
-  await favicons(source, configuration);
+  const response = await favicons(source, configuration);
 
   console.log(response.images); // Array of { name: string, contents: <buffer> }
   console.log(response.files); // Array of { name: string, contents: <string> }
