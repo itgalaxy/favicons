@@ -1,5 +1,5 @@
 import { FaviconHtmlElement } from "../index";
-import { FaviconOptions, IconOptions } from "../config/defaults";
+import { FaviconOptions, NamedIconOptions } from "../config/defaults";
 import { opaqueIcon } from "../config/icons";
 import { Platform, uniformIconOptions } from "./base";
 
@@ -27,31 +27,36 @@ const SCREEN_SIZES: ScreenSize[] = [
   { deviceWidth: 1024, deviceHeight: 1366, pixelRatio: 2 }, // 12.9" iPad Pro
 ];
 
-interface AppleStartupImage extends IconOptions, ScreenSize {
+interface AppleStartupImage extends NamedIconOptions, ScreenSize {
   readonly orientation: string;
 }
 
-function iconOptions(): Record<string, AppleStartupImage> {
+function iconOptions(): AppleStartupImage[] {
   const result = {};
   for (const size of SCREEN_SIZES) {
     const pixelWidth = size.deviceWidth * size.pixelRatio;
     const pixelHeight = size.deviceHeight * size.pixelRatio;
 
-    result[`apple-touch-startup-image-${pixelWidth}x${pixelHeight}.png`] = {
+    const namePortrait = `apple-touch-startup-image-${pixelWidth}x${pixelHeight}.png`;
+    result[namePortrait] = {
+      name: namePortrait,
       ...opaqueIcon(pixelWidth, pixelHeight),
       ...size,
       orientation: "portrait",
     };
-    result[`apple-touch-startup-image-${pixelHeight}x${pixelWidth}.png`] = {
+
+    const nameLandscape = `apple-touch-startup-image-${pixelHeight}x${pixelWidth}.png`;
+    result[nameLandscape] = {
+      name: nameLandscape,
       ...opaqueIcon(pixelHeight, pixelWidth),
       ...size,
       orientation: "landscape",
     };
   }
-  return result;
+  return Object.values(result);
 }
 
-const ICONS_OPTIONS: Record<string, AppleStartupImage> = iconOptions();
+const ICONS_OPTIONS: AppleStartupImage[] = iconOptions();
 
 export class AppleStartupPlatform extends Platform<AppleStartupImage> {
   constructor(options: FaviconOptions) {
@@ -63,8 +68,8 @@ export class AppleStartupPlatform extends Platform<AppleStartupImage> {
 
   override async createHtml(): Promise<FaviconHtmlElement[]> {
     // prettier-ignore
-    return Object.entries(this.iconOptions).map(([name, item]) =>
-      `<link rel="apple-touch-startup-image" media="(device-width: ${item.deviceWidth}px) and (device-height: ${item.deviceHeight}px) and (-webkit-device-pixel-ratio: ${item.pixelRatio}) and (orientation: ${item.orientation})" href="${this.relative(name)}">`
+    return this.iconOptions.map((item) =>
+      `<link rel="apple-touch-startup-image" media="(device-width: ${item.deviceWidth}px) and (device-height: ${item.deviceHeight}px) and (-webkit-device-pixel-ratio: ${item.pixelRatio}) and (orientation: ${item.orientation})" href="${this.relative(item.name)}">`
     );
   }
 }

@@ -4,32 +4,47 @@ import {
   FaviconImage,
   FaviconResponse,
 } from "../index";
-import { FaviconOptions, IconOptions } from "../config/defaults";
 import {
-  asString,
-  filterKeys,
-  createFavicon,
-  mapValues,
-  relativeTo,
-  SourceImage,
-} from "../helpers";
+  FaviconOptions,
+  IconOptions,
+  NamedIconOptions,
+} from "../config/defaults";
+import { asString, createFavicon, relativeTo, SourceImage } from "../helpers";
 
-export function uniformIconOptions<T extends IconOptions>(
+export function uniformIconOptions<T extends NamedIconOptions>(
   options: FaviconOptions,
-  iconsChoice: IconOptions | boolean | string[] | undefined,
-  platformConfig: Record<string, T>
-): Record<string, T> {
-  let result = platformConfig;
+  iconsChoice:
+    | IconOptions
+    | boolean
+    | (string | NamedIconOptions)[]
+    | undefined,
+  platformConfig: T[]
+): T[] {
+  let result = [];
   if (Array.isArray(iconsChoice)) {
-    result = filterKeys(platformConfig, (name) => iconsChoice.includes(name));
+    const iconsChoices = Object.fromEntries(
+      iconsChoice.map((choice) =>
+        typeof choice === "object"
+          ? [choice.name, choice]
+          : [choice, { name: choice }]
+      )
+    );
+    result = platformConfig
+      .filter((iconOptions) => iconOptions.name in iconsChoices)
+      .map((iconOptions) => ({
+        ...iconOptions,
+        ...iconsChoices[iconOptions.name],
+      }));
   } else if (typeof iconsChoice === "object") {
-    result = mapValues(platformConfig, (iconOptions: T) => ({
+    result = platformConfig.map((iconOptions) => ({
       ...iconOptions,
       ...iconsChoice,
     }));
+  } else {
+    result = platformConfig;
   }
 
-  result = mapValues(result, (iconOptions: T) => ({
+  return result.map((iconOptions) => ({
     pixelArt: options.pixel_art,
     ...iconOptions,
     background:
@@ -37,15 +52,13 @@ export function uniformIconOptions<T extends IconOptions>(
         ? options.background
         : asString(iconOptions.background),
   }));
-
-  return result;
 }
 
-export class Platform<IO extends IconOptions = IconOptions> {
+export class Platform<IO extends NamedIconOptions = NamedIconOptions> {
   protected options: FaviconOptions;
-  protected iconOptions: Record<string, IO>;
+  protected iconOptions: IO[];
 
-  constructor(options: FaviconOptions, iconOptions: Record<string, IO>) {
+  constructor(options: FaviconOptions, iconOptions: IO[]) {
     this.options = options;
     this.iconOptions = iconOptions;
   }
@@ -61,8 +74,8 @@ export class Platform<IO extends IconOptions = IconOptions> {
 
   async createImages(sourceset: SourceImage[]): Promise<FaviconImage[]> {
     return await Promise.all(
-      Object.entries(this.iconOptions).map(([iconName, iconOption]) =>
-        createFavicon(sourceset, iconName, iconOption)
+      this.iconOptions.map((iconOption) =>
+        createFavicon(sourceset, iconOption.name, iconOption)
       )
     );
   }
