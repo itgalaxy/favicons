@@ -15,6 +15,10 @@ export interface IconOptions {
   readonly pixelArt?: boolean;
 }
 
+export interface NamedIconOptions extends IconOptions {
+  readonly name: string;
+}
+
 export interface FileOptions {
   readonly manifestFileName?: string;
 }

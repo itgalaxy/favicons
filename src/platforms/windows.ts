@@ -1,17 +1,17 @@
 import xml2js from "xml2js";
 import { FaviconFile, FaviconHtmlElement } from "../index";
-import { FaviconOptions, IconOptions, IconSize } from "../config/defaults";
+import { FaviconOptions, IconSize, NamedIconOptions } from "../config/defaults";
 import { transparentIcon } from "../config/icons";
 import { relativeTo } from "../helpers";
 import { Platform, uniformIconOptions } from "./base";
 
-const ICONS_OPTIONS: Record<string, IconOptions> = {
-  "mstile-70x70.png": transparentIcon(70),
-  "mstile-144x144.png": transparentIcon(144),
-  "mstile-150x150.png": transparentIcon(150),
-  "mstile-310x150.png": transparentIcon(310, 150),
-  "mstile-310x310.png": transparentIcon(310),
-};
+const ICONS_OPTIONS: NamedIconOptions[] = [
+  { name: "mstile-70x70.png", ...transparentIcon(70) },
+  { name: "mstile-144x144.png", ...transparentIcon(144) },
+  { name: "mstile-150x150.png", ...transparentIcon(150) },
+  { name: "mstile-310x150.png", ...transparentIcon(310, 150) },
+  { name: "mstile-310x310.png", ...transparentIcon(310) },
+];
 
 const SUPPORTED_TILES = [
   { name: "square70x70logo", width: 70, height: 70 },
@@ -20,7 +20,7 @@ const SUPPORTED_TILES = [
   { name: "square310x310logo", width: 310, height: 310 },
 ];
 
-function hasSize(size: IconSize, icon: IconOptions): boolean {
+function hasSize(size: IconSize, icon: NamedIconOptions): boolean {
   return (
     icon.sizes.length === 1 &&
     icon.sizes[0].width === size.width &&
@@ -46,7 +46,7 @@ export class WindowsPlatform extends Platform {
     // prettier-ignore
     return [
       `<meta name="msapplication-TileColor" content="${this.options.background}">`,
-      tile in this.iconOptions
+      this.iconOptions.find(iconOption => iconOption.name === tile)
         ? `<meta name="msapplication-TileImage" content="${this.relative(tile)}">`
         : "",
       `<meta name="msapplication-config" content="${this.relative(this.manifestFileName())}">`,
@@ -65,13 +65,11 @@ export class WindowsPlatform extends Platform {
     const tile: Record<string, unknown> = {};
 
     for (const { name, ...size } of SUPPORTED_TILES) {
-      const icon = Object.entries(this.iconOptions).find((icon) =>
-        hasSize(size, icon[1])
-      );
+      const icon = this.iconOptions.find((icon) => hasSize(size, icon));
 
       if (icon) {
         tile[name] = {
-          $: { src: relativeTo(basePath, icon[0]) },
+          $: { src: relativeTo(basePath, icon.name) },
         };
       }
     }

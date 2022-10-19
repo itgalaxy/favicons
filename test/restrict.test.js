@@ -123,3 +123,25 @@ test("should allow to restrict the HTML tags taking into account manifests and o
     expect(useful.length).toBe(expectedLength);
   }
 });
+
+test("should allow to restrict the icons to generate and configure them simultaneously", async () => {
+  const options = {
+    icons: {
+      favicons: false,
+      android: false,
+      appleStartup: false,
+      windows: false,
+      yandex: false,
+      appleIcon: [
+        {
+          name: "apple-touch-icon-60x60.png",
+          background: "#CCF",
+        },
+        "apple-touch-icon-76x76.png",
+      ],
+    },
+  };
+
+  const result = await favicons(source, options);
+  await expect(result).toMatchFaviconsSnapshot();
+});

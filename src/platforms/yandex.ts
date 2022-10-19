@@ -1,12 +1,12 @@
 import { FaviconFile, FaviconHtmlElement } from "../index";
-import { FaviconOptions, IconOptions } from "../config/defaults";
+import { FaviconOptions, NamedIconOptions } from "../config/defaults";
 import { transparentIcon } from "../config/icons";
 import { relativeTo } from "../helpers";
 import { Platform, uniformIconOptions } from "./base";
 
-const ICONS_OPTIONS: Record<string, IconOptions> = {
-  "yandex-browser-50x50.png": transparentIcon(50),
-};
+const ICONS_OPTIONS: NamedIconOptions[] = [
+  { name: "yandex-browser-50x50.png", ...transparentIcon(50) },
+];
 
 export class YandexPlatform extends Platform {
   constructor(options: FaviconOptions) {
@@ -39,7 +39,7 @@ export class YandexPlatform extends Platform {
       ? null
       : this.options.path;
 
-    const logo = Object.keys(this.iconOptions)[0];
+    const logo = this.iconOptions[0].name;
 
     const properties = {
       version: this.options.version,

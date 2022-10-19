@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should allow to restrict the icons to generate and configure them simultaneously 3`] = `
+Object {
+  "files": Array [],
+  "html": Array [
+    "<link rel=\\"apple-touch-icon\\" sizes=\\"60x60\\" href=\\"/apple-touch-icon-60x60.png\\">",
+    "<link rel=\\"apple-touch-icon\\" sizes=\\"76x76\\" href=\\"/apple-touch-icon-76x76.png\\">",
+    "<meta name=\\"apple-mobile-web-app-capable\\" content=\\"yes\\">",
+    "<meta name=\\"apple-mobile-web-app-status-bar-style\\" content=\\"black-translucent\\">",
+    "<meta name=\\"apple-mobile-web-app-title\\">",
+  ],
+  "images": Array [
+    Object {
+      "contents": null,
+      "name": "apple-touch-icon-60x60.png",
+    },
+    Object {
+      "contents": null,
+      "name": "apple-touch-icon-76x76.png",
+    },
+  ],
+}
+`;
