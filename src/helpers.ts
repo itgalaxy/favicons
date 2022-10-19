@@ -67,7 +67,7 @@ export function asString(arg: unknown): string | undefined {
 }
 
 export async function sourceImages(
-  src: string | string[] | Buffer | Buffer[]
+  src: string | Buffer | (string | Buffer)[]
 ): Promise<SourceImage[]> {
   if (Buffer.isBuffer(src)) {
     try {

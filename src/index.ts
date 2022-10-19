@@ -28,7 +28,7 @@ export interface FaviconResponse {
 }
 
 export async function favicons(
-  source: string | string[] | Buffer | Buffer[],
+  source: string | Buffer | (string | Buffer)[],
   options: FaviconOptions = {}
 ): Promise<FaviconResponse> {
   options = {
