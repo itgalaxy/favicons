@@ -34,6 +34,9 @@ export class WindowsPlatform extends Platform {
       options,
       uniformIconOptions(options, options.icons.windows, ICONS_OPTIONS)
     );
+    if (!this.options.background) {
+      throw new Error("`background` is required for Windows icons");
+    }
   }
 
   override async createFiles(): Promise<FaviconFile[]> {
