@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should generate favicons of a given size 4`] = `
+Object {
+  "files": Array [],
+  "html": Array [
+    "<link rel=\\"icon\\" type=\\"image/x-icon\\" href=\\"/favicon.ico\\">",
+    "<link rel=\\"icon\\" type=\\"image/png\\" sizes=\\"48x48\\" href=\\"/favicon-48x48.png\\">",
+  ],
+  "images": Array [
+    Object {
+      "contents": null,
+      "name": "favicon.ico",
+    },
+    Object {
+      "contents": null,
+      "name": "favicon-48x48.png",
+    },
+  ],
+}
+`;
