@@ -170,6 +170,24 @@ import { config } from "favicons";
 
 For the full list of files, check `config/files.json`. For the full HTML code, check `config/html.js`. Finally, for the full list of icons, check `config/icons.json`.
 
+To save the files that are output, you can use `fs`.
+
+For example, amend the code above for Node.js as follows:
+
+```
+var fs = require ("fs");
+
+try {
+  const response = await favicons(source, configuration);
+  response.images.map (image => {
+    fs.writeFileSync (`./your-favicons-directory/${image.name}`, image.contents)
+  })
+
+} catch (error) {
+  console.log(error.message); // Error description e.g. "An unknown error has occurred"
+}
+```
+
 ## Questions
 
 > Why are you missing certain favicons?
