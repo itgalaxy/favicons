@@ -1,5 +1,3 @@
-/* eslint-disable no-magic-numbers */
-
 import * as path from "path";
 import { toMatchSnapshot } from "jest-snapshot";
 import { toMatchImageSnapshot } from "jest-image-snapshot";

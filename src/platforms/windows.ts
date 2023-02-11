@@ -68,7 +68,9 @@ export class WindowsPlatform extends Platform {
     const tile: Record<string, unknown> = {};
 
     for (const { name, ...size } of SUPPORTED_TILES) {
-      const icon = this.iconOptions.find((icon) => hasSize(size, icon));
+      const icon = this.iconOptions.find((iconOption) =>
+        hasSize(size, iconOption)
+      );
 
       if (icon) {
         tile[name] = {

@@ -114,13 +114,13 @@ export class AndroidPlatform extends Platform {
         this.options.manifestMaskable
       );
 
-      const maskable = await Promise.all(
+      const maskableIcons = await Promise.all(
         ICONS_OPTIONS_MASKABLE.map((iconOption) =>
           createFavicon(maskableSourceset, iconOption.name, iconOption)
         )
       );
 
-      icons = [...icons, ...maskable];
+      icons = [...icons, ...maskableIcons];
     }
     if (
       Array.isArray(this.options.shortcuts) &&

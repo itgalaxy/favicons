@@ -1,5 +1,5 @@
-import * as path from "path";
-import * as fs from "fs";
+import { extname } from "path";
+import { readFile } from "fs/promises";
 import sharp from "sharp";
 import { toIco } from "./ico";
 import { FaviconImage } from "./index";
@@ -81,7 +81,7 @@ export async function sourceImages(
       return Promise.reject(new Error("Invalid image buffer"));
     }
   } else if (typeof src === "string") {
-    const buffer = await fs.promises.readFile(src);
+    const buffer = await readFile(src);
 
     return await sourceImages(buffer);
   } else if (Array.isArray(src) && !src.some(Array.isArray)) {
@@ -261,14 +261,15 @@ export async function createFavicon(
   iconOptions: IconOptions
 ): Promise<FaviconImage> {
   const properties = flattenIconOptions(iconOptions);
+  const ext = extname(name);
 
-  if (path.extname(name) === ".ico" || properties.length !== 1) {
+  if (ext === ".ico" || properties.length !== 1) {
     const images = await Promise.all(
       properties.map((props) => createPlane(sourceset, props).then(toRawImage))
     );
     const contents = toIco(images);
     return { name, contents };
-  } else if (path.extname(name) === ".svg") {
+  } else if (ext === ".svg") {
     const contents = await createSvg(sourceset, properties[0]);
     return { name, contents };
   } else {

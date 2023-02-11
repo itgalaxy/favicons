@@ -1,55 +1,45 @@
-{
-  "extends": [
+module.exports = {
+  env: {
+    node: true,
+  },
+  plugins: ["@typescript-eslint", "jest"],
+  parser: "@typescript-eslint/parser",
+  extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended"
+    "plugin:prettier/recommended",
   ],
-
-  "parserOptions": {
-    "ecmaVersion": 9
-  },
-
-  "env": {
-    "es6": true,
-    "node": true,
-    "jest/globals": true
-  },
-
-  "plugins": ["@typescript-eslint", "jest"],
-
-  "rules": {
+  rules: {
     "no-console": 0,
 
     "accessor-pairs": [
       2,
       {
-        "getWithoutSet": true
-      }
+        getWithoutSet: true,
+      },
     ],
-    "block-scoped-var": 2,
     "default-case": 2,
     "dot-notation": [
       2,
       {
-        "allowKeywords": true,
-        "allowPattern": "^[a-z]+(_[a-z]+)+$"
-      }
+        allowKeywords: true,
+        allowPattern: "^[a-z]+(_[a-z]+)+$",
+      },
     ],
-    "eqeqeq": [2, "allow-null"],
+    eqeqeq: ["error", "always", { null: "ignore" }],
     "guard-for-in": 2,
     "no-alert": 2,
     "no-caller": 2,
     "no-div-regex": 2,
-    "no-eq-null": 2,
     "no-eval": 2,
     "no-extra-bind": 2,
     "no-implicit-coercion": [
       2,
       {
-        "boolean": true,
-        "number": true,
-        "string": true
-      }
+        boolean: true,
+        number: true,
+        string: true,
+      },
     ],
     "no-implied-eval": 2,
     "no-invalid-this": 2,
@@ -60,8 +50,8 @@
     "no-native-reassign": [
       2,
       {
-        "exceptions": []
-      }
+        exceptions: [],
+      },
     ],
     "no-new-func": 2,
     "no-new-wrappers": 2,
@@ -76,9 +66,9 @@
     "no-unused-expressions": [
       2,
       {
-        "allowShortCircuit": true,
-        "allowTernary": true
-      }
+        allowShortCircuit: true,
+        allowTernary: true,
+      },
     ],
     "no-useless-call": 2,
     "no-useless-concat": 2,
@@ -86,25 +76,24 @@
     "no-warning-comments": [
       2,
       {
-        "terms": ["todo", "fixme", "xxx"],
-        "location": "anywhere"
-      }
+        terms: ["todo", "fixme", "xxx"],
+        location: "anywhere",
+      },
     ],
-    "no-with": 2,
-    "radix": [2, "always"],
-    "vars-on-top": 2,
-    "yoda": [
+    radix: [2, "always"],
+    yoda: [
       2,
       "never",
       {
-        "exceptRange": false,
-        "onlyEquality": false
-      }
+        exceptRange: false,
+        onlyEquality: false,
+      },
     ],
 
     "init-declarations": [2, "always"],
     "no-catch-shadow": 2,
     "no-label-var": 2,
+    "no-shadow": 2,
     "no-shadow-restricted-names": 2,
     "no-undef-init": 2,
 
@@ -121,8 +110,8 @@
       2,
       "declaration",
       {
-        "allowArrowFunctions": false
-      }
+        allowArrowFunctions: false,
+      },
     ],
     "max-nested-callbacks": [2, 5],
     "no-array-constructor": 2,
@@ -133,19 +122,27 @@
     "no-underscore-dangle": [
       2,
       {
-        "allow": []
-      }
+        allow: [],
+      },
     ],
     "no-unneeded-ternary": 2,
     "operator-assignment": [2, "always"],
     "spaced-comment": [2, "always"],
 
     "arrow-body-style": [2, "as-needed"],
-    "no-var": 2,
     "object-shorthand": [2, "properties"],
     "prefer-arrow-callback": 2,
     "prefer-const": 2,
     "prefer-spread": 2,
-    "prefer-template": 2
-  }
-}
+    "prefer-template": 2,
+    "consistent-return": "error",
+  },
+
+  overrides: [
+    {
+      files: ["test/**"],
+      plugins: ["jest"],
+      extends: ["plugin:jest/recommended"],
+    },
+  ],
+};

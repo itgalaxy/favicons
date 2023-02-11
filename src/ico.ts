@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers */
 import { RawImage } from "./helpers";
 
 const HEADER_SIZE = 6;
@@ -80,10 +79,10 @@ export function toIco(images: RawImage[]) {
   let offset = HEADER_SIZE + DIRECTORY_SIZE * images.length;
 
   const bitmaps = images.map((image) => {
-    const header = createBitmap(image, COLOR_MODE);
+    const bitmapHeader = createBitmap(image, COLOR_MODE);
     const dib = createDib(image);
 
-    return Buffer.concat([header, dib]);
+    return Buffer.concat([bitmapHeader, dib]);
   });
 
   for (let i = 0; i < images.length; ++i) {
