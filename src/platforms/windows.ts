@@ -2,7 +2,7 @@ import xml2js from "xml2js";
 import { FaviconFile, FaviconHtmlElement } from "../index";
 import { FaviconOptions, IconSize, NamedIconOptions } from "../config/defaults";
 import { transparentIcon } from "../config/icons";
-import { relativeTo } from "../helpers";
+import { relativeTo, withParams } from "../helpers";
 import { Platform, uniformIconOptions } from "./base";
 
 const ICONS_OPTIONS: NamedIconOptions[] = [
@@ -74,7 +74,12 @@ export class WindowsPlatform extends Platform {
 
       if (icon) {
         tile[name] = {
-          $: { src: relativeTo(basePath, icon.name) },
+          $: {
+            src: withParams(
+              relativeTo(basePath, icon.name),
+              this.options.cacheBustingQueryParam
+            ),
+          },
         };
       }
     }

@@ -50,6 +50,7 @@ export interface FaviconOptions {
   readonly appDescription?: string;
   readonly developerName?: string;
   readonly developerURL?: string;
+  readonly cacheBustingQueryParam: string | null | undefined;
   readonly dir?: string;
   readonly lang?: string;
   readonly background?: string;
@@ -79,6 +80,7 @@ export const defaultOptions: FaviconOptions = {
   appDescription: null,
   developerName: null,
   developerURL: null,
+  cacheBustingQueryParam: null,
   dir: "auto",
   lang: "en-US",
   background: "#fff",

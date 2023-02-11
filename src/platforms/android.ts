@@ -11,6 +11,7 @@ import {
   relativeTo,
   SourceImage,
   sourceImages,
+  withParams,
 } from "../helpers";
 import { Platform, uniformIconOptions } from "./base";
 
@@ -225,7 +226,10 @@ export class AndroidPlatform extends Platform {
       const { width, height } = iconOptions.sizes[0];
 
       return {
-        src: relativeTo(basePath, iconOptions.name),
+        src: withParams(
+          relativeTo(basePath, iconOptions.name),
+          this.options.cacheBustingQueryParam
+        ),
         sizes: `${width}x${height}`,
         type: "image/png",
         purpose: iconOptions.purpose ?? defaultPurpose,
@@ -256,9 +260,12 @@ export class AndroidPlatform extends Platform {
                 ([shortcutName, option]) => {
                   const { width, height } = option.sizes[0];
                   return {
-                    src: relativeTo(
-                      basePath,
-                      `shortcut${index + 1}-${shortcutName}`
+                    src: withParams(
+                      relativeTo(
+                        basePath,
+                        `shortcut${index + 1}-${shortcutName}`
+                      ),
+                      this.options.cacheBustingQueryParam
                     ),
                     sizes: `${width}x${height}`,
                     type: "image/png",

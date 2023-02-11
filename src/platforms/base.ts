@@ -9,7 +9,13 @@ import {
   IconOptions,
   NamedIconOptions,
 } from "../config/defaults";
-import { asString, createFavicon, relativeTo, SourceImage } from "../helpers";
+import {
+  asString,
+  createFavicon,
+  relativeTo,
+  SourceImage,
+  withParams,
+} from "../helpers";
 
 export interface OptionalMixin {
   readonly optional?: boolean;
@@ -95,6 +101,9 @@ export class Platform<IO extends NamedIconOptions = NamedIconOptions> {
   }
 
   protected relative(path: string): string {
-    return relativeTo(this.options.path, path);
+    return withParams(
+      relativeTo(this.options.path, path),
+      this.options.cacheBustingQueryParam
+    );
   }
 }

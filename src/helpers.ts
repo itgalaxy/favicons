@@ -121,6 +121,20 @@ export function relativeTo(
   return url.protocol === "resolve:" ? url.pathname : url.toString();
 }
 
+export function withParams(path: string, params: string): string {
+  if (!params) {
+    return path;
+  }
+
+  const url = new URL(path, "https://with.params");
+  new URLSearchParams(params).forEach((value, key) => {
+    url.searchParams.append(key, value);
+  });
+  return url.origin === "https://with.params"
+    ? url.pathname + url.search
+    : url.toString();
+}
+
 function bestSource(
   sourceset: SourceImage[],
   width: number,

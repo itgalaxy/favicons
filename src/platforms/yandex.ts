@@ -1,7 +1,7 @@
 import { FaviconFile, FaviconHtmlElement } from "../index";
 import { FaviconOptions, NamedIconOptions } from "../config/defaults";
 import { transparentIcon } from "../config/icons";
-import { relativeTo } from "../helpers";
+import { relativeTo, withParams } from "../helpers";
 import { Platform, uniformIconOptions } from "./base";
 
 const ICONS_OPTIONS: NamedIconOptions[] = [
@@ -45,7 +45,10 @@ export class YandexPlatform extends Platform {
       version: this.options.version,
       api_version: 1,
       layout: {
-        logo: relativeTo(basePath, logo),
+        logo: withParams(
+          relativeTo(basePath, logo),
+          this.options.cacheBustingQueryParam
+        ),
         color: this.options.background,
         show_title: true,
       },
