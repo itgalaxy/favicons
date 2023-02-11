@@ -23,16 +23,16 @@ export class FaviconsPlatform extends Platform {
     return this.iconOptions.map(({ name, ...options }) => {
       if (name.endsWith(".ico")) {
         // prettier-ignore
-        return `<link rel="icon" type="image/x-icon" href="${this.relative(name)}">`;
+        return `<link rel="icon" type="image/x-icon" href="${this.cacheBusting(this.relative(name))}">`;
       } else if (name.endsWith(".svg")) {
         // prettier-ignore
-        return `<link rel="icon" type="image/svg+xml" href="${this.relative(name)}">`;
+        return `<link rel="icon" type="image/svg+xml" href="${this.cacheBusting(this.relative(name))}">`;
       }
 
       const { width, height } = options.sizes[0];
 
       // prettier-ignore
-      return `<link rel="icon" type="image/png" sizes="${width}x${height}" href="${this.relative(name)}">`;
+      return `<link rel="icon" type="image/png" sizes="${width}x${height}" href="${this.cacheBusting(this.relative(name))}">`;
     });
   }
 }

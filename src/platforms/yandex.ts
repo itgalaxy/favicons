@@ -23,7 +23,7 @@ export class YandexPlatform extends Platform {
   override async createHtml(): Promise<FaviconHtmlElement[]> {
     // prettier-ignore
     return [
-      `<link rel="yandex-tableau-widget" href="${this.relative(this.manifestFileName())}">`
+      `<link rel="yandex-tableau-widget" href="${this.cacheBusting(this.relative(this.manifestFileName()))}">`
     ];
   }
 
@@ -45,7 +45,7 @@ export class YandexPlatform extends Platform {
       version: this.options.version,
       api_version: 1,
       layout: {
-        logo: relativeTo(basePath, logo),
+        logo: this.cacheBusting(relativeTo(basePath, logo)),
         color: this.options.background,
         show_title: true,
       },

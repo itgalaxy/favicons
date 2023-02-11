@@ -18,6 +18,7 @@ const configuration = {
   appDescription: null, // Your application's description. `string`
   developerName: null, // Your (or your developer's) name. `string`
   developerURL: null, // Your (or your developer's) URL. `string`
+  cacheBustingQueryParam: null, // Query parameter added to all URLs that acts as a cache busting system. `string | null`
   dir: "auto", // Primary text direction for name, short_name, and description
   lang: "en-US", // Primary language for name and short_name
   background: "#fff", // Background colour for flattened icons. `string`
