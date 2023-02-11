@@ -50,9 +50,9 @@ export class WindowsPlatform extends Platform {
     return [
       `<meta name="msapplication-TileColor" content="${this.options.background}">`,
       this.iconOptions.find(iconOption => iconOption.name === tile)
-        ? `<meta name="msapplication-TileImage" content="${this.relative(tile)}">`
+        ? `<meta name="msapplication-TileImage" content="${this.cacheBusting(this.relative(tile))}">`
         : "",
-      `<meta name="msapplication-config" content="${this.relative(this.manifestFileName())}">`,
+      `<meta name="msapplication-config" content="${this.cacheBusting(this.relative(this.manifestFileName()))}">`,
     ];
   }
 
@@ -74,7 +74,7 @@ export class WindowsPlatform extends Platform {
 
       if (icon) {
         tile[name] = {
-          $: { src: relativeTo(basePath, icon.name) },
+          $: { src: this.cacheBusting(relativeTo(basePath, icon.name)) },
         };
       }
     }

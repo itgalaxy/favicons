@@ -140,8 +140,8 @@ export class AndroidPlatform extends Platform {
     // prettier-ignore
     return [
       this.options.loadManifestWithCredentials
-        ? `<link rel="manifest" href="${this.relative(this.manifestFileName())}" crossOrigin="use-credentials">`
-        : `<link rel="manifest" href="${this.relative(this.manifestFileName())}">`,
+        ? `<link rel="manifest" href="${this.cacheBusting(this.relative(this.manifestFileName()))}" crossOrigin="use-credentials">`
+        : `<link rel="manifest" href="${this.cacheBusting(this.relative(this.manifestFileName()))}">`,
       `<meta name="mobile-web-app-capable" content="yes">`,
       `<meta name="theme-color" content="${this.options.theme_color || this.options.background}">`,
       this.options.appName
@@ -225,7 +225,7 @@ export class AndroidPlatform extends Platform {
       const { width, height } = iconOptions.sizes[0];
 
       return {
-        src: relativeTo(basePath, iconOptions.name),
+        src: this.cacheBusting(relativeTo(basePath, iconOptions.name)),
         sizes: `${width}x${height}`,
         type: "image/png",
         purpose: iconOptions.purpose ?? defaultPurpose,
@@ -256,9 +256,11 @@ export class AndroidPlatform extends Platform {
                 ([shortcutName, option]) => {
                   const { width, height } = option.sizes[0];
                   return {
-                    src: relativeTo(
-                      basePath,
-                      `shortcut${index + 1}-${shortcutName}`
+                    src: this.cacheBusting(
+                      relativeTo(
+                        basePath,
+                        `shortcut${index + 1}-${shortcutName}`
+                      )
                     ),
                     sizes: `${width}x${height}`,
                     type: "image/png",

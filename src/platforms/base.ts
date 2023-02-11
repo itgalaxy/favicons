@@ -97,4 +97,22 @@ export class Platform<IO extends NamedIconOptions = NamedIconOptions> {
   protected relative(path: string): string {
     return relativeTo(this.options.path, path);
   }
+
+  protected cacheBusting(path: string): string {
+    if (typeof this.options.cacheBustingQueryParam !== "string") {
+      return path;
+    }
+
+    const paramParts = this.options.cacheBustingQueryParam.split("=");
+
+    if (paramParts.length === 1) {
+      return path;
+    }
+
+    const url = new URL(path, "https://cache.busting");
+    url.searchParams.set(paramParts[0], paramParts.slice(1).join("="));
+    return url.origin === "https://cache.busting"
+      ? url.pathname + url.search
+      : url.toString();
+  }
 }

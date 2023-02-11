@@ -69,7 +69,7 @@ export class AppleStartupPlatform extends Platform<AppleStartupImage> {
   override async createHtml(): Promise<FaviconHtmlElement[]> {
     // prettier-ignore
     return this.iconOptions.map((item) =>
-      `<link rel="apple-touch-startup-image" media="(device-width: ${item.deviceWidth}px) and (device-height: ${item.deviceHeight}px) and (-webkit-device-pixel-ratio: ${item.pixelRatio}) and (orientation: ${item.orientation})" href="${this.relative(item.name)}">`
+      `<link rel="apple-touch-startup-image" media="(device-width: ${item.deviceWidth}px) and (device-height: ${item.deviceHeight}px) and (-webkit-device-pixel-ratio: ${item.pixelRatio}) and (orientation: ${item.orientation})" href="${this.cacheBusting(this.relative(item.name))}">`
     );
   }
 }

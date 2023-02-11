@@ -35,7 +35,7 @@ export class AppleIconPlatform extends Platform {
         const { width, height } = options.sizes[0];
 
         // prettier-ignore
-        return `<link rel="apple-touch-icon" sizes="${width}x${height}" href="${this.relative(options.name)}">`;
+        return `<link rel="apple-touch-icon" sizes="${width}x${height}" href="${this.cacheBusting(this.relative(options.name))}">`;
       });
 
     const name = this.options.appShortName || this.options.appName;
