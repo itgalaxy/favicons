@@ -3,15 +3,13 @@
 [![NPM version](https://img.shields.io/npm/v/favicons.svg)](https://www.npmjs.org/package/favicons)
 [![Build Status](https://github.com/itgalaxy/favicons/actions/workflows/ci.yml/badge.svg)](https://github.com/itgalaxy/favicons/actions/workflows/ci.yml)
 
-A Node.js module for generating favicons and their associated files. Originally built for [Google's Web Starter Kit](https://github.com/google/web-starter-kit) and [Catalyst](https://github.com/haydenbleasel/catalyst). Installed through NPM with:
+A **Node.js module** for generating favicons and their associated files. Originally built for [Google's Web Starter Kit](https://github.com/google/web-starter-kit) and [Catalyst](https://github.com/haydenbleasel/catalyst). Installed through NPM with:
 
 ```
 npm install favicons
 ```
 
 ## Usage
-
-### Node.js
 
 To use Favicons, require the appropriate module and call it, optionally specifying configuration and callback objects. A sample is shown on the right. The full list of options can be found on GitHub.
 
@@ -167,9 +165,33 @@ You can programmatically access Favicons configuration (icon filenames, HTML, ma
 import { config } from "favicons";
 ```
 
-## Output
+Below you will find a simple working example to generate an output. Amend the `src`, `dest`, `htmlBasename` and `configuration` constants to suit your own needs.
 
-For the full list of files, check `config/files.json`. For the full HTML code, check `config/html.js`. Finally, for the full list of icons, check `config/icons.json`.
+```js
+import favicons from 'favicons';
+import fs from 'fs/promises';
+import path from 'path';
+
+const src = './icon.svg'; // Icon source file path.
+const dest = './favicons'; // Output directory path.
+const htmlBasename = 'index.html'; // HTML file basename.
+
+// Configuration (see above in the README file).
+const configuration = {
+  path: '/favicons',
+  appName: 'My Great App',
+  appShortName: 'Great App',
+  appDescription: 'A great application to test itgalaxy/favicons.',
+  // Extra options...
+};
+
+// Below is the processing.
+const response = await favicons(src, configuration);
+await fs.mkdir(dest, {recursive: true, });
+await Promise.all(response.images.map(async (image) => await fs.writeFile(path.join(dest, image.name), image.contents)));
+await Promise.all(response.files.map(async (file) => await fs.writeFile(path.join(dest, file.name), file.contents)));
+await fs.writeFile(path.join(dest, htmlBasename), response.html.join('\n'));
+```
 
 ## Questions
 
