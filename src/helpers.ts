@@ -1,4 +1,4 @@
-import { extname } from "path";
+import { extname, join } from "path";
 import { readFile } from "fs/promises";
 import sharp from "sharp";
 import { toIco } from "./ico";
@@ -67,8 +67,16 @@ export function asString(arg: unknown): string | undefined {
 }
 
 export async function sourceImages(
-  src: string | Buffer | (string | Buffer)[]
+  src: string | Buffer | (string | Buffer)[],
+  cwd?:string
 ): Promise<SourceImage[]> {
+  try {
+    if(cwd){
+      src = join(cwd, src)
+    }
+  } catch (error) {
+    console.error("Could not join with cwd path") 
+  }
   if (Buffer.isBuffer(src)) {
     try {
       return [
@@ -83,12 +91,12 @@ export async function sourceImages(
   } else if (typeof src === "string") {
     const buffer = await readFile(src);
 
-    return await sourceImages(buffer);
+    return await sourceImages(buffer, cwd);
   } else if (Array.isArray(src) && !src.some(Array.isArray)) {
     if (!src.length) {
       throw new Error("No source provided");
     }
-    const images = await Promise.all(src.map(sourceImages));
+    const images = await Promise.all(src.map(image = sourceImages(image, cwd)));
 
     return images.flat();
   } else {
