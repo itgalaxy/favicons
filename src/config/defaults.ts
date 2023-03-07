@@ -28,7 +28,7 @@ export interface ShortcutOptions {
   readonly short_name?: string;
   readonly description?: string;
   readonly url: string;
-  readonly icon?: string | string[] | Buffer | Buffer[];
+  readonly icon?: string | Buffer | (string | Buffer)[];
 }
 
 export interface Application {
@@ -64,7 +64,7 @@ export interface FaviconOptions {
   readonly pixel_art?: boolean;
   readonly loadManifestWithCredentials?: boolean;
   readonly manifestRelativePaths?: boolean;
-  readonly manifestMaskable?: boolean | string | string[] | Buffer | Buffer[];
+  readonly manifestMaskable?: boolean | string | Buffer | (string | Buffer)[];
   readonly preferRelatedApplications?: boolean;
   readonly relatedApplications?: Application[];
   readonly icons?: Record<PlatformName, IconOptions | boolean | string[]>;
