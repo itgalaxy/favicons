@@ -1,5 +1,5 @@
 import { PlatformName } from "../platforms";
-import {IconPlaneOptions} from "../helpers";
+import { IconPlaneOptions } from "../helpers";
 
 export interface IconSize {
   readonly width: number;
@@ -9,7 +9,11 @@ export interface IconSize {
 export interface IconOptions {
   readonly sizes: IconSize[];
   readonly offset?: number;
-  readonly source?: string | Buffer | (string | Buffer)[] | ((options:IconPlaneOptions) => string | Buffer | (string | Buffer)[]);
+  readonly source?:
+    | string
+    | Buffer
+    | (string | Buffer)[]
+    | ((options: IconPlaneOptions) => string | Buffer | (string | Buffer)[]);
   readonly background?: string | boolean;
   readonly transparent: boolean;
   readonly rotate: boolean;

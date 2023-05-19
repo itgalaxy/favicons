@@ -18,7 +18,11 @@ export interface IconPlaneOptions {
   readonly background?: string;
   readonly transparent: boolean;
   readonly rotate: boolean;
-  readonly source?: string | Buffer | (string | Buffer)[] | ((options:IconPlaneOptions) => string | Buffer | (string | Buffer)[])
+  readonly source?:
+    | string
+    | Buffer
+    | (string | Buffer)[]
+    | ((options: IconPlaneOptions) => string | Buffer | (string | Buffer)[]);
 }
 
 function arrayComparator(a: unknown, b: unknown): number {
@@ -202,9 +206,12 @@ async function createPlane(
   sourceset: SourceImage[],
   options: IconPlaneOptions
 ): Promise<sharp.Sharp> {
-
-  if(options.source) {
-    sourceset =  await sourceImages(typeof options.source === 'function' ? options.source(options) : options.source);
+  if (options.source) {
+    sourceset = await sourceImages(
+      typeof options.source === "function"
+        ? options.source(options)
+        : options.source
+    );
   }
 
   const offset =
@@ -246,8 +253,12 @@ async function createSvg(
   sourceset: SourceImage[],
   options: IconPlaneOptions
 ): Promise<Buffer> {
-  if(options.source) {
-    sourceset =  await sourceImages(typeof options.source === 'function' ? options.source(options) : options.source);
+  if (options.source) {
+    sourceset = await sourceImages(
+      typeof options.source === "function"
+        ? options.source(options)
+        : options.source
+    );
   }
   const { width, height } = options;
   const source = bestSource(sourceset, width, height);
