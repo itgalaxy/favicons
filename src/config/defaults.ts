@@ -71,6 +71,7 @@ export interface FaviconOptions {
   readonly files?: Record<PlatformName, FileOptions>;
   readonly shortcuts?: ShortcutOptions[];
   readonly output?: OutputOptions;
+  readonly cwd?: string;
 }
 
 export const defaultOptions: FaviconOptions = {

@@ -111,7 +111,8 @@ export class AndroidPlatform extends Platform {
       typeof this.options.manifestMaskable !== "boolean"
     ) {
       const maskableSourceset = await sourceImages(
-        this.options.manifestMaskable
+        this.options.manifestMaskable,
+        this.options.cwd
       );
 
       const maskableIcons = await Promise.all(
@@ -154,7 +155,7 @@ export class AndroidPlatform extends Platform {
     const icons = await Promise.all(
       this.options.shortcuts.map(async (shortcut, index) => {
         if (!shortcut.name || !shortcut.url || !shortcut.icon) return null;
-        const shortcutSourceset = await sourceImages(shortcut.icon);
+        const shortcutSourceset = await sourceImages(shortcut.icon, this.options.cwd);
         return Promise.all(
           Object.entries(SHORTCUT_ICONS_OPTIONS).map(([shortcutName, option]) =>
             createFavicon(

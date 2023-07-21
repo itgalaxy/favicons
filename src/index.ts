@@ -38,7 +38,7 @@ export async function favicons(
     output: { ...defaultOptions.output, ...options.output },
   };
 
-  const sourceset = await sourceImages(source);
+  const sourceset = await sourceImages(source, options.cwd);
 
   const platforms = Object.keys(options.icons)
     .filter((platform) => options.icons[platform])
