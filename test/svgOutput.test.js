@@ -19,7 +19,7 @@ test("should reuse svg as a favicon", async () => {
 });
 
 test("should generate svg favicon", async () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const result = await favicons(logo_png, {
     icons: {
@@ -32,5 +32,28 @@ test("should generate svg favicon", async () => {
     },
   });
 
-  await expect(result).toMatchFaviconsSnapshot();
+  const svg = result.images[0].contents;
+  const deterministicSvg = Buffer.from(
+    svg.toString().replace(/png;base64,[^"]+/, "")
+  );
+  await expect({
+    ...result,
+    images: [
+      {
+        ...result.images[0],
+        contents: deterministicSvg,
+      },
+    ],
+  }).toMatchFaviconsSnapshot();
+
+  const roundtripResult = await favicons(svg, {
+    icons: {
+      android: false,
+      appleIcon: false,
+      appleStartup: false,
+      windows: false,
+      yandex: false,
+    },
+  });
+  await expect(roundtripResult).toMatchFaviconsSnapshot();
 });
