@@ -22,7 +22,7 @@ export function uniformIconOptions<T extends NamedIconOptions>(
     | boolean
     | (string | NamedIconOptions)[]
     | undefined,
-  platformConfig: (T & OptionalMixin)[]
+  platformConfig: (T & OptionalMixin)[],
 ): T[] {
   let result = [];
   if (Array.isArray(iconsChoice)) {
@@ -30,8 +30,8 @@ export function uniformIconOptions<T extends NamedIconOptions>(
       iconsChoice.map((choice) =>
         typeof choice === "object"
           ? [choice.name, choice]
-          : [choice, { name: choice }]
-      )
+          : [choice, { name: choice }],
+      ),
     );
     result = platformConfig
       .filter((iconOptions) => iconOptions.name in iconsChoices)
@@ -81,8 +81,8 @@ export class Platform<IO extends NamedIconOptions = NamedIconOptions> {
   async createImages(sourceset: SourceImage[]): Promise<FaviconImage[]> {
     return await Promise.all(
       this.iconOptions.map((iconOption) =>
-        createFavicon(sourceset, iconOption.name, iconOption)
-      )
+        createFavicon(sourceset, iconOption.name, iconOption),
+      ),
     );
   }
 

@@ -32,7 +32,7 @@ export class WindowsPlatform extends Platform {
   constructor(options: FaviconOptions) {
     super(
       options,
-      uniformIconOptions(options, options.icons.windows, ICONS_OPTIONS)
+      uniformIconOptions(options, options.icons.windows, ICONS_OPTIONS),
     );
     if (!this.options.background) {
       throw new Error("`background` is required for Windows icons");
@@ -69,7 +69,7 @@ export class WindowsPlatform extends Platform {
 
     for (const { name, ...size } of SUPPORTED_TILES) {
       const icon = this.iconOptions.find((iconOption) =>
-        hasSize(size, iconOption)
+        hasSize(size, iconOption),
       );
 
       if (icon) {

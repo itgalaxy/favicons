@@ -62,7 +62,7 @@ export class AppleStartupPlatform extends Platform<AppleStartupImage> {
   constructor(options: FaviconOptions) {
     super(
       options,
-      uniformIconOptions(options, options.icons.appleStartup, ICONS_OPTIONS)
+      uniformIconOptions(options, options.icons.appleStartup, ICONS_OPTIONS),
     );
   }
 

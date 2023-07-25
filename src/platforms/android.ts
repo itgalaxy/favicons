@@ -92,17 +92,17 @@ export class AndroidPlatform extends Platform {
   constructor(options: FaviconOptions) {
     super(
       options,
-      uniformIconOptions(options, options.icons.android, ICONS_OPTIONS)
+      uniformIconOptions(options, options.icons.android, ICONS_OPTIONS),
     );
   }
 
   override async createImages(
-    sourceset: SourceImage[]
+    sourceset: SourceImage[],
   ): Promise<FaviconImage[]> {
     let icons = await Promise.all(
       this.iconOptions.map((iconOption) =>
-        createFavicon(sourceset, iconOption.name, iconOption)
-      )
+        createFavicon(sourceset, iconOption.name, iconOption),
+      ),
     );
 
     // Generate android maskable images from a different source set
@@ -111,13 +111,13 @@ export class AndroidPlatform extends Platform {
       typeof this.options.manifestMaskable !== "boolean"
     ) {
       const maskableSourceset = await sourceImages(
-        this.options.manifestMaskable
+        this.options.manifestMaskable,
       );
 
       const maskableIcons = await Promise.all(
         ICONS_OPTIONS_MASKABLE.map((iconOption) =>
-          createFavicon(maskableSourceset, iconOption.name, iconOption)
-        )
+          createFavicon(maskableSourceset, iconOption.name, iconOption),
+        ),
       );
 
       icons = [...icons, ...maskableIcons];
@@ -160,11 +160,11 @@ export class AndroidPlatform extends Platform {
             createFavicon(
               shortcutSourceset,
               `shortcut${index + 1}-${shortcutName}`,
-              option
-            )
-          )
+              option,
+            ),
+          ),
         );
-      })
+      }),
     );
     return icons.flat();
   }
@@ -259,13 +259,13 @@ export class AndroidPlatform extends Platform {
                     src: this.cacheBusting(
                       relativeTo(
                         basePath,
-                        `shortcut${index + 1}-${shortcutName}`
-                      )
+                        `shortcut${index + 1}-${shortcutName}`,
+                      ),
                     ),
                     sizes: `${width}x${height}`,
                     type: "image/png",
                   };
-                }
+                },
               )
             : undefined,
         };

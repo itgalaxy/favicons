@@ -34,7 +34,7 @@ test("should generate svg favicon", async () => {
 
   const svg = result.images[0].contents;
   const deterministicSvg = Buffer.from(
-    svg.toString().replace(/png;base64,[^"]+/, "")
+    svg.toString().replace(/png;base64,[^"]+/, ""),
   );
   await expect({
     ...result,

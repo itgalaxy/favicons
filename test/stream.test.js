@@ -27,7 +27,7 @@ function classify(name) {
 function stat(array) {
   return array.reduce(
     (acc, type) => ({ ...acc, [type]: (acc[type] ?? 0) + 1 }),
-    {}
+    {},
   );
 }
 
@@ -47,12 +47,12 @@ test("should provide stream interface", async () => {
         } else {
           resolve();
         }
-      }
+      },
     );
   });
 
   expect(
-    sink.result.every((chunk) => Buffer.isBuffer(chunk.contents))
+    sink.result.every((chunk) => Buffer.isBuffer(chunk.contents)),
   ).toBeTruthy();
 
   const types = stat(sink.result.map((chunk) => classify(chunk.name)));

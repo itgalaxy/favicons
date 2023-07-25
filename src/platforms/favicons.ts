@@ -15,7 +15,7 @@ export class FaviconsPlatform extends Platform {
   constructor(options: FaviconOptions) {
     super(
       options,
-      uniformIconOptions(options, options.icons.favicons, ICONS_OPTIONS)
+      uniformIconOptions(options, options.icons.favicons, ICONS_OPTIONS),
     );
   }
 

@@ -17,7 +17,7 @@ import sharp from "sharp";
 export function svgDensity(
   metadata: sharp.Metadata,
   width: number,
-  height: number
+  height: number,
 ): number | undefined {
   if (!metadata.width || !metadata.height) {
     return undefined;
@@ -28,8 +28,8 @@ export function svgDensity(
       1,
       currentDensity,
       (currentDensity * width) / metadata.width,
-      (currentDensity * height) / metadata.height
+      (currentDensity * height) / metadata.height,
     ),
-    100000
+    100000,
   );
 }
