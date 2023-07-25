@@ -24,7 +24,7 @@ export class AppleIconPlatform extends Platform {
   constructor(options: FaviconOptions) {
     super(
       options,
-      uniformIconOptions(options, options.icons.appleIcon, ICONS_OPTIONS)
+      uniformIconOptions(options, options.icons.appleIcon, ICONS_OPTIONS),
     );
   }
 

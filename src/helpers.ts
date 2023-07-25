@@ -44,19 +44,19 @@ function minByKey<T>(array: T[], keyFn: (e: T) => unknown): T {
 
 export function mapValues<T, U>(
   dict: Record<string, T>,
-  mapper: (value: T, key: string) => U
+  mapper: (value: T, key: string) => U,
 ): Record<string, U> {
   return Object.fromEntries(
-    Object.entries(dict).map(([key, value]) => [key, mapper(value, key)])
+    Object.entries(dict).map(([key, value]) => [key, mapper(value, key)]),
   );
 }
 
 export function filterKeys<T>(
   dict: Record<string, T>,
-  predicate: (key: string) => boolean
+  predicate: (key: string) => boolean,
 ): Record<string, T> {
   return Object.fromEntries(
-    Object.entries(dict).filter((pair) => predicate(pair[0]))
+    Object.entries(dict).filter((pair) => predicate(pair[0])),
   );
 }
 
@@ -67,7 +67,7 @@ export function asString(arg: unknown): string | undefined {
 }
 
 export async function sourceImages(
-  src: string | Buffer | (string | Buffer)[]
+  src: string | Buffer | (string | Buffer)[],
 ): Promise<SourceImage[]> {
   if (Buffer.isBuffer(src)) {
     try {
@@ -109,7 +109,7 @@ function flattenIconOptions(iconOptions: IconOptions): IconPlaneOptions[] {
 
 export function relativeTo(
   base: string | undefined | null,
-  path: string
+  path: string,
 ): string {
   if (!base) {
     return path;
@@ -124,7 +124,7 @@ export function relativeTo(
 function bestSource(
   sourceset: SourceImage[],
   width: number,
-  height: number
+  height: number,
 ): SourceImage {
   const sideSize = Math.max(width, height);
   return minByKey(sourceset, (icon) => {
@@ -141,7 +141,7 @@ async function resize(
   source: SourceImage,
   width: number,
   height: number,
-  pixelArt: boolean
+  pixelArt: boolean,
 ): Promise<Buffer> {
   if (source.metadata.format === "svg") {
     const options = {
@@ -177,7 +177,7 @@ async function resize(
 function createBlankImage(
   width: number,
   height: number,
-  background?: string
+  background?: string,
 ): sharp.Sharp {
   const transparent = !background || background === "transparent";
 
@@ -198,11 +198,11 @@ function createBlankImage(
 
 async function createPlane(
   sourceset: SourceImage[],
-  options: IconPlaneOptions
+  options: IconPlaneOptions,
 ): Promise<sharp.Sharp> {
   const offset =
     Math.round(
-      (Math.max(options.width, options.height) * options.offset) / 100
+      (Math.max(options.width, options.height) * options.offset) / 100,
     ) || 0;
   const width = options.width - offset * 2;
   const height = options.height - offset * 2;
@@ -213,7 +213,7 @@ async function createPlane(
   let pipeline = createBlankImage(
     options.width,
     options.height,
-    options.background
+    options.background,
   ).composite([{ input: image, left: offset, top: offset }]);
 
   if (options.rotate) {
@@ -237,7 +237,7 @@ function toPng(pipeline: sharp.Sharp): Promise<Buffer> {
 
 async function createSvg(
   sourceset: SourceImage[],
-  options: IconPlaneOptions
+  options: IconPlaneOptions,
 ): Promise<Buffer> {
   const { width, height } = options;
   const source = bestSource(sourceset, width, height);
@@ -250,7 +250,7 @@ async function createSvg(
     return Buffer.from(
       `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
   <image width="${width}" height="${height}" xlink:href="data:image/png;base64,${encodedPng}"/>
-</svg>`
+</svg>`,
     );
   }
 }
@@ -258,14 +258,14 @@ async function createSvg(
 export async function createFavicon(
   sourceset: SourceImage[],
   name: string,
-  iconOptions: IconOptions
+  iconOptions: IconOptions,
 ): Promise<FaviconImage> {
   const properties = flattenIconOptions(iconOptions);
   const ext = extname(name);
 
   if (ext === ".ico" || properties.length !== 1) {
     const images = await Promise.all(
-      properties.map((props) => createPlane(sourceset, props).then(toRawImage))
+      properties.map((props) => createPlane(sourceset, props).then(toRawImage)),
     );
     const contents = toIco(images);
     return { name, contents };

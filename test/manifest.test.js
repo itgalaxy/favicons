@@ -8,7 +8,7 @@ it("should not prefer any related applications by default", async () => {
     output: { images: false, html: false },
   });
   const manifestFile = result.files.find(
-    (file) => file.name === "manifest.webmanifest"
+    (file) => file.name === "manifest.webmanifest",
   );
 
   expect(manifestFile).toBeDefined();
@@ -39,7 +39,7 @@ it("should list preferrable related applications", async () => {
     output: { images: false, html: false },
   });
   const manifestFile = result.files.find(
-    (file) => file.name === "manifest.webmanifest"
+    (file) => file.name === "manifest.webmanifest",
   );
 
   expect(manifestFile).toBeDefined();
@@ -64,7 +64,7 @@ it("should allow renaming of manifest", async () => {
       "manifest.webmanifest",
       "browserconfig.xml",
       "yandex-browser-manifest.json",
-    ])
+    ]),
   );
 
   const result2 = await favicons(logo_png, {
@@ -82,6 +82,6 @@ it("should allow renaming of manifest", async () => {
       "android-manifest.webmanifest",
       "windows-browserconfig.xml",
       "yandex-manifest.json",
-    ])
+    ]),
   );
 });

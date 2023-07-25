@@ -12,7 +12,7 @@ export class YandexPlatform extends Platform {
   constructor(options: FaviconOptions) {
     super(
       options,
-      uniformIconOptions(options, options.icons.yandex, ICONS_OPTIONS)
+      uniformIconOptions(options, options.icons.yandex, ICONS_OPTIONS),
     );
   }
 

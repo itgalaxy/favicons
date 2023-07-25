@@ -29,7 +29,7 @@ export interface FaviconResponse {
 
 export async function favicons(
   source: string | Buffer | (string | Buffer)[],
-  options: FaviconOptions = {}
+  options: FaviconOptions = {},
 ): Promise<FaviconResponse> {
   options = {
     ...defaultOptions,
@@ -86,7 +86,7 @@ class FaviconStream extends Transform {
   override _transform(
     file: any, // eslint-disable-line @typescript-eslint/no-explicit-any -- superclass uses any
     _encoding: BufferEncoding,
-    callback: TransformCallback
+    callback: TransformCallback,
   ) {
     const { html: htmlPath, pipeHTML, ...options } = this.#options;
 

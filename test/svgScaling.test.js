@@ -17,7 +17,7 @@ test("should scale the SVG image properly", async () => {
   const result = await favicons(logo_small_svg, { icons });
 
   result.images = result.images.filter(
-    (image) => image.name === "apple-touch-icon-1024x1024.png"
+    (image) => image.name === "apple-touch-icon-1024x1024.png",
   );
 
   await expect(result).toMatchFaviconsSnapshot();
