@@ -28,11 +28,12 @@
     "pretest": "npm run lint && npm run fmt-check",
     "test-import": "node ./test-packages/test-mjs/index.js",
     "test-require": "node ./test-packages/test-cjs/index.js",
-    "test-only": "npm run build && jest",
-    "test": "npm run test-only",
+    "test": "jest",
+    "test-all": "npm test && npm run test-import && npm run test-require",
     "clean": "rimraf dist/",
+    "prebuild": "npm run clean",
     "build": "unbuild",
-    "prepare": "npm run pretest && npm run build && npm run test-import && npm run test-require"
+    "prepublishOnly": "npm run build && npm run test-all"
   },
   "keywords": [
     "favicon",
