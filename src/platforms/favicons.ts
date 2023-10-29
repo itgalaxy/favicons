@@ -1,4 +1,4 @@
-import { FaviconHtmlElement } from "../index";
+import { FaviconElement } from "../index";
 import { FaviconOptions, NamedIconOptions } from "../config/defaults";
 import { transparentIcon, transparentIcons } from "../config/icons";
 import { OptionalMixin, Platform, uniformIconOptions } from "./base";
@@ -19,20 +19,22 @@ export class FaviconsPlatform extends Platform {
     );
   }
 
-  override async createHtml(): Promise<FaviconHtmlElement[]> {
+  override async createHtml(): Promise<FaviconElement[]> {
     return this.iconOptions.map(({ name, ...options }) => {
+      const baseEle = new FaviconElement("link", {
+        rel: "icon",
+        type: "image/png",
+        href: this.cacheBusting(this.relative(name)),
+      });
       if (name.endsWith(".ico")) {
-        // prettier-ignore
-        return `<link rel="icon" type="image/x-icon" href="${this.cacheBusting(this.relative(name))}">`;
+        baseEle.attrs.type = "image/x-icon";
       } else if (name.endsWith(".svg")) {
-        // prettier-ignore
-        return `<link rel="icon" type="image/svg+xml" href="${this.cacheBusting(this.relative(name))}">`;
+        baseEle.attrs.type = "image/svg+xml";
+      } else {
+        const { width, height } = options.sizes[0];
+        baseEle.attrs.sizes = `${width}x${height}`;
       }
-
-      const { width, height } = options.sizes[0];
-
-      // prettier-ignore
-      return `<link rel="icon" type="image/png" sizes="${width}x${height}" href="${this.cacheBusting(this.relative(name))}">`;
+      return baseEle;
     });
   }
 }

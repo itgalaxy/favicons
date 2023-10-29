@@ -1,4 +1,4 @@
-import { FaviconFile, FaviconHtmlElement } from "../index";
+import { FaviconFile, FaviconElement } from "../index";
 import { FaviconOptions, NamedIconOptions } from "../config/defaults";
 import { transparentIcon } from "../config/icons";
 import { relativeTo } from "../helpers";
@@ -20,10 +20,12 @@ export class YandexPlatform extends Platform {
     return [this.manifest()];
   }
 
-  override async createHtml(): Promise<FaviconHtmlElement[]> {
-    // prettier-ignore
+  override async createHtml(): Promise<FaviconElement[]> {
     return [
-      `<link rel="yandex-tableau-widget" href="${this.cacheBusting(this.relative(this.manifestFileName()))}">`
+      new FaviconElement("link", {
+        rel: "yandex-tableau-widget",
+        href: this.cacheBusting(this.relative(this.manifestFileName())),
+      }),
     ];
   }
 
