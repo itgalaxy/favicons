@@ -21,20 +21,22 @@ export class FaviconsPlatform extends Platform {
 
   override async createHtml(): Promise<FaviconElement[]> {
     return this.iconOptions.map(({ name, ...options }) => {
-      const baseEle = new FaviconElement("link", {
+      const baseAttrs: Record<string, string> = {
         rel: "icon",
         type: "image/png",
-        href: this.cacheBusting(this.relative(name)),
-      });
+      };
       if (name.endsWith(".ico")) {
-        baseEle.attrs.type = "image/x-icon";
+        baseAttrs.type = "image/x-icon";
       } else if (name.endsWith(".svg")) {
-        baseEle.attrs.type = "image/svg+xml";
+        baseAttrs.type = "image/svg+xml";
       } else {
         const { width, height } = options.sizes[0];
-        baseEle.attrs.sizes = `${width}x${height}`;
+        baseAttrs.sizes = `${width}x${height}`;
       }
-      return baseEle;
+      return new FaviconElement("link", {
+        ...baseAttrs,
+        href: this.cacheBusting(this.relative(name)),
+      });
     });
   }
 }
