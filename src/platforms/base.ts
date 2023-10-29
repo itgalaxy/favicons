@@ -1,6 +1,6 @@
 import {
   FaviconFile,
-  FaviconElement,
+  FaviconHtmlTag,
   FaviconImage,
   FaviconResponse,
 } from "../index";
@@ -72,23 +72,19 @@ export class Platform<IO extends NamedIconOptions = NamedIconOptions> {
     this.iconOptions = iconOptions;
   }
 
-  async create(
-    sourceset: SourceImage[],
-  ): Promise<FaviconResponse<FaviconElement | string>> {
+  async create(sourceset: SourceImage[]): Promise<FaviconResponse> {
     const { output } = this.options;
     const images = output.images ? await this.createImages(sourceset) : [];
     const files = output.files ? await this.createFiles() : [];
-    let html = [];
+    let htmlTags = [];
     if (output.html) {
-      const htmlElements = await this.createHtml();
-      html = this.options.htmlUnStringified
-        ? htmlElements
-        : htmlElements.map((element) => element.stringify());
+      htmlTags = await this.createHtml();
     }
     return {
       images,
       files,
-      html,
+      html: htmlTags.map((element) => element.stringify()),
+      htmlTags,
     };
   }
 
@@ -104,7 +100,7 @@ export class Platform<IO extends NamedIconOptions = NamedIconOptions> {
     return [];
   }
 
-  async createHtml(): Promise<FaviconElement[]> {
+  async createHtml(): Promise<FaviconHtmlTag[]> {
     return [];
   }
 

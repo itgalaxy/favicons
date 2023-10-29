@@ -164,6 +164,414 @@ exports[`should allow setting an URL prefix 71`] = `
     "<meta name="msapplication-config" content="https://domain/subdomain/browserconfig.xml">",
     "<link rel="yandex-tableau-widget" href="https://domain/subdomain/yandex-browser-manifest.json">",
   ],
+  "htmlTags": [
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/favicon.ico",
+        "rel": "icon",
+        "type": "image/x-icon",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/favicon-16x16.png",
+        "rel": "icon",
+        "sizes": "16x16",
+        "type": "image/png",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/favicon-32x32.png",
+        "rel": "icon",
+        "sizes": "32x32",
+        "type": "image/png",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/favicon-48x48.png",
+        "rel": "icon",
+        "sizes": "48x48",
+        "type": "image/png",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/manifest.webmanifest",
+        "rel": "manifest",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "content": "yes",
+        "name": "mobile-web-app-capable",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "content": "#fff",
+        "name": "theme-color",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "name": "application-name",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-icon-57x57.png",
+        "rel": "apple-touch-icon",
+        "sizes": "57x57",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-icon-60x60.png",
+        "rel": "apple-touch-icon",
+        "sizes": "60x60",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-icon-72x72.png",
+        "rel": "apple-touch-icon",
+        "sizes": "72x72",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-icon-76x76.png",
+        "rel": "apple-touch-icon",
+        "sizes": "76x76",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-icon-114x114.png",
+        "rel": "apple-touch-icon",
+        "sizes": "114x114",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-icon-120x120.png",
+        "rel": "apple-touch-icon",
+        "sizes": "120x120",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-icon-144x144.png",
+        "rel": "apple-touch-icon",
+        "sizes": "144x144",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-icon-152x152.png",
+        "rel": "apple-touch-icon",
+        "sizes": "152x152",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-icon-167x167.png",
+        "rel": "apple-touch-icon",
+        "sizes": "167x167",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-icon-180x180.png",
+        "rel": "apple-touch-icon",
+        "sizes": "180x180",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-icon-1024x1024.png",
+        "rel": "apple-touch-icon",
+        "sizes": "1024x1024",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "content": "yes",
+        "name": "apple-mobile-web-app-capable",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "content": "black-translucent",
+        "name": "apple-mobile-web-app-status-bar-style",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "name": "apple-mobile-web-app-title",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-640x1136.png",
+        "media": "(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-1136x640.png",
+        "media": "(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-750x1334.png",
+        "media": "(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-1334x750.png",
+        "media": "(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-1125x2436.png",
+        "media": "(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-2436x1125.png",
+        "media": "(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-1170x2532.png",
+        "media": "(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-2532x1170.png",
+        "media": "(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-828x1792.png",
+        "media": "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-1792x828.png",
+        "media": "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-1242x2688.png",
+        "media": "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-2688x1242.png",
+        "media": "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-1242x2208.png",
+        "media": "(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-2208x1242.png",
+        "media": "(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-1284x2778.png",
+        "media": "(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-2778x1284.png",
+        "media": "(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-1536x2048.png",
+        "media": "(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-2048x1536.png",
+        "media": "(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-1620x2160.png",
+        "media": "(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-2160x1620.png",
+        "media": "(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-1668x2388.png",
+        "media": "(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-2388x1668.png",
+        "media": "(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-1668x2224.png",
+        "media": "(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-2224x1668.png",
+        "media": "(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-2048x2732.png",
+        "media": "(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/apple-touch-startup-image-2732x2048.png",
+        "media": "(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "content": "#fff",
+        "name": "msapplication-TileColor",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "content": "https://domain/subdomain/mstile-144x144.png",
+        "name": "msapplication-TileImage",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "content": "https://domain/subdomain/browserconfig.xml",
+        "name": "msapplication-config",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "https://domain/subdomain/yandex-browser-manifest.json",
+        "rel": "yandex-tableau-widget",
+      },
+      "tag": "link",
+    },
+  ],
   "images": [
     {
       "contents": null,

@@ -19,11 +19,8 @@ export const config = {
   defaults: defaultOptions,
 };
 
-export type FaviconHtmlElement = {
-  readonly tag: string;
-  readonly attrs: Record<string, string | boolean>;
-};
-export class FaviconElement implements FaviconHtmlElement {
+export type FaviconHtmlElement = string;
+export class FaviconHtmlTag {
   readonly tag: string;
   readonly attrs: Record<string, string | boolean>;
 
@@ -46,25 +43,18 @@ export class FaviconElement implements FaviconHtmlElement {
   }
 }
 
-export interface FaviconResponse<T> {
+export interface FaviconResponse {
   readonly images: FaviconImage[];
   readonly files: FaviconFile[];
-  readonly html: T[];
+  readonly html: FaviconHtmlElement[];
+  readonly htmlTags: FaviconHtmlTag[];
 }
 
 export type FaviconsSource = string | Buffer | (string | Buffer)[];
 export async function favicons(
   source: FaviconsSource,
-  options: FaviconOptions & { readonly htmlUnStringified: true },
-): Promise<FaviconResponse<FaviconElement>>;
-export async function favicons(
-  source: FaviconsSource,
-  options: FaviconOptions & { readonly htmlUnStringified: false },
-): Promise<FaviconResponse<string>>;
-export async function favicons(
-  source: FaviconsSource,
   options: FaviconOptions & { readonly htmlUnStringified?: boolean } = {},
-): Promise<FaviconResponse<FaviconElement | string>> {
+): Promise<FaviconResponse> {
   options = {
     ...defaultOptions,
     ...options,
@@ -82,7 +72,7 @@ export async function favicons(
       return a.localeCompare(b);
     });
 
-  const responses: FaviconResponse<FaviconElement | string>[] = [];
+  const responses: FaviconResponse[] = [];
 
   for (const platformName of platforms) {
     const platform = getPlatform(platformName, options);
@@ -94,6 +84,7 @@ export async function favicons(
     images: responses.flatMap((r) => r.images),
     files: responses.flatMap((r) => r.files),
     html: responses.flatMap((r) => r.html),
+    htmlTags: responses.flatMap((r) => r.htmlTags),
   };
 }
 
@@ -105,23 +96,18 @@ export interface FaviconStreamOptions extends FaviconOptions {
   readonly emitBuffers?: boolean;
 }
 
-export type HandleHTML<K> = (html: K[]) => void;
+export type HandleHTML = (
+  html: FaviconHtmlElement[],
+  htmlTags: FaviconHtmlTag[],
+) => void;
 
-class FaviconStream<T> extends Transform {
+class FaviconStream extends Transform {
   #options: FaviconStreamOptions & { readonly htmlUnStringified?: boolean };
-  #handleHTML: HandleHTML<T extends true ? FaviconElement : string>;
+  #handleHTML: HandleHTML;
 
-  constructor(
-    options: FaviconStreamOptions & { readonly htmlUnStringified: T & false },
-    handleHTML: HandleHTML<T extends true ? FaviconElement : string>,
-  );
-  constructor(
-    options: FaviconStreamOptions & { readonly htmlUnStringified: T & true },
-    handleHTML: HandleHTML<T extends true ? FaviconElement : string>,
-  );
   constructor(
     options: FaviconStreamOptions & { readonly htmlUnStringified?: boolean },
-    handleHTML: HandleHTML<T extends true ? FaviconElement : string>,
+    handleHTML: HandleHTML,
   ) {
     super({ objectMode: true });
     this.#options = options;
@@ -136,7 +122,7 @@ class FaviconStream<T> extends Transform {
     const { html: htmlPath, pipeHTML, ...options } = this.#options;
 
     favicons(file, { ...options, htmlUnStringified: true })
-      .then(({ images, files, html }) => {
+      .then(({ images, files, html, htmlTags }) => {
         for (const { name, contents } of [...images, ...files]) {
           this.push({
             name,
@@ -145,9 +131,7 @@ class FaviconStream<T> extends Transform {
         }
 
         if (this.#handleHTML) {
-          this.#handleHTML(
-            <(T extends true ? FaviconElement : string)[]>(<unknown>html),
-          );
+          this.#handleHTML(html, htmlTags);
         }
 
         if (pipeHTML) {
@@ -169,20 +153,6 @@ class FaviconStream<T> extends Transform {
   }
 }
 
-export function stream<T>(
-  options: FaviconStreamOptions & { readonly htmlUnStringified: T & false },
-  handleHTML: HandleHTML<T extends true ? FaviconElement : string>,
-): FaviconStream<false>;
-export function stream<T>(
-  options: FaviconStreamOptions & { readonly htmlUnStringified: T & true },
-  handleHTML: HandleHTML<T extends true ? FaviconElement : string>,
-): FaviconStream<true>;
-export function stream<T>(
-  options: FaviconStreamOptions & { readonly htmlUnStringified: T },
-  handleHTML: HandleHTML<T extends true ? FaviconElement : string>,
-) {
-  return new FaviconStream(
-    options as typeof options & { readonly htmlUnStringified: T & true },
-    handleHTML,
-  ) as T extends true ? FaviconStream<true> : FaviconStream<false>;
+export function stream(options: FaviconStreamOptions, handleHTML: HandleHTML) {
+  return new FaviconStream(options, handleHTML);
 }

@@ -112,6 +112,63 @@ exports[`should images without options.path to manifests when manifestRelativePa
     "<meta name="msapplication-config" content="/favicons/browserconfig.xml">",
     "<link rel="yandex-tableau-widget" href="/favicons/yandex-browser-manifest.json">",
   ],
+  "htmlTags": [
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/favicons/manifest.webmanifest",
+        "rel": "manifest",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "content": "yes",
+        "name": "mobile-web-app-capable",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "content": "#fff",
+        "name": "theme-color",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "name": "application-name",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "content": "#fff",
+        "name": "msapplication-TileColor",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "content": "/favicons/mstile-144x144.png",
+        "name": "msapplication-TileImage",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "content": "/favicons/browserconfig.xml",
+        "name": "msapplication-config",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/favicons/yandex-browser-manifest.json",
+        "rel": "yandex-tableau-widget",
+      },
+      "tag": "link",
+    },
+  ],
   "images": [
     {
       "contents": null,

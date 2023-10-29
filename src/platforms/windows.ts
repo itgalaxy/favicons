@@ -1,5 +1,5 @@
 import xml2js from "xml2js";
-import { FaviconElement, FaviconFile } from "../index";
+import { FaviconHtmlTag, FaviconFile } from "../index";
 import { FaviconOptions, IconSize, NamedIconOptions } from "../config/defaults";
 import { transparentIcon } from "../config/icons";
 import { relativeTo } from "../helpers";
@@ -43,21 +43,21 @@ export class WindowsPlatform extends Platform {
     return [this.browserConfig()];
   }
 
-  override async createHtml(): Promise<FaviconElement[]> {
+  override async createHtml(): Promise<FaviconHtmlTag[]> {
     const tile = "mstile-144x144.png";
 
     return [
-      new FaviconElement("meta", {
+      new FaviconHtmlTag("meta", {
         name: "msapplication-TileColor",
         content: this.options.background,
       }),
       this.iconOptions.find((iconOption) => iconOption.name === tile)
-        ? new FaviconElement("meta", {
+        ? new FaviconHtmlTag("meta", {
             name: "msapplication-TileImage",
             content: this.cacheBusting(this.relative(tile)),
           })
         : undefined,
-      new FaviconElement("meta", {
+      new FaviconHtmlTag("meta", {
         name: "msapplication-config",
         content: this.cacheBusting(this.relative(this.manifestFileName())),
       }),
