@@ -42,7 +42,7 @@ export class FaviconElement implements FaviconHtmlElement {
       .filter(Boolean)
       .join(" ");
 
-    return `<${this.tag} ${attrs || ""} />`;
+    return `<${this.tag} ${attrs || ""}>`;
   }
 }
 

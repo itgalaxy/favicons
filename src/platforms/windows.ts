@@ -48,7 +48,7 @@ export class WindowsPlatform extends Platform {
 
     return [
       new FaviconElement("meta", {
-        name: "msapplication-TileImage",
+        name: "msapplication-TileColor",
         content: this.options.background,
       }),
       this.iconOptions.find((iconOption) => iconOption.name === tile)

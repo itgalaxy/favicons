@@ -1,10 +1,5 @@
 import escapeHtml from "escape-html";
-import {
-  FaviconElement,
-  FaviconFile,
-  FaviconElement,
-  FaviconImage,
-} from "../index";
+import { FaviconElement, FaviconFile, FaviconImage } from "../index";
 import {
   FaviconOptions,
   IconOptions,
