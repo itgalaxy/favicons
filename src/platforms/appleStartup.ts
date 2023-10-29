@@ -1,4 +1,4 @@
-import { FaviconHtmlElement } from "../index";
+import { FaviconElement } from "../index";
 import { FaviconOptions, NamedIconOptions } from "../config/defaults";
 import { opaqueIcon } from "../config/icons";
 import { Platform, uniformIconOptions } from "./base";
@@ -66,10 +66,14 @@ export class AppleStartupPlatform extends Platform<AppleStartupImage> {
     );
   }
 
-  override async createHtml(): Promise<FaviconHtmlElement[]> {
-    // prettier-ignore
-    return this.iconOptions.map((item) =>
-      `<link rel="apple-touch-startup-image" media="(device-width: ${item.deviceWidth}px) and (device-height: ${item.deviceHeight}px) and (-webkit-device-pixel-ratio: ${item.pixelRatio}) and (orientation: ${item.orientation})" href="${this.cacheBusting(this.relative(item.name))}">`
+  override async createHtml(): Promise<FaviconElement[]> {
+    return this.iconOptions.map(
+      (item) =>
+        new FaviconElement("link", {
+          rel: "apple-touch-startup-image",
+          media: `(device-width: ${item.deviceWidth}px) and (device-height: ${item.deviceHeight}px) and (-webkit-device-pixel-ratio: ${item.pixelRatio}) and (orientation: ${item.orientation})`,
+          href: this.cacheBusting(this.relative(item.name)),
+        }),
     );
   }
 }
