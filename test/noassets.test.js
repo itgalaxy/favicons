@@ -18,6 +18,7 @@ test("should allow disabling asset generation", async () => {
   expect(result).toStrictEqual({
     files: [],
     images: [],
+    htmlTags: [],
     html: [],
   });
 });

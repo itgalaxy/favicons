@@ -1,4 +1,4 @@
-import { FaviconElement } from "../index";
+import { FaviconHtmlTag } from "../index";
 import { FaviconOptions, NamedIconOptions } from "../config/defaults";
 import { transparentIcon, transparentIcons } from "../config/icons";
 import { OptionalMixin, Platform, uniformIconOptions } from "./base";
@@ -19,7 +19,7 @@ export class FaviconsPlatform extends Platform {
     );
   }
 
-  override async createHtml(): Promise<FaviconElement[]> {
+  override async createHtml(): Promise<FaviconHtmlTag[]> {
     return this.iconOptions.map(({ name, ...options }) => {
       const baseAttrs: Record<string, string> = {
         rel: "icon",
@@ -33,7 +33,7 @@ export class FaviconsPlatform extends Platform {
         const { width, height } = options.sizes[0];
         baseAttrs.sizes = `${width}x${height}`;
       }
-      return new FaviconElement("link", {
+      return new FaviconHtmlTag("link", {
         ...baseAttrs,
         href: this.cacheBusting(this.relative(name)),
       });

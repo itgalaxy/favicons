@@ -1,5 +1,5 @@
 import escapeHtml from "escape-html";
-import { FaviconElement, FaviconFile, FaviconImage } from "../index";
+import { FaviconHtmlTag, FaviconFile, FaviconImage } from "../index";
 import {
   FaviconOptions,
   IconOptions,
@@ -136,32 +136,32 @@ export class AndroidPlatform extends Platform {
     return [this.manifest()];
   }
 
-  override async createHtml(): Promise<FaviconElement[]> {
+  override async createHtml(): Promise<FaviconHtmlTag[]> {
     return [
       this.options.loadManifestWithCredentials
-        ? new FaviconElement("link", {
+        ? new FaviconHtmlTag("link", {
             rel: "manifest",
             href: this.cacheBusting(this.relative(this.manifestFileName())),
             crossOrigin: "use-credentials",
           })
-        : new FaviconElement("link", {
+        : new FaviconHtmlTag("link", {
             rel: "manifest",
             href: this.cacheBusting(this.relative(this.manifestFileName())),
           }),
-      new FaviconElement("meta", {
+      new FaviconHtmlTag("meta", {
         name: "mobile-web-app-capable",
         content: "yes",
       }),
-      new FaviconElement("meta", {
+      new FaviconHtmlTag("meta", {
         name: "theme-color",
         content: this.options.theme_color || this.options.background,
       }),
       this.options.appName
-        ? new FaviconElement("meta", {
+        ? new FaviconHtmlTag("meta", {
             name: "application-name",
             content: escapeHtml(this.options.appName),
           })
-        : new FaviconElement("meta", {
+        : new FaviconHtmlTag("meta", {
             name: "application-name",
           }),
     ];
