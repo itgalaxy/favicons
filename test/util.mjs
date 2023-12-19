@@ -1,7 +1,8 @@
-import * as path from "path";
+import { fileURLToPath } from "node:url";
 
-function fixture(uri) {
-  return path.resolve(__dirname, "fixtures", uri);
+function fixture(name) {
+  const url = new URL(`fixtures/${name}`, import.meta.url);
+  return fileURLToPath(url);
 }
 
 export const logo_png = fixture("logo.png");

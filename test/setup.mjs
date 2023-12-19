@@ -10,7 +10,7 @@ async function imagePlanes(image) {
     return [image];
   }
 
-  const planes = await ICO.parse(image.contents, "image/png");
+  const planes = await ICO.parseICO(image.contents, "image/png");
   const result = [];
 
   for (const plane of planes) {
