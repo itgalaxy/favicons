@@ -6,6 +6,16 @@ exports[`should generate svg favicon 1`] = `
   "html": [
     "<link rel="icon" type="image/svg+xml" href="/favicon.svg">",
   ],
+  "htmlTags": [
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/favicon.svg",
+        "rel": "icon",
+        "type": "image/svg+xml",
+      },
+      "tag": "link",
+    },
+  ],
   "images": [
     {
       "contents": "<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 1024 1024" width="1024" height="1024">
@@ -25,6 +35,43 @@ exports[`should generate svg favicon 10`] = `
     "<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">",
     "<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">",
     "<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">",
+  ],
+  "htmlTags": [
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/favicon.ico",
+        "rel": "icon",
+        "type": "image/x-icon",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/favicon-16x16.png",
+        "rel": "icon",
+        "sizes": "16x16",
+        "type": "image/png",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/favicon-32x32.png",
+        "rel": "icon",
+        "sizes": "32x32",
+        "type": "image/png",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/favicon-48x48.png",
+        "rel": "icon",
+        "sizes": "48x48",
+        "type": "image/png",
+      },
+      "tag": "link",
+    },
   ],
   "images": [
     {
@@ -52,6 +99,16 @@ exports[`should reuse svg as a favicon 1`] = `
   "files": [],
   "html": [
     "<link rel="icon" type="image/svg+xml" href="/favicon.svg">",
+  ],
+  "htmlTags": [
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/favicon.svg",
+        "rel": "icon",
+        "type": "image/svg+xml",
+      },
+      "tag": "link",
+    },
   ],
   "images": [
     {
