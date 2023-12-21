@@ -1,5 +1,50 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`should generate svg as a android icon 1`] = `
+{
+  "files": [
+    {
+      "contents": "{
+  "name": null,
+  "short_name": null,
+  "description": null,
+  "dir": "auto",
+  "lang": "en-US",
+  "display": "standalone",
+  "orientation": "any",
+  "start_url": "/?homescreen=1",
+  "background_color": "#fff",
+  "theme_color": "#fff",
+  "icons": [
+    {
+      "src": "/android-chrome.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}",
+      "name": "manifest.webmanifest",
+    },
+  ],
+  "html": [
+    "<link rel="manifest" href="/manifest.webmanifest">",
+    "<meta name="mobile-web-app-capable" content="yes">",
+    "<meta name="theme-color" content="#fff">",
+    "<meta name="application-name">",
+  ],
+  "images": [
+    {
+      "contents": "<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1500 1500" width="1500" height="1500">
+  <path fill="#ff8c8c" fill-rule="evenodd" stroke="#ff8c8c" stroke-linecap="round" stroke-linejoin="round" stroke-width="125" d="M636.39443 914.97056L407.70197 686.75804l-81.36252 82.95151 310.61677 310.46155 537.00668-538.1103-83.356-82.94415z"/>
+</svg>
+",
+      "name": "android-chrome.svg",
+    },
+  ],
+}
+`;
+
 exports[`should generate svg favicon 1`] = `
 {
   "files": [],

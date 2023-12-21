@@ -12,7 +12,7 @@ import {
   SourceImage,
   sourceImages,
 } from "../helpers";
-import { Platform, uniformIconOptions } from "./base";
+import { OptionalMixin, Platform, uniformIconOptions } from "./base";
 
 interface Icon {
   readonly src: string;
@@ -28,7 +28,7 @@ interface Shortcut {
   readonly icons?: Icon[];
 }
 
-const ICONS_OPTIONS: NamedIconOptions[] = [
+const ICONS_OPTIONS: (NamedIconOptions & OptionalMixin)[] = [
   { name: "android-chrome-36x36.png", ...transparentIcon(36) },
   { name: "android-chrome-48x48.png", ...transparentIcon(48) },
   { name: "android-chrome-72x72.png", ...transparentIcon(72) },
@@ -38,6 +38,7 @@ const ICONS_OPTIONS: NamedIconOptions[] = [
   { name: "android-chrome-256x256.png", ...transparentIcon(256) },
   { name: "android-chrome-384x384.png", ...transparentIcon(384) },
   { name: "android-chrome-512x512.png", ...transparentIcon(512) },
+  { name: "android-chrome.svg", ...transparentIcon(1024), optional: true },
 ];
 
 const ICONS_OPTIONS_MASKABLE: NamedIconOptions[] = [
@@ -222,14 +223,16 @@ export class AndroidPlatform extends Platform {
       options.manifestMaskable === true ? "any maskable" : "any";
 
     properties.icons = icons.map((iconOptions) => {
-      const { width, height } = iconOptions.sizes[0];
+      const src = this.cacheBusting(relativeTo(basePath, iconOptions.name));
+      const purpose = iconOptions.purpose ?? defaultPurpose;
 
-      return {
-        src: this.cacheBusting(relativeTo(basePath, iconOptions.name)),
-        sizes: `${width}x${height}`,
-        type: "image/png",
-        purpose: iconOptions.purpose ?? defaultPurpose,
-      };
+      if (iconOptions.name.endsWith(".svg")) {
+        return { src, sizes: "any", type: "image/svg+xml", purpose };
+      } else {
+        // png
+        const { width, height } = iconOptions.sizes[0];
+        return { src, sizes: `${width}x${height}`, type: "image/png", purpose };
+      }
     });
 
     if (Array.isArray(options.shortcuts) && options.shortcuts.length > 0) {
