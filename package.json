@@ -1,6 +1,6 @@
 {
   "name": "favicons",
-  "version": "7.1.4",
+  "version": "7.1.5",
   "description": "Favicon generator for Node.js",
   "type": "module",
   "main": "./dist/index.cjs",
