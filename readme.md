@@ -48,6 +48,7 @@ const configuration = {
   icons: {
     // Platform Options:
     // - offset - offset in percentage
+    // - source - set different source image(s). `string`, `buffer`, array of `string` or function
     // - background:
     //   * false - use default
     //   * true - force use default, e.g. set background for Android icons
