@@ -1,0 +1,577 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should allow setting an URL query parameter for cache busting 1`] = `
+{
+  "files": [
+    {
+      "contents": "{
+  "name": null,
+  "short_name": null,
+  "description": null,
+  "dir": "auto",
+  "lang": "en-US",
+  "display": "standalone",
+  "orientation": "any",
+  "start_url": "/?homescreen=1",
+  "background_color": "#fff",
+  "theme_color": "#fff",
+  "icons": [
+    {
+      "src": "/android-chrome-36x36.png?v=1",
+      "sizes": "36x36",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-48x48.png?v=1",
+      "sizes": "48x48",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-72x72.png?v=1",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-96x96.png?v=1",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-144x144.png?v=1",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-192x192.png?v=1",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-256x256.png?v=1",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-384x384.png?v=1",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-512x512.png?v=1",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}",
+      "name": "manifest.webmanifest",
+    },
+    {
+      "contents": "<?xml version="1.0" encoding="utf-8"?>
+<browserconfig>
+  <msapplication>
+    <tile>
+      <square70x70logo src="/mstile-70x70.png?v=1"/>
+      <square150x150logo src="/mstile-150x150.png?v=1"/>
+      <wide310x150logo src="/mstile-310x150.png?v=1"/>
+      <square310x310logo src="/mstile-310x310.png?v=1"/>
+      <TileColor>#fff</TileColor>
+    </tile>
+  </msapplication>
+</browserconfig>",
+      "name": "browserconfig.xml",
+    },
+    {
+      "contents": "{
+  "version": "1.0",
+  "api_version": 1,
+  "layout": {
+    "logo": "/yandex-browser-50x50.png?v=1",
+    "color": "#fff",
+    "show_title": true
+  }
+}",
+      "name": "yandex-browser-manifest.json",
+    },
+  ],
+  "html": [
+    "<link rel="icon" type="image/x-icon" href="/favicon.ico?v=1">",
+    "<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=1">",
+    "<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=1">",
+    "<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png?v=1">",
+    "<link rel="manifest" href="/manifest.webmanifest?v=1">",
+    "<meta name="mobile-web-app-capable" content="yes">",
+    "<meta name="theme-color" content="#fff">",
+    "<meta name="application-name">",
+    "<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png?v=1">",
+    "<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png?v=1">",
+    "<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png?v=1">",
+    "<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png?v=1">",
+    "<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png?v=1">",
+    "<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png?v=1">",
+    "<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png?v=1">",
+    "<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png?v=1">",
+    "<link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon-167x167.png?v=1">",
+    "<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png?v=1">",
+    "<link rel="apple-touch-icon" sizes="1024x1024" href="/apple-touch-icon-1024x1024.png?v=1">",
+    "<meta name="apple-mobile-web-app-capable" content="yes">",
+    "<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">",
+    "<meta name="apple-mobile-web-app-title">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/apple-touch-startup-image-640x1136.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="/apple-touch-startup-image-1136x640.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/apple-touch-startup-image-750x1334.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="/apple-touch-startup-image-1334x750.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/apple-touch-startup-image-1125x2436.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" href="/apple-touch-startup-image-2436x1125.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/apple-touch-startup-image-1170x2532.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" href="/apple-touch-startup-image-2532x1170.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/apple-touch-startup-image-1179x2556.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" href="/apple-touch-startup-image-2556x1179.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/apple-touch-startup-image-828x1792.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="/apple-touch-startup-image-1792x828.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/apple-touch-startup-image-1242x2688.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" href="/apple-touch-startup-image-2688x1242.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/apple-touch-startup-image-1242x2208.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" href="/apple-touch-startup-image-2208x1242.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/apple-touch-startup-image-1284x2778.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" href="/apple-touch-startup-image-2778x1284.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/apple-touch-startup-image-1290x2796.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" href="/apple-touch-startup-image-2796x1290.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/apple-touch-startup-image-1488x2266.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="/apple-touch-startup-image-2266x1488.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/apple-touch-startup-image-1536x2048.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="/apple-touch-startup-image-2048x1536.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/apple-touch-startup-image-1620x2160.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="/apple-touch-startup-image-2160x1620.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 820px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/apple-touch-startup-image-1640x2160.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 820px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="/apple-touch-startup-image-2160x1640.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/apple-touch-startup-image-1668x2388.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="/apple-touch-startup-image-2388x1668.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/apple-touch-startup-image-1668x2224.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="/apple-touch-startup-image-2224x1668.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/apple-touch-startup-image-2048x2732.png?v=1">",
+    "<link rel="apple-touch-startup-image" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="/apple-touch-startup-image-2732x2048.png?v=1">",
+    "<meta name="msapplication-TileColor" content="#fff">",
+    "<meta name="msapplication-TileImage" content="/mstile-144x144.png?v=1">",
+    "<meta name="msapplication-config" content="/browserconfig.xml?v=1">",
+    "<link rel="yandex-tableau-widget" href="/yandex-browser-manifest.json?v=1">",
+  ],
+  "htmlTags": [
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/favicon.ico?v=1",
+        "rel": "icon",
+        "type": "image/x-icon",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/favicon-16x16.png?v=1",
+        "rel": "icon",
+        "sizes": "16x16",
+        "type": "image/png",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/favicon-32x32.png?v=1",
+        "rel": "icon",
+        "sizes": "32x32",
+        "type": "image/png",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/favicon-48x48.png?v=1",
+        "rel": "icon",
+        "sizes": "48x48",
+        "type": "image/png",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/manifest.webmanifest?v=1",
+        "rel": "manifest",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "content": "yes",
+        "name": "mobile-web-app-capable",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "content": "#fff",
+        "name": "theme-color",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "name": "application-name",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-icon-57x57.png?v=1",
+        "rel": "apple-touch-icon",
+        "sizes": "57x57",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-icon-60x60.png?v=1",
+        "rel": "apple-touch-icon",
+        "sizes": "60x60",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-icon-72x72.png?v=1",
+        "rel": "apple-touch-icon",
+        "sizes": "72x72",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-icon-76x76.png?v=1",
+        "rel": "apple-touch-icon",
+        "sizes": "76x76",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-icon-114x114.png?v=1",
+        "rel": "apple-touch-icon",
+        "sizes": "114x114",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-icon-120x120.png?v=1",
+        "rel": "apple-touch-icon",
+        "sizes": "120x120",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-icon-144x144.png?v=1",
+        "rel": "apple-touch-icon",
+        "sizes": "144x144",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-icon-152x152.png?v=1",
+        "rel": "apple-touch-icon",
+        "sizes": "152x152",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-icon-167x167.png?v=1",
+        "rel": "apple-touch-icon",
+        "sizes": "167x167",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-icon-180x180.png?v=1",
+        "rel": "apple-touch-icon",
+        "sizes": "180x180",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-icon-1024x1024.png?v=1",
+        "rel": "apple-touch-icon",
+        "sizes": "1024x1024",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "content": "yes",
+        "name": "apple-mobile-web-app-capable",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "content": "black-translucent",
+        "name": "apple-mobile-web-app-status-bar-style",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "name": "apple-mobile-web-app-title",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-640x1136.png?v=1",
+        "media": "(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-1136x640.png?v=1",
+        "media": "(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-750x1334.png?v=1",
+        "media": "(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-1334x750.png?v=1",
+        "media": "(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-1125x2436.png?v=1",
+        "media": "(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-2436x1125.png?v=1",
+        "media": "(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-1170x2532.png?v=1",
+        "media": "(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-2532x1170.png?v=1",
+        "media": "(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-828x1792.png?v=1",
+        "media": "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-1792x828.png?v=1",
+        "media": "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-1242x2688.png?v=1",
+        "media": "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-2688x1242.png?v=1",
+        "media": "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-1242x2208.png?v=1",
+        "media": "(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-2208x1242.png?v=1",
+        "media": "(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-1284x2778.png?v=1",
+        "media": "(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-2778x1284.png?v=1",
+        "media": "(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-1536x2048.png?v=1",
+        "media": "(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-2048x1536.png?v=1",
+        "media": "(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-1620x2160.png?v=1",
+        "media": "(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-2160x1620.png?v=1",
+        "media": "(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-1668x2388.png?v=1",
+        "media": "(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-2388x1668.png?v=1",
+        "media": "(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-1668x2224.png?v=1",
+        "media": "(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-2224x1668.png?v=1",
+        "media": "(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-2048x2732.png?v=1",
+        "media": "(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-2732x2048.png?v=1",
+        "media": "(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "content": "#fff",
+        "name": "msapplication-TileColor",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "content": "/mstile-144x144.png?v=1",
+        "name": "msapplication-TileImage",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "content": "/browserconfig.xml?v=1",
+        "name": "msapplication-config",
+      },
+      "tag": "meta",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/yandex-browser-manifest.json?v=1",
+        "rel": "yandex-tableau-widget",
+      },
+      "tag": "link",
+    },
+  ],
+  "images": [],
+}
+`;
