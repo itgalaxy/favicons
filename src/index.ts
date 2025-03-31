@@ -20,16 +20,40 @@ export const config = {
 };
 
 export type FaviconHtmlElement = string;
+export class FaviconHtmlTag {
+  readonly tag: string;
+  readonly attrs: Record<string, string | boolean>;
+
+  constructor(tag: string, attrs: Record<string, string | boolean> = {}) {
+    this.tag = tag;
+    this.attrs = attrs;
+  }
+
+  stringify() {
+    const attrs = Object.entries(this.attrs)
+      .map(([key, value]) => {
+        if (value === true) return key;
+        if (value === false) return "";
+        return `${key}="${value}"`;
+      })
+      .filter(Boolean)
+      .join(" ");
+
+    return `<${this.tag} ${attrs || ""}>`;
+  }
+}
 
 export interface FaviconResponse {
   readonly images: FaviconImage[];
   readonly files: FaviconFile[];
   readonly html: FaviconHtmlElement[];
+  readonly htmlTags: FaviconHtmlTag[];
 }
 
+export type FaviconsSource = string | Buffer | (string | Buffer)[];
 export async function favicons(
-  source: string | Buffer | (string | Buffer)[],
-  options: FaviconOptions = {},
+  source: FaviconsSource,
+  options: FaviconOptions & { readonly htmlUnStringified?: boolean } = {},
 ): Promise<FaviconResponse> {
   options = {
     ...defaultOptions,
@@ -60,6 +84,7 @@ export async function favicons(
     images: responses.flatMap((r) => r.images),
     files: responses.flatMap((r) => r.files),
     html: responses.flatMap((r) => r.html),
+    htmlTags: responses.flatMap((r) => r.htmlTags),
   };
 }
 
@@ -71,13 +96,19 @@ export interface FaviconStreamOptions extends FaviconOptions {
   readonly emitBuffers?: boolean;
 }
 
-export type HandleHTML = (html: FaviconHtmlElement[]) => void;
+export type HandleHTML = (
+  html: FaviconHtmlElement[],
+  htmlTags: FaviconHtmlTag[],
+) => void;
 
 class FaviconStream extends Transform {
-  #options: FaviconStreamOptions;
+  #options: FaviconStreamOptions & { readonly htmlUnStringified?: boolean };
   #handleHTML: HandleHTML;
 
-  constructor(options: FaviconStreamOptions, handleHTML: HandleHTML) {
+  constructor(
+    options: FaviconStreamOptions & { readonly htmlUnStringified?: boolean },
+    handleHTML: HandleHTML,
+  ) {
     super({ objectMode: true });
     this.#options = options;
     this.#handleHTML = handleHTML;
@@ -90,8 +121,8 @@ class FaviconStream extends Transform {
   ) {
     const { html: htmlPath, pipeHTML, ...options } = this.#options;
 
-    favicons(file, options)
-      .then(({ images, files, html }) => {
+    favicons(file, { ...options, htmlUnStringified: true })
+      .then(({ images, files, html, htmlTags }) => {
         for (const { name, contents } of [...images, ...files]) {
           this.push({
             name,
@@ -100,7 +131,7 @@ class FaviconStream extends Transform {
         }
 
         if (this.#handleHTML) {
-          this.#handleHTML(html);
+          this.#handleHTML(html, htmlTags);
         }
 
         if (pipeHTML) {

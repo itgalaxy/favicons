@@ -1,6 +1,6 @@
 import {
   FaviconFile,
-  FaviconHtmlElement,
+  FaviconHtmlTag,
   FaviconImage,
   FaviconResponse,
 } from "../index";
@@ -61,20 +61,30 @@ export function uniformIconOptions<T extends NamedIconOptions>(
 }
 
 export class Platform<IO extends NamedIconOptions = NamedIconOptions> {
-  protected options: FaviconOptions;
+  protected options: FaviconOptions & { readonly htmlUnStringified?: boolean };
   protected iconOptions: IO[];
 
-  constructor(options: FaviconOptions, iconOptions: IO[]) {
+  constructor(
+    options: FaviconOptions & { readonly htmlUnStringified?: boolean },
+    iconOptions: IO[],
+  ) {
     this.options = options;
     this.iconOptions = iconOptions;
   }
 
   async create(sourceset: SourceImage[]): Promise<FaviconResponse> {
     const { output } = this.options;
+    const images = output.images ? await this.createImages(sourceset) : [];
+    const files = output.files ? await this.createFiles() : [];
+    let htmlTags = [];
+    if (output.html) {
+      htmlTags = await this.createHtml();
+    }
     return {
-      images: output.images ? await this.createImages(sourceset) : [],
-      files: output.files ? await this.createFiles() : [],
-      html: output.html ? await this.createHtml() : [],
+      images,
+      files,
+      html: htmlTags.map((element) => element.stringify()),
+      htmlTags,
     };
   }
 
@@ -90,7 +100,7 @@ export class Platform<IO extends NamedIconOptions = NamedIconOptions> {
     return [];
   }
 
-  async createHtml(): Promise<FaviconHtmlElement[]> {
+  async createHtml(): Promise<FaviconHtmlTag[]> {
     return [];
   }
 
