@@ -401,6 +401,22 @@ exports[`should allow configuring background color on selected platforms 71`] = 
     },
     FaviconHtmlTag {
       "attrs": {
+        "href": "/apple-touch-startup-image-1179x2556.png",
+        "media": "(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-2556x1179.png",
+        "media": "(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
         "href": "/apple-touch-startup-image-828x1792.png",
         "media": "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)",
         "rel": "apple-touch-startup-image",
@@ -465,6 +481,38 @@ exports[`should allow configuring background color on selected platforms 71`] = 
     },
     FaviconHtmlTag {
       "attrs": {
+        "href": "/apple-touch-startup-image-1290x2796.png",
+        "media": "(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-2796x1290.png",
+        "media": "(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-1488x2266.png",
+        "media": "(device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-2266x1488.png",
+        "media": "(device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
         "href": "/apple-touch-startup-image-1536x2048.png",
         "media": "(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)",
         "rel": "apple-touch-startup-image",
@@ -491,6 +539,22 @@ exports[`should allow configuring background color on selected platforms 71`] = 
       "attrs": {
         "href": "/apple-touch-startup-image-2160x1620.png",
         "media": "(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-1640x2160.png",
+        "media": "(device-width: 820px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)",
+        "rel": "apple-touch-startup-image",
+      },
+      "tag": "link",
+    },
+    FaviconHtmlTag {
+      "attrs": {
+        "href": "/apple-touch-startup-image-2160x1640.png",
+        "media": "(device-width: 820px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)",
         "rel": "apple-touch-startup-image",
       },
       "tag": "link",
