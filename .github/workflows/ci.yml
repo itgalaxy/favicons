@@ -17,8 +17,9 @@ jobs:
           - macOS-latest
           - windows-latest
         node-version:
-          - 18
           - 20
+          - 22
+          - 24
 
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
