@@ -78,7 +78,9 @@ export async function sourceImages(
         },
       ];
     } catch (error) {
-      return Promise.reject(new Error("Invalid image buffer"));
+      return Promise.reject(
+        new Error("Invalid image buffer", { cause: error }),
+      );
     }
   } else if (typeof src === "string") {
     const buffer = await readFile(src);
