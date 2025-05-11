@@ -21,14 +21,21 @@ export const config = {
 
 export type FaviconHtmlElement = string;
 
+export interface FaviconHtmlTag {
+  readonly tag: string;
+  readonly attrs: Record<string, string | boolean>;
+}
+
 export interface FaviconResponse {
   readonly images: FaviconImage[];
   readonly files: FaviconFile[];
   readonly html: FaviconHtmlElement[];
+  readonly htmlTags: FaviconHtmlTag[];
 }
 
+export type FaviconsSource = string | Buffer | (string | Buffer)[];
 export async function favicons(
-  source: string | Buffer | (string | Buffer)[],
+  source: FaviconsSource,
   options: FaviconOptions = {},
 ): Promise<FaviconResponse> {
   options = {
@@ -60,6 +67,7 @@ export async function favicons(
     images: responses.flatMap((r) => r.images),
     files: responses.flatMap((r) => r.files),
     html: responses.flatMap((r) => r.html),
+    htmlTags: responses.flatMap((r) => r.htmlTags),
   };
 }
 
@@ -71,7 +79,10 @@ export interface FaviconStreamOptions extends FaviconOptions {
   readonly emitBuffers?: boolean;
 }
 
-export type HandleHTML = (html: FaviconHtmlElement[]) => void;
+export type HandleHTML = (
+  html: FaviconHtmlElement[],
+  htmlTags: FaviconHtmlTag[],
+) => void;
 
 class FaviconStream extends Transform {
   #options: FaviconStreamOptions;
@@ -91,7 +102,7 @@ class FaviconStream extends Transform {
     const { html: htmlPath, pipeHTML, ...options } = this.#options;
 
     favicons(file, options)
-      .then(({ images, files, html }) => {
+      .then(({ images, files, html, htmlTags }) => {
         for (const { name, contents } of [...images, ...files]) {
           this.push({
             name,
@@ -100,7 +111,7 @@ class FaviconStream extends Transform {
         }
 
         if (this.#handleHTML) {
-          this.#handleHTML(html);
+          this.#handleHTML(html, htmlTags);
         }
 
         if (pipeHTML) {

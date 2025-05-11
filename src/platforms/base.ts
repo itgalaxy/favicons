@@ -1,6 +1,7 @@
+import escapeHTML from "escape-html";
 import {
   FaviconFile,
-  FaviconHtmlElement,
+  FaviconHtmlTag,
   FaviconImage,
   FaviconResponse,
 } from "../index";
@@ -60,6 +61,26 @@ export function uniformIconOptions<T extends NamedIconOptions>(
   }));
 }
 
+function attrSorkKey(key: string): string {
+  const attrs = ["name", "rel", "type", "media", "sizes"];
+  const index = attrs.indexOf(key);
+  return index >= 0 ? `${index}_${key}` : `z_${key}`;
+}
+
+function renderHtmlTag(tag: FaviconHtmlTag): string {
+  const attrs = Object.entries(tag.attrs)
+    .toSorted((a, b) => attrSorkKey(a[0]).localeCompare(attrSorkKey(b[0])))
+    .map(([key, value]) => {
+      if (value === true) return key;
+      if (value === false) return "";
+      return `${key}="${escapeHTML(value)}"`;
+    })
+    .filter(Boolean)
+    .join(" ");
+
+  return `<${tag.tag} ${attrs || ""}>`;
+}
+
 export class Platform<IO extends NamedIconOptions = NamedIconOptions> {
   protected options: FaviconOptions;
   protected iconOptions: IO[];
@@ -71,10 +92,17 @@ export class Platform<IO extends NamedIconOptions = NamedIconOptions> {
 
   async create(sourceset: SourceImage[]): Promise<FaviconResponse> {
     const { output } = this.options;
+    const images = output.images ? await this.createImages(sourceset) : [];
+    const files = output.files ? await this.createFiles() : [];
+    let htmlTags = [];
+    if (output.html) {
+      htmlTags = await this.createHtml();
+    }
     return {
-      images: output.images ? await this.createImages(sourceset) : [],
-      files: output.files ? await this.createFiles() : [],
-      html: output.html ? await this.createHtml() : [],
+      images,
+      files,
+      html: htmlTags.map(renderHtmlTag),
+      htmlTags,
     };
   }
 
@@ -90,7 +118,7 @@ export class Platform<IO extends NamedIconOptions = NamedIconOptions> {
     return [];
   }
 
-  async createHtml(): Promise<FaviconHtmlElement[]> {
+  async createHtml(): Promise<FaviconHtmlTag[]> {
     return [];
   }
 

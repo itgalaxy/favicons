@@ -7,6 +7,25 @@ exports[`should generate favicons of a given size 4`] = `
     "<link rel="icon" type="image/x-icon" href="/favicon.ico">",
     "<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">",
   ],
+  "htmlTags": [
+    {
+      "attrs": {
+        "href": "/favicon.ico",
+        "rel": "icon",
+        "type": "image/x-icon",
+      },
+      "tag": "link",
+    },
+    {
+      "attrs": {
+        "href": "/favicon-48x48.png",
+        "rel": "icon",
+        "sizes": "48x48",
+        "type": "image/png",
+      },
+      "tag": "link",
+    },
+  ],
   "images": [
     {
       "contents": null,

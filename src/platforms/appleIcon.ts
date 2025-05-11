@@ -1,5 +1,4 @@
-import escapeHtml from "escape-html";
-import { FaviconHtmlElement } from "../index";
+import { FaviconHtmlTag } from "../index";
 import { FaviconOptions, NamedIconOptions } from "../config/defaults";
 import { opaqueIcon } from "../config/icons";
 import { Platform, uniformIconOptions } from "./base";
@@ -28,26 +27,46 @@ export class AppleIconPlatform extends Platform {
     );
   }
 
-  override async createHtml(): Promise<FaviconHtmlElement[]> {
+  override async createHtml(): Promise<FaviconHtmlTag[]> {
     const icons = this.iconOptions
       .filter(({ name }) => /\d/.test(name)) // with a size in a name
       .map((options) => {
         const { width, height } = options.sizes[0];
-
-        // prettier-ignore
-        return `<link rel="apple-touch-icon" sizes="${width}x${height}" href="${this.cacheBusting(this.relative(options.name))}">`;
+        return {
+          tag: "link",
+          attrs: {
+            rel: "apple-touch-icon",
+            sizes: `${width}x${height}`,
+            href: this.cacheBusting(this.relative(options.name)),
+          },
+        };
       });
 
     const name = this.options.appShortName || this.options.appName;
 
-    // prettier-ignore
     return [
       ...icons,
-      `<meta name="apple-mobile-web-app-capable" content="yes">`,
-      `<meta name="apple-mobile-web-app-status-bar-style" content="${this.options.appleStatusBarStyle}">`,
-      name
-        ? `<meta name="apple-mobile-web-app-title" content="${escapeHtml(name)}">`
-        : `<meta name="apple-mobile-web-app-title">`
+      {
+        tag: "meta",
+        attrs: {
+          name: "apple-mobile-web-app-capable",
+          content: "yes",
+        },
+      },
+      {
+        tag: "meta",
+        attrs: {
+          name: "apple-mobile-web-app-status-bar-style",
+          content: this.options.appleStatusBarStyle,
+        },
+      },
+      {
+        tag: "meta",
+        attrs: {
+          name: "apple-mobile-web-app-title",
+          content: name || false,
+        },
+      },
     ];
   }
 }

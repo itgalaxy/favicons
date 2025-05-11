@@ -1,5 +1,5 @@
 import xml2js from "xml2js";
-import { FaviconFile, FaviconHtmlElement } from "../index";
+import { FaviconHtmlTag, FaviconFile } from "../index";
 import { FaviconOptions, IconSize, NamedIconOptions } from "../config/defaults";
 import { transparentIcon } from "../config/icons";
 import { relativeTo } from "../helpers";
@@ -43,16 +43,33 @@ export class WindowsPlatform extends Platform {
     return [this.browserConfig()];
   }
 
-  override async createHtml(): Promise<FaviconHtmlElement[]> {
+  override async createHtml(): Promise<FaviconHtmlTag[]> {
     const tile = "mstile-144x144.png";
 
-    // prettier-ignore
     return [
-      `<meta name="msapplication-TileColor" content="${this.options.background}">`,
-      this.iconOptions.find(iconOption => iconOption.name === tile)
-        ? `<meta name="msapplication-TileImage" content="${this.cacheBusting(this.relative(tile))}">`
-        : "",
-      `<meta name="msapplication-config" content="${this.cacheBusting(this.relative(this.manifestFileName()))}">`,
+      {
+        tag: "meta",
+        attrs: {
+          name: "msapplication-TileColor",
+          content: this.options.background,
+        },
+      },
+      this.iconOptions.find((iconOption) => iconOption.name === tile)
+        ? {
+            tag: "meta",
+            attrs: {
+              name: "msapplication-TileImage",
+              content: this.cacheBusting(this.relative(tile)),
+            },
+          }
+        : undefined,
+      {
+        tag: "meta",
+        attrs: {
+          name: "msapplication-config",
+          content: this.cacheBusting(this.relative(this.manifestFileName())),
+        },
+      },
     ];
   }
 

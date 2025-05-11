@@ -2,7 +2,7 @@
   "compilerOptions": {
     "moduleResolution": "node",
     "outDir": "./dist",
-    "target": "es2019",
+    "target": "es2024",
     "allowSyntheticDefaultImports": true
   },
   "include": ["./src/**/*"]

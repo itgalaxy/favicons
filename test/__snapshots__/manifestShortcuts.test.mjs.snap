@@ -158,6 +158,37 @@ exports[`manifest should support shortcuts 22`] = `
     "<meta name="theme-color" content="#fff">",
     "<meta name="application-name">",
   ],
+  "htmlTags": [
+    {
+      "attrs": {
+        "crossOrigin": false,
+        "href": "/manifest.webmanifest",
+        "rel": "manifest",
+      },
+      "tag": "link",
+    },
+    {
+      "attrs": {
+        "content": "yes",
+        "name": "mobile-web-app-capable",
+      },
+      "tag": "meta",
+    },
+    {
+      "attrs": {
+        "content": "#fff",
+        "name": "theme-color",
+      },
+      "tag": "meta",
+    },
+    {
+      "attrs": {
+        "content": false,
+        "name": "application-name",
+      },
+      "tag": "meta",
+    },
+  ],
   "images": [
     {
       "contents": null,

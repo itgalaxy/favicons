@@ -10,6 +10,45 @@ exports[`should allow to restrict the icons to generate and configure them simul
     "<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">",
     "<meta name="apple-mobile-web-app-title">",
   ],
+  "htmlTags": [
+    {
+      "attrs": {
+        "href": "/apple-touch-icon-60x60.png",
+        "rel": "apple-touch-icon",
+        "sizes": "60x60",
+      },
+      "tag": "link",
+    },
+    {
+      "attrs": {
+        "href": "/apple-touch-icon-76x76.png",
+        "rel": "apple-touch-icon",
+        "sizes": "76x76",
+      },
+      "tag": "link",
+    },
+    {
+      "attrs": {
+        "content": "yes",
+        "name": "apple-mobile-web-app-capable",
+      },
+      "tag": "meta",
+    },
+    {
+      "attrs": {
+        "content": "black-translucent",
+        "name": "apple-mobile-web-app-status-bar-style",
+      },
+      "tag": "meta",
+    },
+    {
+      "attrs": {
+        "content": false,
+        "name": "apple-mobile-web-app-title",
+      },
+      "tag": "meta",
+    },
+  ],
   "images": [
     {
       "contents": null,
