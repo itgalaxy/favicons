@@ -1,4 +1,3 @@
-import escapeHtml from "escape-html";
 import { FaviconHtmlTag } from "../index";
 import { FaviconOptions, NamedIconOptions } from "../config/defaults";
 import { opaqueIcon } from "../config/icons";
@@ -33,33 +32,41 @@ export class AppleIconPlatform extends Platform {
       .filter(({ name }) => /\d/.test(name)) // with a size in a name
       .map((options) => {
         const { width, height } = options.sizes[0];
-        return new FaviconHtmlTag("link", {
-          rel: "apple-touch-icon",
-          sizes: `${width}x${height}`,
-          href: this.cacheBusting(this.relative(options.name)),
-        });
+        return {
+          tag: "link",
+          attrs: {
+            rel: "apple-touch-icon",
+            sizes: `${width}x${height}`,
+            href: this.cacheBusting(this.relative(options.name)),
+          },
+        };
       });
 
     const name = this.options.appShortName || this.options.appName;
 
     return [
       ...icons,
-      new FaviconHtmlTag("meta", {
-        name: "apple-mobile-web-app-capable",
-        content: "yes",
-      }),
-      new FaviconHtmlTag("meta", {
-        name: "apple-mobile-web-app-status-bar-style",
-        content: this.options.appleStatusBarStyle,
-      }),
-      name
-        ? new FaviconHtmlTag("meta", {
-            name: "apple-mobile-web-app-title",
-            content: escapeHtml(name),
-          })
-        : new FaviconHtmlTag("meta", {
-            name: "apple-mobile-web-app-title",
-          }),
+      {
+        tag: "meta",
+        attrs: {
+          name: "apple-mobile-web-app-capable",
+          content: "yes",
+        },
+      },
+      {
+        tag: "meta",
+        attrs: {
+          name: "apple-mobile-web-app-status-bar-style",
+          content: this.options.appleStatusBarStyle,
+        },
+      },
+      {
+        tag: "meta",
+        attrs: {
+          name: "apple-mobile-web-app-title",
+          content: name || false,
+        },
+      },
     ];
   }
 }

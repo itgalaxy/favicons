@@ -20,27 +20,10 @@ export const config = {
 };
 
 export type FaviconHtmlElement = string;
-export class FaviconHtmlTag {
+
+export interface FaviconHtmlTag {
   readonly tag: string;
   readonly attrs: Record<string, string | boolean>;
-
-  constructor(tag: string, attrs: Record<string, string | boolean> = {}) {
-    this.tag = tag;
-    this.attrs = attrs;
-  }
-
-  stringify() {
-    const attrs = Object.entries(this.attrs)
-      .map(([key, value]) => {
-        if (value === true) return key;
-        if (value === false) return "";
-        return `${key}="${value}"`;
-      })
-      .filter(Boolean)
-      .join(" ");
-
-    return `<${this.tag} ${attrs || ""}>`;
-  }
 }
 
 export interface FaviconResponse {

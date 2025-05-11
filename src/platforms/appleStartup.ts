@@ -71,13 +71,13 @@ export class AppleStartupPlatform extends Platform<AppleStartupImage> {
   }
 
   override async createHtml(): Promise<FaviconHtmlTag[]> {
-    return this.iconOptions.map(
-      (item) =>
-        new FaviconHtmlTag("link", {
-          rel: "apple-touch-startup-image",
-          media: `(device-width: ${item.deviceWidth}px) and (device-height: ${item.deviceHeight}px) and (-webkit-device-pixel-ratio: ${item.pixelRatio}) and (orientation: ${item.orientation})`,
-          href: this.cacheBusting(this.relative(item.name)),
-        }),
-    );
+    return this.iconOptions.map((item) => ({
+      tag: "link",
+      attrs: {
+        rel: "apple-touch-startup-image",
+        media: `(device-width: ${item.deviceWidth}px) and (device-height: ${item.deviceHeight}px) and (-webkit-device-pixel-ratio: ${item.pixelRatio}) and (orientation: ${item.orientation})`,
+        href: this.cacheBusting(this.relative(item.name)),
+      },
+    }));
   }
 }

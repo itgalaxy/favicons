@@ -20,7 +20,7 @@ exports[`should scale the SVG image properly 2`] = `
     "<meta name="apple-mobile-web-app-title">",
   ],
   "htmlTags": [
-    FaviconHtmlTag {
+    {
       "attrs": {
         "href": "/apple-touch-icon-57x57.png",
         "rel": "apple-touch-icon",
@@ -28,7 +28,7 @@ exports[`should scale the SVG image properly 2`] = `
       },
       "tag": "link",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
         "href": "/apple-touch-icon-60x60.png",
         "rel": "apple-touch-icon",
@@ -36,7 +36,7 @@ exports[`should scale the SVG image properly 2`] = `
       },
       "tag": "link",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
         "href": "/apple-touch-icon-72x72.png",
         "rel": "apple-touch-icon",
@@ -44,7 +44,7 @@ exports[`should scale the SVG image properly 2`] = `
       },
       "tag": "link",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
         "href": "/apple-touch-icon-76x76.png",
         "rel": "apple-touch-icon",
@@ -52,7 +52,7 @@ exports[`should scale the SVG image properly 2`] = `
       },
       "tag": "link",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
         "href": "/apple-touch-icon-114x114.png",
         "rel": "apple-touch-icon",
@@ -60,7 +60,7 @@ exports[`should scale the SVG image properly 2`] = `
       },
       "tag": "link",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
         "href": "/apple-touch-icon-120x120.png",
         "rel": "apple-touch-icon",
@@ -68,7 +68,7 @@ exports[`should scale the SVG image properly 2`] = `
       },
       "tag": "link",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
         "href": "/apple-touch-icon-144x144.png",
         "rel": "apple-touch-icon",
@@ -76,7 +76,7 @@ exports[`should scale the SVG image properly 2`] = `
       },
       "tag": "link",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
         "href": "/apple-touch-icon-152x152.png",
         "rel": "apple-touch-icon",
@@ -84,7 +84,7 @@ exports[`should scale the SVG image properly 2`] = `
       },
       "tag": "link",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
         "href": "/apple-touch-icon-167x167.png",
         "rel": "apple-touch-icon",
@@ -92,7 +92,7 @@ exports[`should scale the SVG image properly 2`] = `
       },
       "tag": "link",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
         "href": "/apple-touch-icon-180x180.png",
         "rel": "apple-touch-icon",
@@ -100,7 +100,7 @@ exports[`should scale the SVG image properly 2`] = `
       },
       "tag": "link",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
         "href": "/apple-touch-icon-1024x1024.png",
         "rel": "apple-touch-icon",
@@ -108,22 +108,23 @@ exports[`should scale the SVG image properly 2`] = `
       },
       "tag": "link",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
         "content": "yes",
         "name": "apple-mobile-web-app-capable",
       },
       "tag": "meta",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
         "content": "black-translucent",
         "name": "apple-mobile-web-app-status-bar-style",
       },
       "tag": "meta",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
+        "content": false,
         "name": "apple-mobile-web-app-title",
       },
       "tag": "meta",

@@ -11,7 +11,7 @@ exports[`should allow to restrict the icons to generate and configure them simul
     "<meta name="apple-mobile-web-app-title">",
   ],
   "htmlTags": [
-    FaviconHtmlTag {
+    {
       "attrs": {
         "href": "/apple-touch-icon-60x60.png",
         "rel": "apple-touch-icon",
@@ -19,7 +19,7 @@ exports[`should allow to restrict the icons to generate and configure them simul
       },
       "tag": "link",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
         "href": "/apple-touch-icon-76x76.png",
         "rel": "apple-touch-icon",
@@ -27,22 +27,23 @@ exports[`should allow to restrict the icons to generate and configure them simul
       },
       "tag": "link",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
         "content": "yes",
         "name": "apple-mobile-web-app-capable",
       },
       "tag": "meta",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
         "content": "black-translucent",
         "name": "apple-mobile-web-app-status-bar-style",
       },
       "tag": "meta",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
+        "content": false,
         "name": "apple-mobile-web-app-title",
       },
       "tag": "meta",

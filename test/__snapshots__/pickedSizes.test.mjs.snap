@@ -8,7 +8,7 @@ exports[`should generate favicons of a given size 4`] = `
     "<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">",
   ],
   "htmlTags": [
-    FaviconHtmlTag {
+    {
       "attrs": {
         "href": "/favicon.ico",
         "rel": "icon",
@@ -16,7 +16,7 @@ exports[`should generate favicons of a given size 4`] = `
       },
       "tag": "link",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
         "href": "/favicon-48x48.png",
         "rel": "icon",

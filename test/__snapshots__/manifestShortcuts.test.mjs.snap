@@ -159,29 +159,31 @@ exports[`manifest should support shortcuts 22`] = `
     "<meta name="application-name">",
   ],
   "htmlTags": [
-    FaviconHtmlTag {
+    {
       "attrs": {
+        "crossOrigin": false,
         "href": "/manifest.webmanifest",
         "rel": "manifest",
       },
       "tag": "link",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
         "content": "yes",
         "name": "mobile-web-app-capable",
       },
       "tag": "meta",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
         "content": "#fff",
         "name": "theme-color",
       },
       "tag": "meta",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
+        "content": false,
         "name": "application-name",
       },
       "tag": "meta",

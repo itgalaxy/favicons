@@ -22,10 +22,13 @@ export class YandexPlatform extends Platform {
 
   override async createHtml(): Promise<FaviconHtmlTag[]> {
     return [
-      new FaviconHtmlTag("link", {
-        rel: "yandex-tableau-widget",
-        href: this.cacheBusting(this.relative(this.manifestFileName())),
-      }),
+      {
+        tag: "link",
+        attrs: {
+          rel: "yandex-tableau-widget",
+          href: this.cacheBusting(this.relative(this.manifestFileName())),
+        },
+      },
     ];
   }
 

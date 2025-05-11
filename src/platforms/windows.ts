@@ -47,20 +47,29 @@ export class WindowsPlatform extends Platform {
     const tile = "mstile-144x144.png";
 
     return [
-      new FaviconHtmlTag("meta", {
-        name: "msapplication-TileColor",
-        content: this.options.background,
-      }),
+      {
+        tag: "meta",
+        attrs: {
+          name: "msapplication-TileColor",
+          content: this.options.background,
+        },
+      },
       this.iconOptions.find((iconOption) => iconOption.name === tile)
-        ? new FaviconHtmlTag("meta", {
-            name: "msapplication-TileImage",
-            content: this.cacheBusting(this.relative(tile)),
-          })
+        ? {
+            tag: "meta",
+            attrs: {
+              name: "msapplication-TileImage",
+              content: this.cacheBusting(this.relative(tile)),
+            },
+          }
         : undefined,
-      new FaviconHtmlTag("meta", {
-        name: "msapplication-config",
-        content: this.cacheBusting(this.relative(this.manifestFileName())),
-      }),
+      {
+        tag: "meta",
+        attrs: {
+          name: "msapplication-config",
+          content: this.cacheBusting(this.relative(this.manifestFileName())),
+        },
+      },
     ];
   }
 

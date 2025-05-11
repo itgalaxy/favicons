@@ -1,3 +1,4 @@
+import escapeHTML from "escape-html";
 import {
   FaviconFile,
   FaviconHtmlTag,
@@ -60,6 +61,26 @@ export function uniformIconOptions<T extends NamedIconOptions>(
   }));
 }
 
+function attrSorkKey(key: string): string {
+  const attrs = ["name", "rel", "type", "media", "sizes"];
+  const index = attrs.indexOf(key);
+  return index >= 0 ? `${index}_${key}` : `z_${key}`;
+}
+
+function renderHtmlTag(tag: FaviconHtmlTag): string {
+  const attrs = Object.entries(tag.attrs)
+    .toSorted((a, b) => attrSorkKey(a[0]).localeCompare(attrSorkKey(b[0])))
+    .map(([key, value]) => {
+      if (value === true) return key;
+      if (value === false) return "";
+      return `${key}="${escapeHTML(value)}"`;
+    })
+    .filter(Boolean)
+    .join(" ");
+
+  return `<${tag.tag} ${attrs || ""}>`;
+}
+
 export class Platform<IO extends NamedIconOptions = NamedIconOptions> {
   protected options: FaviconOptions;
   protected iconOptions: IO[];
@@ -80,7 +101,7 @@ export class Platform<IO extends NamedIconOptions = NamedIconOptions> {
     return {
       images,
       files,
-      html: htmlTags.map((element) => element.stringify()),
+      html: htmlTags.map(renderHtmlTag),
       htmlTags,
     };
   }

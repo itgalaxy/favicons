@@ -7,7 +7,7 @@ exports[`should generate svg favicon 1`] = `
     "<link rel="icon" type="image/svg+xml" href="/favicon.svg">",
   ],
   "htmlTags": [
-    FaviconHtmlTag {
+    {
       "attrs": {
         "href": "/favicon.svg",
         "rel": "icon",
@@ -37,7 +37,7 @@ exports[`should generate svg favicon 10`] = `
     "<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">",
   ],
   "htmlTags": [
-    FaviconHtmlTag {
+    {
       "attrs": {
         "href": "/favicon.ico",
         "rel": "icon",
@@ -45,7 +45,7 @@ exports[`should generate svg favicon 10`] = `
       },
       "tag": "link",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
         "href": "/favicon-16x16.png",
         "rel": "icon",
@@ -54,7 +54,7 @@ exports[`should generate svg favicon 10`] = `
       },
       "tag": "link",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
         "href": "/favicon-32x32.png",
         "rel": "icon",
@@ -63,7 +63,7 @@ exports[`should generate svg favicon 10`] = `
       },
       "tag": "link",
     },
-    FaviconHtmlTag {
+    {
       "attrs": {
         "href": "/favicon-48x48.png",
         "rel": "icon",
@@ -101,7 +101,7 @@ exports[`should reuse svg as a favicon 1`] = `
     "<link rel="icon" type="image/svg+xml" href="/favicon.svg">",
   ],
   "htmlTags": [
-    FaviconHtmlTag {
+    {
       "attrs": {
         "href": "/favicon.svg",
         "rel": "icon",

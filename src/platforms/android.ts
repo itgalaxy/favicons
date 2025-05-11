@@ -1,4 +1,3 @@
-import escapeHtml from "escape-html";
 import { FaviconHtmlTag, FaviconFile, FaviconImage } from "../index";
 import {
   FaviconOptions,
@@ -138,32 +137,37 @@ export class AndroidPlatform extends Platform {
 
   override async createHtml(): Promise<FaviconHtmlTag[]> {
     return [
-      this.options.loadManifestWithCredentials
-        ? new FaviconHtmlTag("link", {
-            rel: "manifest",
-            href: this.cacheBusting(this.relative(this.manifestFileName())),
-            crossOrigin: "use-credentials",
-          })
-        : new FaviconHtmlTag("link", {
-            rel: "manifest",
-            href: this.cacheBusting(this.relative(this.manifestFileName())),
-          }),
-      new FaviconHtmlTag("meta", {
-        name: "mobile-web-app-capable",
-        content: "yes",
-      }),
-      new FaviconHtmlTag("meta", {
-        name: "theme-color",
-        content: this.options.theme_color || this.options.background,
-      }),
-      this.options.appName
-        ? new FaviconHtmlTag("meta", {
-            name: "application-name",
-            content: escapeHtml(this.options.appName),
-          })
-        : new FaviconHtmlTag("meta", {
-            name: "application-name",
-          }),
+      {
+        tag: "link",
+        attrs: {
+          rel: "manifest",
+          href: this.cacheBusting(this.relative(this.manifestFileName())),
+          crossOrigin: this.options.loadManifestWithCredentials
+            ? "use-credentials"
+            : false,
+        },
+      },
+      {
+        tag: "meta",
+        attrs: {
+          name: "mobile-web-app-capable",
+          content: "yes",
+        },
+      },
+      {
+        tag: "meta",
+        attrs: {
+          name: "theme-color",
+          content: this.options.theme_color || this.options.background,
+        },
+      },
+      {
+        tag: "meta",
+        attrs: {
+          name: "application-name",
+          content: this.options.appName || false,
+        },
+      },
     ];
   }
 
