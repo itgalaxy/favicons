@@ -61,13 +61,10 @@ export function uniformIconOptions<T extends NamedIconOptions>(
 }
 
 export class Platform<IO extends NamedIconOptions = NamedIconOptions> {
-  protected options: FaviconOptions & { readonly htmlUnStringified?: boolean };
+  protected options: FaviconOptions;
   protected iconOptions: IO[];
 
-  constructor(
-    options: FaviconOptions & { readonly htmlUnStringified?: boolean },
-    iconOptions: IO[],
-  ) {
+  constructor(options: FaviconOptions, iconOptions: IO[]) {
     this.options = options;
     this.iconOptions = iconOptions;
   }

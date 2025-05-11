@@ -53,7 +53,7 @@ export interface FaviconResponse {
 export type FaviconsSource = string | Buffer | (string | Buffer)[];
 export async function favicons(
   source: FaviconsSource,
-  options: FaviconOptions & { readonly htmlUnStringified?: boolean } = {},
+  options: FaviconOptions = {},
 ): Promise<FaviconResponse> {
   options = {
     ...defaultOptions,
@@ -102,13 +102,10 @@ export type HandleHTML = (
 ) => void;
 
 class FaviconStream extends Transform {
-  #options: FaviconStreamOptions & { readonly htmlUnStringified?: boolean };
+  #options: FaviconStreamOptions;
   #handleHTML: HandleHTML;
 
-  constructor(
-    options: FaviconStreamOptions & { readonly htmlUnStringified?: boolean },
-    handleHTML: HandleHTML,
-  ) {
+  constructor(options: FaviconStreamOptions, handleHTML: HandleHTML) {
     super({ objectMode: true });
     this.#options = options;
     this.#handleHTML = handleHTML;
@@ -121,7 +118,7 @@ class FaviconStream extends Transform {
   ) {
     const { html: htmlPath, pipeHTML, ...options } = this.#options;
 
-    favicons(file, { ...options, htmlUnStringified: true })
+    favicons(file, options)
       .then(({ images, files, html, htmlTags }) => {
         for (const { name, contents } of [...images, ...files]) {
           this.push({
