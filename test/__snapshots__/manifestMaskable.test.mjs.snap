@@ -1,13 +1,10 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`manifestMaskable should accept an array of either buffers or paths to source images 80`] = `
 {
   "files": [
     {
       "contents": "{
-  "name": null,
-  "short_name": null,
-  "description": null,
   "dir": "auto",
   "lang": "en-US",
   "display": "standalone",
@@ -1003,9 +1000,6 @@ exports[`should add \`maskable\` to manifest purpose when manifestMaskable is tr
   "files": [
     {
       "contents": "{
-  "name": null,
-  "short_name": null,
-  "description": null,
   "dir": "auto",
   "lang": "en-US",
   "display": "standalone",

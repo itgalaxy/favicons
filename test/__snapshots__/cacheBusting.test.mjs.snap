@@ -1,13 +1,10 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`should allow setting an URL query parameter for cache busting 1`] = `
 {
   "files": [
     {
       "contents": "{
-  "name": null,
-  "short_name": null,
-  "description": null,
   "dir": "auto",
   "lang": "en-US",
   "display": "standalone",

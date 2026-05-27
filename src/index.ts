@@ -1,9 +1,13 @@
-import { Transform, TransformCallback } from "stream";
-import { type FaviconOptions, defaultOptions } from "./config/defaults";
+import { Transform, type TransformCallback } from "stream";
+import {
+  type FaviconOptions,
+  type FullFaviconOptions,
+  defaultOptions,
+} from "./config/defaults";
 import { sourceImages } from "./helpers";
-import { getPlatform } from "./platforms/index";
+import { getPlatform, type PlatformName } from "./platforms/index";
 
-export { FaviconOptions };
+export type { FaviconOptions };
 
 export interface FaviconImage {
   readonly name: string;
@@ -23,7 +27,7 @@ export type FaviconHtmlElement = string;
 
 export interface FaviconHtmlTag {
   readonly tag: string;
-  readonly attrs: Record<string, string | boolean>;
+  readonly attrs: Partial<Record<string, string | boolean>>;
 }
 
 export interface FaviconResponse {
@@ -38,7 +42,7 @@ export async function favicons(
   source: FaviconsSource,
   options: FaviconOptions = {},
 ): Promise<FaviconResponse> {
-  options = {
+  const fullOptions: FullFaviconOptions = {
     ...defaultOptions,
     ...options,
     icons: { ...defaultOptions.icons, ...options.icons },
@@ -47,8 +51,8 @@ export async function favicons(
 
   const sourceset = await sourceImages(source);
 
-  const platforms = Object.keys(options.icons)
-    .filter((platform) => options.icons[platform])
+  const platforms = (Object.keys(fullOptions.icons) as PlatformName[])
+    .filter((platform) => fullOptions.icons[platform])
     .sort((a, b) => {
       if (a === "favicons") return -1;
       if (b === "favicons") return 1;
@@ -58,7 +62,7 @@ export async function favicons(
   const responses: FaviconResponse[] = [];
 
   for (const platformName of platforms) {
-    const platform = getPlatform(platformName, options);
+    const platform = getPlatform(platformName, fullOptions);
 
     responses.push(await platform.create(sourceset));
   }
@@ -86,9 +90,9 @@ export type HandleHTML = (
 
 class FaviconStream extends Transform {
   #options: FaviconStreamOptions;
-  #handleHTML: HandleHTML;
+  #handleHTML: HandleHTML | undefined;
 
-  constructor(options: FaviconStreamOptions, handleHTML: HandleHTML) {
+  constructor(options: FaviconStreamOptions, handleHTML?: HandleHTML) {
     super({ objectMode: true });
     this.#options = options;
     this.#handleHTML = handleHTML;

@@ -1,5 +1,5 @@
-import { FaviconFile, FaviconHtmlTag } from "../index";
-import { FaviconOptions, NamedIconOptions } from "../config/defaults";
+import type { FaviconFile, FaviconHtmlTag } from "../index";
+import type { FullFaviconOptions, NamedIconOptions } from "../config/defaults";
 import { transparentIcon } from "../config/icons";
 import { relativeTo } from "../helpers";
 import { Platform, uniformIconOptions } from "./base";
@@ -9,7 +9,7 @@ const ICONS_OPTIONS: NamedIconOptions[] = [
 ];
 
 export class YandexPlatform extends Platform {
-  constructor(options: FaviconOptions) {
+  constructor(options: FullFaviconOptions) {
     super(
       options,
       uniformIconOptions(options, options.icons.yandex, ICONS_OPTIONS),

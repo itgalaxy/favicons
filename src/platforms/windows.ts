@@ -1,6 +1,10 @@
 import xml2js from "xml2js";
-import { FaviconHtmlTag, FaviconFile } from "../index";
-import { FaviconOptions, IconSize, NamedIconOptions } from "../config/defaults";
+import type { FaviconHtmlTag, FaviconFile } from "../index";
+import type {
+  FullFaviconOptions,
+  IconSize,
+  NamedIconOptions,
+} from "../config/defaults";
 import { transparentIcon } from "../config/icons";
 import { relativeTo } from "../helpers";
 import { Platform, uniformIconOptions } from "./base";
@@ -29,7 +33,7 @@ function hasSize(size: IconSize, icon: NamedIconOptions): boolean {
 }
 
 export class WindowsPlatform extends Platform {
-  constructor(options: FaviconOptions) {
+  constructor(options: FullFaviconOptions) {
     super(
       options,
       uniformIconOptions(options, options.icons.windows, ICONS_OPTIONS),
@@ -44,9 +48,7 @@ export class WindowsPlatform extends Platform {
   }
 
   override async createHtml(): Promise<FaviconHtmlTag[]> {
-    const tile = "mstile-144x144.png";
-
-    return [
+    const tags: FaviconHtmlTag[] = [
       {
         tag: "meta",
         attrs: {
@@ -54,23 +56,29 @@ export class WindowsPlatform extends Platform {
           content: this.options.background,
         },
       },
-      this.iconOptions.find((iconOption) => iconOption.name === tile)
-        ? {
-            tag: "meta",
-            attrs: {
-              name: "msapplication-TileImage",
-              content: this.cacheBusting(this.relative(tile)),
-            },
-          }
-        : undefined,
-      {
+    ];
+
+    const tile = "mstile-144x144.png";
+    const tileOption = this.iconOptions.find((o) => o.name === tile);
+    if (tileOption) {
+      tags.push({
         tag: "meta",
         attrs: {
-          name: "msapplication-config",
-          content: this.cacheBusting(this.relative(this.manifestFileName())),
+          name: "msapplication-TileImage",
+          content: this.cacheBusting(this.relative(tile)),
         },
+      });
+    }
+
+    tags.push({
+      tag: "meta",
+      attrs: {
+        name: "msapplication-config",
+        content: this.cacheBusting(this.relative(this.manifestFileName())),
       },
-    ];
+    });
+
+    return tags;
   }
 
   private manifestFileName(): string {
@@ -105,7 +113,7 @@ export class WindowsPlatform extends Platform {
     };
 
     const contents = new xml2js.Builder({
-      xmldec: { version: "1.0", encoding: "utf-8", standalone: null },
+      xmldec: { version: "1.0", encoding: "utf-8", standalone: undefined },
     }).buildObject(browserconfig);
 
     return { name: this.manifestFileName(), contents };

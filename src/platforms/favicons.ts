@@ -1,7 +1,7 @@
-import { FaviconHtmlTag } from "../index";
-import { FaviconOptions, NamedIconOptions } from "../config/defaults";
+import type { FaviconHtmlTag } from "../index";
+import type { FullFaviconOptions, NamedIconOptions } from "../config/defaults";
 import { transparentIcon, transparentIcons } from "../config/icons";
-import { OptionalMixin, Platform, uniformIconOptions } from "./base";
+import { type OptionalMixin, Platform, uniformIconOptions } from "./base";
 
 const ICONS_OPTIONS: (NamedIconOptions & OptionalMixin)[] = [
   { name: "favicon.ico", ...transparentIcons(16, 24, 32, 48, 64) },
@@ -12,7 +12,7 @@ const ICONS_OPTIONS: (NamedIconOptions & OptionalMixin)[] = [
 ];
 
 export class FaviconsPlatform extends Platform {
-  constructor(options: FaviconOptions) {
+  constructor(options: FullFaviconOptions) {
     super(
       options,
       uniformIconOptions(options, options.icons.favicons, ICONS_OPTIONS),

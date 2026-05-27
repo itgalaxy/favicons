@@ -1,5 +1,5 @@
-import { FaviconHtmlTag } from "../index";
-import { FaviconOptions, NamedIconOptions } from "../config/defaults";
+import type { FaviconHtmlTag } from "../index";
+import type { FullFaviconOptions, NamedIconOptions } from "../config/defaults";
 import { opaqueIcon } from "../config/icons";
 import { Platform, uniformIconOptions } from "./base";
 
@@ -36,7 +36,7 @@ interface AppleStartupImage extends NamedIconOptions, ScreenSize {
 }
 
 function iconOptions(): AppleStartupImage[] {
-  const result = {};
+  const result: Record<string, AppleStartupImage> = {};
   for (const size of SCREEN_SIZES) {
     const pixelWidth = size.deviceWidth * size.pixelRatio;
     const pixelHeight = size.deviceHeight * size.pixelRatio;
@@ -63,7 +63,7 @@ function iconOptions(): AppleStartupImage[] {
 const ICONS_OPTIONS: AppleStartupImage[] = iconOptions();
 
 export class AppleStartupPlatform extends Platform<AppleStartupImage> {
-  constructor(options: FaviconOptions) {
+  constructor(options: FullFaviconOptions) {
     super(
       options,
       uniformIconOptions(options, options.icons.appleStartup, ICONS_OPTIONS),

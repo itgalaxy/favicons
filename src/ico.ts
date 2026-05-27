@@ -1,4 +1,4 @@
-import { RawImage } from "./helpers";
+import type { RawImage } from "./helpers";
 
 const HEADER_SIZE = 6;
 const DIRECTORY_SIZE = 16;

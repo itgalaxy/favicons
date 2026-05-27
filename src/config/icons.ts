@@ -1,4 +1,4 @@
-import { IconOptions } from "./defaults";
+import type { IconOptions } from "./defaults";
 
 export function transparentIcon(width: number, height?: number): IconOptions {
   return {

@@ -1,4 +1,4 @@
-import { PlatformName } from "../platforms";
+import type { PlatformName } from "../platforms";
 
 export interface IconSize {
   readonly width: number;
@@ -25,10 +25,10 @@ export interface FileOptions {
 
 export interface ShortcutOptions {
   readonly name: string;
-  readonly short_name?: string;
-  readonly description?: string;
+  readonly short_name?: string | undefined;
+  readonly description?: string | undefined;
   readonly url: string;
-  readonly icon?: string | Buffer | (string | Buffer)[];
+  readonly icon?: string | Buffer | (string | Buffer)[] | undefined;
 }
 
 export interface Application {
@@ -38,9 +38,9 @@ export interface Application {
 }
 
 export interface OutputOptions {
-  readonly images?: boolean;
-  readonly files?: boolean;
-  readonly html?: boolean;
+  readonly images?: boolean | undefined;
+  readonly files?: boolean | undefined;
+  readonly html?: boolean | undefined;
 }
 
 export interface FaviconOptions {
@@ -67,19 +67,26 @@ export interface FaviconOptions {
   readonly manifestMaskable?: boolean | string | Buffer | (string | Buffer)[];
   readonly preferRelatedApplications?: boolean;
   readonly relatedApplications?: Application[];
-  readonly icons?: Record<PlatformName, IconOptions | boolean | string[]>;
+  readonly icons?:
+    | Partial<Record<PlatformName, IconOptions | boolean | string[]>>
+    | undefined;
   readonly files?: Record<PlatformName, FileOptions>;
-  readonly shortcuts?: ShortcutOptions[];
+  readonly shortcuts?: ShortcutOptions[] | undefined;
   readonly output?: OutputOptions;
 }
 
-export const defaultOptions: FaviconOptions = {
+export type FullFaviconOptions = Omit<FaviconOptions, "icons" | "output"> & {
+  readonly icons: Record<PlatformName, IconOptions | boolean | string[]>;
+  readonly output: OutputOptions;
+};
+
+export const defaultOptions: FullFaviconOptions = {
   path: "/",
-  appName: null,
-  appShortName: null,
-  appDescription: null,
-  developerName: null,
-  developerURL: null,
+  appName: undefined,
+  appShortName: undefined,
+  appDescription: undefined,
+  developerName: undefined,
+  developerURL: undefined,
   cacheBustingQueryParam: null,
   dir: "auto",
   lang: "en-US",

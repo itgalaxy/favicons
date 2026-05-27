@@ -1,6 +1,6 @@
-import { FaviconHtmlTag, FaviconFile, FaviconImage } from "../index";
-import {
-  FaviconOptions,
+import type { FaviconHtmlTag, FaviconFile, FaviconImage } from "../index";
+import type {
+  FullFaviconOptions,
   IconOptions,
   NamedIconOptions,
 } from "../config/defaults";
@@ -8,7 +8,7 @@ import { maskable, transparentIcon } from "../config/icons";
 import {
   createFavicon,
   relativeTo,
-  SourceImage,
+  type SourceImage,
   sourceImages,
 } from "../helpers";
 import { Platform, uniformIconOptions } from "./base";
@@ -88,7 +88,7 @@ const SHORTCUT_ICONS_OPTIONS: Record<string, IconOptions> = {
 };
 
 export class AndroidPlatform extends Platform {
-  constructor(options: FaviconOptions) {
+  constructor(options: FullFaviconOptions) {
     super(
       options,
       uniformIconOptions(options, options.icons.android, ICONS_OPTIONS),
@@ -173,8 +173,10 @@ export class AndroidPlatform extends Platform {
 
   private async shortcutIcons(): Promise<FaviconImage[]> {
     const icons = await Promise.all(
-      this.options.shortcuts.map(async (shortcut, index) => {
-        if (!shortcut.name || !shortcut.url || !shortcut.icon) return null;
+      this.options.shortcuts?.map(async (shortcut, index) => {
+        if (!shortcut.name || !shortcut.url || !shortcut.icon) {
+          return [];
+        }
         const shortcutSourceset = await sourceImages(shortcut.icon);
         return Promise.all(
           Object.entries(SHORTCUT_ICONS_OPTIONS).map(([shortcutName, option]) =>
@@ -185,7 +187,7 @@ export class AndroidPlatform extends Platform {
             ),
           ),
         );
-      }),
+      }) ?? [],
     );
     return icons.flat();
   }
@@ -263,11 +265,11 @@ export class AndroidPlatform extends Platform {
     };
   }
 
-  private manifestShortcuts(basePath: string): Shortcut[] {
-    return this.options.shortcuts
-      .map((shortcut, index) => {
-        if (!shortcut.name || !shortcut.url) return null; // skip if required name or url missing
-        return {
+  private manifestShortcuts(basePath: string | null | undefined): Shortcut[] {
+    return (
+      this.options.shortcuts
+        ?.filter((shortcut) => shortcut.name && shortcut.url) // skip if required name or url missing
+        ?.map((shortcut, index) => ({
           name: shortcut.name,
           short_name: shortcut.short_name || shortcut.name, // fallback to name
           description: shortcut.description, // optional
@@ -289,8 +291,7 @@ export class AndroidPlatform extends Platform {
                 },
               )
             : undefined,
-        };
-      })
-      .filter((x) => x !== null);
+        })) ?? []
+    );
   }
 }
