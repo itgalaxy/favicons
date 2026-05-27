@@ -1,5 +1,5 @@
-import { FaviconHtmlTag } from "../index";
-import { FaviconOptions, NamedIconOptions } from "../config/defaults";
+import type { FaviconHtmlTag } from "../index";
+import type { FullFaviconOptions, NamedIconOptions } from "../config/defaults";
 import { opaqueIcon } from "../config/icons";
 import { Platform, uniformIconOptions } from "./base";
 
@@ -20,7 +20,7 @@ const ICONS_OPTIONS: NamedIconOptions[] = [
 ];
 
 export class AppleIconPlatform extends Platform {
-  constructor(options: FaviconOptions) {
+  constructor(options: FullFaviconOptions) {
     super(
       options,
       uniformIconOptions(options, options.icons.appleIcon, ICONS_OPTIONS),

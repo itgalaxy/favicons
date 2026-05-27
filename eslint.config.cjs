@@ -115,7 +115,6 @@ module.exports = ts.config(
         },
       ],
 
-      "init-declarations": [2, "always"],
       "no-catch-shadow": 2,
       "no-label-var": 2,
       "no-shadow": 2,

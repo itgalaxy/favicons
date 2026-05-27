@@ -6,11 +6,11 @@ import ICO from "icojs";
 expect.extend({ toMatchImageSnapshot });
 
 async function imagePlanes(image) {
-  if (!ICO.isICO(image.contents)) {
+  if (!ICO.isIco(image.contents)) {
     return [image];
   }
 
-  const planes = await ICO.parseICO(image.contents, "image/png");
+  const planes = await ICO.decodeIco(image.contents, "image/png");
   const result = [];
 
   for (const plane of planes) {

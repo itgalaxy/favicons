@@ -2,8 +2,8 @@ import { extname } from "path";
 import { readFile } from "fs/promises";
 import sharp from "sharp";
 import { toIco } from "./ico";
-import { FaviconImage } from "./index";
-import { IconOptions } from "./config/defaults";
+import type { FaviconImage } from "./index";
+import type { IconOptions } from "./config/defaults";
 import { svgDensity } from "./svgtool";
 
 export type SourceImage = { data: Buffer; metadata: sharp.Metadata };
@@ -13,14 +13,16 @@ export type RawImage = { data: Buffer; info: sharp.OutputInfo };
 export interface IconPlaneOptions {
   readonly width: number;
   readonly height: number;
-  readonly offset?: number;
+  readonly offset: number;
   readonly pixelArt: boolean;
-  readonly background?: string;
+  readonly background: string | undefined;
   readonly transparent: boolean;
   readonly rotate: boolean;
 }
 
-function arrayComparator(a: unknown, b: unknown): number {
+type Comparable = number | string | (number | string)[];
+
+function arrayComparator(a: Comparable, b: Comparable): number {
   const aArr = [a].flat(Infinity);
   const bArr = [b].flat(Infinity);
 
@@ -38,7 +40,7 @@ function minBy<T>(array: T[], comparator: (a: T, b: T) => number): T {
   return array.reduce((acc, cur) => (comparator(acc, cur) < 0 ? acc : cur));
 }
 
-function minByKey<T>(array: T[], keyFn: (e: T) => unknown): T {
+function minByKey<T>(array: T[], keyFn: (e: T) => Comparable): T {
   return minBy(array, (a, b) => arrayComparator(keyFn(a), keyFn(b)));
 }
 

@@ -1,16 +1,22 @@
 import escapeHTML from "escape-html";
-import {
+import type {
   FaviconFile,
   FaviconHtmlTag,
   FaviconImage,
   FaviconResponse,
 } from "../index";
-import {
+import type {
   FaviconOptions,
+  FullFaviconOptions,
   IconOptions,
   NamedIconOptions,
 } from "../config/defaults";
-import { asString, createFavicon, relativeTo, SourceImage } from "../helpers";
+import {
+  asString,
+  createFavicon,
+  relativeTo,
+  type SourceImage,
+} from "../helpers";
 
 export interface OptionalMixin {
   readonly optional?: boolean;
@@ -25,7 +31,7 @@ export function uniformIconOptions<T extends NamedIconOptions>(
     | undefined,
   platformConfig: (T & OptionalMixin)[],
 ): T[] {
-  let result = [];
+  let result;
   if (Array.isArray(iconsChoice)) {
     const iconsChoices = Object.fromEntries(
       iconsChoice.map((choice) =>
@@ -82,10 +88,10 @@ function renderHtmlTag(tag: FaviconHtmlTag): string {
 }
 
 export class Platform<IO extends NamedIconOptions = NamedIconOptions> {
-  protected options: FaviconOptions;
+  protected options: FullFaviconOptions;
   protected iconOptions: IO[];
 
-  constructor(options: FaviconOptions, iconOptions: IO[]) {
+  constructor(options: FullFaviconOptions, iconOptions: IO[]) {
     this.options = options;
     this.iconOptions = iconOptions;
   }
@@ -94,7 +100,7 @@ export class Platform<IO extends NamedIconOptions = NamedIconOptions> {
     const { output } = this.options;
     const images = output.images ? await this.createImages(sourceset) : [];
     const files = output.files ? await this.createFiles() : [];
-    let htmlTags = [];
+    let htmlTags: FaviconHtmlTag[] = [];
     if (output.html) {
       htmlTags = await this.createHtml();
     }

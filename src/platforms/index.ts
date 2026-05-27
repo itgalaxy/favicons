@@ -1,5 +1,5 @@
-import { FaviconOptions } from "../config/defaults";
-import { Platform } from "./base";
+import type { FullFaviconOptions } from "../config/defaults";
+import type { Platform } from "./base";
 import { AndroidPlatform } from "./android";
 import { AppleIconPlatform } from "./appleIcon";
 import { AppleStartupPlatform } from "./appleStartup";
@@ -15,7 +15,10 @@ export type PlatformName =
   | "windows"
   | "yandex";
 
-export function getPlatform(name: string, options: FaviconOptions): Platform {
+export function getPlatform(
+  name: string,
+  options: FullFaviconOptions,
+): Platform {
   switch (name) {
     case "android":
       return new AndroidPlatform(options);
