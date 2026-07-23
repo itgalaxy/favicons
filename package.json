@@ -54,7 +54,7 @@
   },
   "dependencies": {
     "escape-html": "^1.0.3",
-    "sharp": "^0.34.1",
+    "sharp": "^0.35.3",
     "xml2js": "^0.6.1"
   },
   "devDependencies": {
