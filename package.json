@@ -75,7 +75,7 @@
     "jest-image-snapshot": "^6.1.0",
     "prettier": "^3.0.0",
     "rimraf": "^6.0.1",
-    "tsdown": "^0.22.0",
+    "tsdown": "^0.22.13",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.32.0",
     "unrun": "^0.3.0"

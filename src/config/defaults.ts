@@ -68,8 +68,7 @@ export interface FaviconOptions {
   readonly preferRelatedApplications?: boolean;
   readonly relatedApplications?: Application[];
   readonly icons?:
-    | Partial<Record<PlatformName, IconOptions | boolean | string[]>>
-    | undefined;
+    Partial<Record<PlatformName, IconOptions | boolean | string[]>> | undefined;
   readonly files?: Record<PlatformName, FileOptions>;
   readonly shortcuts?: ShortcutOptions[] | undefined;
   readonly output?: OutputOptions;

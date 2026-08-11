@@ -25,10 +25,7 @@ export interface OptionalMixin {
 export function uniformIconOptions<T extends NamedIconOptions>(
   options: FaviconOptions,
   iconsChoice:
-    | IconOptions
-    | boolean
-    | (string | NamedIconOptions)[]
-    | undefined,
+    IconOptions | boolean | (string | NamedIconOptions)[] | undefined,
   platformConfig: (T & OptionalMixin)[],
 ): T[] {
   let result;
